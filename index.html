@@ -1182,33 +1182,31 @@
     }
 })();
     </script>
-    <!-- ======================================================== -->
-<!-- SHREE VAISHNAVI COMPUTERS - PRO TOOLS EXTENSION (FINAL)  -->
+ <!-- ======================================================== -->
+<!-- SHREE VAISHNAVI COMPUTERS - TOP HEADER TRAY EXTENSION    -->
 <!-- ======================================================== -->
 <style>
-/* प्रोफ़ेशनल टूलबार लेआउट */
-.svc-pro-bar {
+/* हेडर के नीचे सिंगल-लाइन प्रोफ़ेशनल ट्रे */
+.svc-header-tray {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 6px 16px;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
-  background: #ffffff;
-  padding: 10px 14px;
-  border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  margin: 12px auto;
-  max-width: 1200px;
   box-sizing: border-box;
   font-family: system-ui, -apple-system, sans-serif;
-  z-index: 10;
+  z-index: 999;
 }
 
-.svc-pro-group {
+.svc-tray-group {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -1216,14 +1214,15 @@
   background: #f8fafc;
   color: #1e293b;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 6px 11px;
-  font-size: 13px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
+  white-space: nowrap;
   user-select: none;
   transition: all 0.2s ease;
 }
@@ -1232,7 +1231,6 @@
   background: #0284c7;
   color: #ffffff;
   border-color: #0284c7;
-  transform: translateY(-1px);
 }
 
 .svc-pbtn-wa {
@@ -1245,37 +1243,33 @@
   color: white;
 }
 
-/* ऑटो-सेव बैज */
 .svc-save-badge {
-  font-size: 12px;
+  font-size: 11px;
   color: #64748b;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   font-weight: 500;
-  min-width: 85px;
+  min-width: 75px;
 }
 .svc-save-badge.saved { color: #16a34a; }
 
-/* फाइंड एंड रिप्लेस पैनल */
+/* फाइंड एंड रिप्लेस पैनल (हेडर के ठीक नीचे ड्रॉपडाउन की तरह) */
 .svc-find-panel {
   display: none;
+  width: 100%;
   background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin: 8px auto 12px auto;
-  max-width: 1200px;
+  border-bottom: 2px solid #cbd5e1;
+  padding: 8px 16px;
   gap: 8px;
   align-items: center;
   box-sizing: border-box;
 }
 .svc-find-panel.show { display: flex; flex-wrap: wrap; }
 .svc-find-panel input {
-  padding: 6px 10px;
+  padding: 5px 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 5px;
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 12px;
   outline: none;
 }
 .svc-find-panel input:focus { border-color: #0284c7; }
@@ -1285,11 +1279,10 @@ body.svc-dark {
   background-color: #0f172a !important;
   color: #f1f5f9 !important;
 }
-body.svc-dark .svc-pro-bar, 
+body.svc-dark .svc-header-tray, 
 body.svc-dark .svc-find-panel {
   background: #1e293b !important;
   border-color: #334155 !important;
-  color: #f1f5f9 !important;
 }
 body.svc-dark .svc-pbtn {
   background: #334155;
@@ -1306,7 +1299,7 @@ body.svc-dark .card, body.svc-dark .container, body.svc-dark header {
   color: #f1f5f9 !important;
 }
 
-/* फ़ुल स्क्रीन (Focus Mode) */
+/* फ़ुल स्क्रीन / फ़ोकस मोड */
 body.svc-focus header, 
 body.svc-focus footer, 
 body.svc-focus .hero,
@@ -1318,7 +1311,7 @@ body.svc-focus p.desc {
 /* A4 प्रिंट अनुकूलन */
 @media print {
   body { background: white !important; color: black !important; }
-  .svc-pro-bar, .svc-find-panel, header, footer, button, .buttons, nav {
+  .svc-header-tray, .svc-find-panel, header, footer, button, .buttons, nav {
     display: none !important;
   }
   textarea {
@@ -1333,30 +1326,35 @@ body.svc-focus p.desc {
   }
 }
 
-/* मोबाइल रिस्पॉन्सिव */
-@media (max-width: 600px) {
-  .svc-pro-bar { justify-content: center; padding: 8px; }
-  .svc-pro-group { justify-content: center; }
-  .svc-pbtn { padding: 5px 8px; font-size: 12px; }
+/* मोबाइल में स्क्रॉल करने योग्य ट्रे */
+@media (max-width: 768px) {
+  .svc-header-tray {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 10px;
+  }
+  .svc-tray-group { flex-wrap: nowrap; }
 }
 </style>
 
-<!-- टूलबार इंटरफ़ेस -->
-<div class="svc-pro-bar" id="svcProBar">
-  <div class="svc-pro-group">
+<!-- टॉप हेडर ट्रे -->
+<div class="svc-header-tray" id="svcHeaderTray">
+  <div class="svc-tray-group">
     <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(1)" title="फॉन्ट बड़ा करें"><b>A+</b></button>
     <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(-1)" title="फॉन्ट छोटा करें"><b>A-</b></button>
     <button type="button" class="svc-pbtn" onclick="svcPro.toggleFindPanel()">🔍 Find & Replace</button>
-    <button type="button" class="svc-pbtn" onclick="svcPro.cleanText()" title="डबल स्पेस व विराम चिन्ह सुधारें">✨ Auto-Clean</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.cleanText()" title="अतिरिक्त स्पेस व विराम चिन्ह सुधारें">✨ Auto-Clean</button>
   </div>
 
-  <div class="svc-pro-group">
+  <div class="svc-tray-group">
     <button type="button" class="svc-pbtn" onclick="svcPro.exportWord()">📄 Export .doc</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.printA4()">🖨️ Print A4</button>
     <button type="button" class="svc-pbtn svc-pbtn-wa" onclick="svcPro.shareWhatsApp()">📲 WhatsApp</button>
   </div>
 
-  <div class="svc-pro-group">
+  <div class="svc-tray-group">
     <span class="svc-save-badge" id="svcSaveBadge">💾 Auto-Save</span>
     <button type="button" class="svc-pbtn" onclick="svcPro.toggleDark()" id="svcDarkBtn">🌙 Dark</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.toggleFocus()">🔲 Focus</button>
@@ -1371,7 +1369,7 @@ body.svc-focus p.desc {
   <button type="button" class="svc-pbtn" onclick="svcPro.toggleFindPanel()" style="background:#fee2e2; border-color:#fca5a5;">✕</button>
 </div>
 
-<!-- सेफ़ जावास्क्रिप्ट इंजन -->
+<!-- जावास्क्रिप्ट इंजन -->
 <script>
 window.svcPro = (function() {
   let currentFontSize = 16;
@@ -1523,21 +1521,26 @@ window.svcPro = (function() {
     if (unicode) unicode.addEventListener('input', save);
   }
 
-  function setupToolbarPosition() {
-    const bar = document.getElementById('svcProBar');
+  // ट्रे को नीले वाले मुख्य हेडर के ठीक नीचे सेट करना
+  function placeTrayUnderHeader() {
+    const tray = document.getElementById('svcHeaderTray');
     const findPanel = document.getElementById('svcFindPanel');
-    const textareas = document.querySelectorAll('textarea');
-    if (textareas.length > 0 && bar) {
-      const targetCard = textareas[0].closest('.card, .container, .box, div') || textareas[0];
-      if (targetCard && targetCard.parentNode && targetCard !== document.body) {
-        targetCard.parentNode.insertBefore(bar, targetCard);
-        if (findPanel) targetCard.parentNode.insertBefore(findPanel, targetCard);
+    const header = document.querySelector('header, .header, nav, .navbar') || document.body.firstElementChild;
+
+    if (header && tray) {
+      if (header.nextSibling) {
+        header.parentNode.insertBefore(tray, header.nextSibling);
+      } else {
+        header.parentNode.appendChild(tray);
+      }
+      if (findPanel) {
+        tray.parentNode.insertBefore(findPanel, tray.nextSibling);
       }
     }
   }
 
   function initAll() {
-    setupToolbarPosition();
+    placeTrayUnderHeader();
     initAutoSave();
     if (localStorage.getItem('svc_theme_dark') === '1') {
       toggleDark();
