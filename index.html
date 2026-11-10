@@ -1183,10 +1183,10 @@
 })();
     </script>
  <!-- ======================================================== -->
-<!-- SHREE VAISHNAVI COMPUTERS - ULTIMATE PRO + SPEED METER   -->
+<!-- SHREE VAISHNAVI COMPUTERS - PRO WORKSTATION + OCR & DND  -->
 <!-- ======================================================== -->
 <style>
-/* प्रोफ़ेशनल सिंगल-लाइन हेडर ट्रे */
+/* प्रोफ़ेशनल हेडर ट्रे */
 .svc-header-tray {
   width: 100%;
   background: #ffffff;
@@ -1296,7 +1296,7 @@
 }
 .svc-save-badge.saved { color: #16a34a; }
 
-/* पैनल्स (Find & Alt Codes) */
+/* ड्रॉपडाउन पैनल्स (Find & Alt Codes) */
 .svc-panel-tray {
   display: none;
   width: 100%;
@@ -1350,7 +1350,13 @@
 .svc-sym-char { font-size: 14px; font-weight: bold; color: #0f172a; }
 .svc-sym-code { font-size: 10px; color: #64748b; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; }
 
-/* फ्लोटिंग टोस्ट नोटिफ़िकेशन */
+/* ड्रैग एंड ड्रॉप विज़ुअल इंडिकेटर */
+textarea.svc-drag-over {
+  border: 2px dashed #0284c7 !important;
+  background-color: #f0f9ff !important;
+}
+
+/* फ्लोटिंग टोस्ट */
 .svc-toast-container {
   position: fixed;
   bottom: 24px;
@@ -1383,7 +1389,7 @@
 .svc-toast.info { background: #0369a1; }
 .svc-toast.warning { background: #b45309; }
 
-/* लाइव स्टेटस बार (MS Word जैसा + स्पीड मीटर) */
+/* लाइव स्टेटस बार + स्पीड मीटर */
 .svc-status-bar {
   width: 100%;
   max-width: 1200px;
@@ -1460,7 +1466,9 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
     <button type="button" class="svc-pbtn" onclick="svcPro.cleanText()" title="डबल स्पेस व विराम चिन्ह सुधारें">✨ Auto-Clean</button>
   </div>
 
+  <!-- फ़ाइल, OCR व शेयरिंग टूल्स -->
   <div class="svc-tray-group">
+    <button type="button" class="svc-pbtn" onclick="svcPro.triggerFileInput()" title="Word, Text या फ़ोटो (OCR) अपलोड करें">📂 File / OCR</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.exportWord()" title="शॉर्टकट: Ctrl+S">📄 Word</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.printA4()">🖨️ Print</button>
     <button type="button" class="svc-pbtn svc-pbtn-wa" onclick="svcPro.shareWhatsApp()">📲 WhatsApp</button>
@@ -1473,6 +1481,9 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
     <button type="button" class="svc-pbtn" onclick="svcPro.toggleFocus()">🔲 Focus</button>
   </div>
 </div>
+
+<!-- छुपा हुआ फ़ाइल इनपुट (File / OCR के लिए) -->
+<input type="file" id="svcFileInput" accept=".txt,.docx,.doc,image/*" style="display:none;" onchange="svcPro.handleFileSelect(event)">
 
 <!-- ड्रॉपडाउन पैनल्स -->
 <div class="svc-panel-tray" id="svcFindPanel">
@@ -1492,7 +1503,7 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
   <div class="svc-symbol-grid" id="svcSymbolGrid"></div>
 </div>
 
-<!-- लाइव स्टेटस बार (MS Word जैसा + स्पीड मीटर) -->
+<!-- लाइव स्टेटस बार -->
 <div class="svc-status-bar" id="svcStatusBar">
   <div class="svc-status-group">
     <span class="svc-status-item">शब्द: <b id="statWords">0</b></span>
@@ -1503,7 +1514,7 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
   </div>
   <div class="svc-status-group">
     <span class="svc-status-item">पढ़ने का समय: <b id="statReadTime">0 मिनट</b></span>
-    <span class="svc-status-item" style="color:#0284c7; font-weight:500;">Ctrl+K: Find | Ctrl+S: Save</span>
+    <span class="svc-status-item" style="color:#0284c7; font-weight:500;">ड्रैग & ड्रॉप फ़ाइल समर्थित | Ctrl+K / Ctrl+S</span>
   </div>
 </div>
 
@@ -1519,7 +1530,6 @@ window.svcPro = (function() {
   let deferredPrompt = null;
   let lastActiveTextarea = null;
 
-  // लाइव टाइपिंग स्पीड कैलकुलेशन स्टेट
   let sessionStartTime = null;
   let sessionTypedChars = 0;
   let lastKeyStrokeTime = null;
@@ -1565,7 +1575,7 @@ window.svcPro = (function() {
     setTimeout(() => {
       item.classList.remove('show');
       setTimeout(() => item.remove(), 300);
-    }, 2400);
+    }, 2800);
   }
 
   function getBoxes() {
@@ -1582,7 +1592,6 @@ window.svcPro = (function() {
     return { devlys: devlysBox, unicode: unicodeBox || devlysBox };
   }
 
-  // लाइव टाइपिंग स्पीड व आँकड़े अपडेट
   function updateLiveStats(e) {
     const { unicode, devlys } = getBoxes();
     const target = lastActiveTextarea || unicode || devlys;
@@ -1594,7 +1603,6 @@ window.svcPro = (function() {
     const lines = txt.trim() ? txt.split('\n').length : 0;
     const readMin = Math.ceil(words / 180);
 
-    // स्पीड कैलकुलेशन (5 कैरेक्टर = 1 स्टैण्डर्ड शब्द)
     const now = Date.now();
     if (e && e.type === 'keydown' && e.key.length === 1) {
       if (!sessionStartTime || (now - lastKeyStrokeTime > 3500)) {
@@ -1632,6 +1640,122 @@ window.svcPro = (function() {
       t.addEventListener('focus', () => { lastActiveTextarea = t; updateLiveStats(); });
       t.addEventListener('input', updateLiveStats);
       t.addEventListener('keydown', updateLiveStats);
+    });
+  }
+
+  // एक्सटर्नल CDN लाइब्रेरी लोड करने का हेल्पर
+  function loadScript(url, callback) {
+    const existing = document.querySelector(`script[src="${url}"]`);
+    if (existing) {
+      callback();
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = callback;
+    document.head.appendChild(s);
+  }
+
+  // 1. फ़ाइल व इमेज (OCR) प्रोसेसिंग
+  function processFile(file) {
+    if (!file) return;
+    const { unicode, devlys } = getBoxes();
+    const target = lastActiveTextarea || unicode || devlys;
+
+    // A. Plain Text (.txt) फ़ाइल
+    if (file.name.endsWith('.txt')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        target.value = e.target.result;
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+        toast("✓ .txt फ़ाइल लोड हो गई!", "success");
+      };
+      reader.readAsText(file, "UTF-8");
+    } 
+    // B. Word (.docx) फ़ाइल
+    else if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+      toast("Word फ़ाइल पढ़ी जा रही है...", "info");
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', function() {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          mammoth.extractRawText({ arrayBuffer: e.target.result })
+            .then(function(result) {
+              target.value = result.value;
+              target.dispatchEvent(new Event('input', { bubbles: true }));
+              toast("✓ Word फ़ाइल का टेक्स्ट लोड हो गया!", "success");
+            })
+            .catch(function() {
+              toast("Word फ़ाइल पढ़ने में त्रुटि!", "warning");
+            });
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    } 
+    // C. इमेज OCR (Hindi + English)
+    else if (file.type.startsWith('image/')) {
+      toast("इमेज से टेक्स्ट स्कैन (OCR) किया जा रहा है... कृपया प्रतीक्षा करें", "info");
+      loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js', function() {
+        Tesseract.recognize(
+          file,
+          'hin+eng',
+          {
+            logger: m => {
+              if (m.status === 'recognizing text' && m.progress) {
+                toast(`स्कैनिंग: ${Math.round(m.progress * 100)}%`, "info");
+              }
+            }
+          }
+        ).then(({ data: { text } }) => {
+          if (text && text.trim()) {
+            target.value = text;
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+            toast("✓ इमेज से टेक्स्ट स्कैन होकर बॉक्स में आ गया!", "success");
+          } else {
+            toast("इमेज में कोई साफ़ टेक्स्ट नहीं मिला।", "warning");
+          }
+        }).catch(err => {
+          toast("OCR स्कैनिंग में समस्या आई!", "warning");
+        });
+      });
+    } else {
+      toast("कृपया .txt, .docx या इमेज (.jpg, .png) फ़ाइल चुनें।", "warning");
+    }
+  }
+
+  function triggerFileInput() {
+    document.getElementById('svcFileInput').click();
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) processFile(file);
+    e.target.value = '';
+  }
+
+  // 2. ड्रैग एंड ड्रॉप (Drag & Drop) इनिशियलाइज़ेशन
+  function setupDragAndDrop() {
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(t => {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        t.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          t.classList.add('svc-drag-over');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        t.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          t.classList.remove('svc-drag-over');
+        }, false);
+      });
+
+      t.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const file = dt.files[0];
+        lastActiveTextarea = t;
+        if (file) processFile(file);
+      }, false);
     });
   }
 
@@ -1920,6 +2044,7 @@ window.svcPro = (function() {
     initAutoSave();
     trackFocus();
     setupShortcuts();
+    setupDragAndDrop();
     initPWA();
     updateLiveStats();
     if (localStorage.getItem('svc_theme_dark') === '1') toggleDark();
@@ -1934,7 +2059,7 @@ window.svcPro = (function() {
   return {
     zoomText, togglePanel, doReplace, cleanText, 
     exportWord, printA4, shareWhatsApp, toggleDark, toggleFocus, 
-    switchDraft, installApp, toast
+    switchDraft, installApp, toast, triggerFileInput, handleFileSelect
   };
 })();
 </script>
