@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About, Feedback & Support | Shree Vaishnavi Computers - Bhilwara</title>
+    <meta name="description" content="Shree Vaishnavi Computers, Bhilwara - Devlys 010 to Unicode Hindi Font Converter की विशेषताएँ, सुरक्षा गारंटी और सुझाव/समस्या निवारण हेतु फीडबैक फॉर्म।">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/jpeg" href="logo.jpeg">
+    <style>
+        :root {
+            --gov-blue: #003366;
+            --gov-navy: #0B2545;
+            --accent-orange: #FF7722;
+            --accent-green: #138808;
+            --bg-page: #f4f6f9;
+            --bg-card: #ffffff;
+            --border-color: #cbd5e1;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gov-navy), var(--gov-blue));
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            border-bottom: 4px solid var(--accent-orange);
+            margin-bottom: 24px;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-box img {
+            width: 54px;
+            height: 54px;
+            border-radius: 8px;
+            border: 2px solid #ffffff;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        .brand-title h1 {
+            font-size: 1.35rem;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .brand-title p {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .back-btn {
+            background-color: #ffffff;
+            color: var(--gov-navy);
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .section-title {
+            color: var(--gov-blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--gov-blue);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .feature-item h3 {
+            font-size: 1rem;
+            color: var(--gov-navy);
+            margin-bottom: 6px;
+        }
+
+        .feature-item p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .privacy-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+        }
+
+        .privacy-box h2 {
+            color: #166534;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .privacy-box p {
+            color: #15803d;
+            font-size: 0.93rem;
+        }
+
+        .guide-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.92rem;
+        }
+
+        .guide-table th, .guide-table td {
+            border: 1px solid var(--border-color);
+            padding: 11px 14px;
+            text-align: left;
+        }
+
+        .guide-table th {
+            background-color: #f1f5f9;
+            color: var(--gov-navy);
+            font-weight: 600;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: var(--gov-navy);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gov-navy);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gov-blue);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .submit-btn {
+            background: var(--gov-blue);
+            color: #fff;
+            border: none;
+            padding: 11px 22px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-orange);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .contact-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .contact-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gov-navy);
+            word-break: break-all;
+        }
+
+        .email-btn {
+            display: inline-block;
+            margin-top: 8px;
+            background: var(--gov-blue);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            width: fit-content;
+            transition: background 0.2s;
+        }
+
+        .email-btn:hover {
+            background: var(--accent-orange);
+        }
+
+        .footer {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--gov-blue);
+            border-radius: 10px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .guide-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Header -->
+    <header class="header">
+        <div class="brand-box">
+            <img src="logo.jpeg" alt="Shree Vaishnavi Computers Logo">
+            <div class="brand-title">
+                <h1>SHREE VAISHNAVI COMPUTERS</h1>
+                <p>Government Documentation & Public Works Portal</p>
+            </div>
+        </div>
+        <a href="index.html" class="back-btn">⬅ वापस कनवर्टर पर जाएँ (Back to Converter)</a>
+    </header>
+
+    <!-- 1. About Firm & Portal -->
+    <section class="card">
+        <h2 class="section-title">🏢 संस्था एवं पोर्टल का परिचय (About Us)</h2>
+        <p style="margin-bottom: 10px;">
+            <strong>SHREE VAISHNAVI COMPUTERS (भीलवाड़ा, राजस्थान)</strong> द्वारा विकसित यह आधुनिक <strong>Devlys 010 ⇄ Unicode (Mangal) Hindi Font Converter</strong> विशेष रूप से सरकारी कार्यालयों, विभागीय पत्राचार, न्यायिक व विधिक ड्राफ़्टिंग, ई-मित्र संचालकों और पेशेवर टाइपिस्टों के दैनिक कार्यों को सरल, शुद्ध और तेज़ बनाने के लिए तैयार किया गया है।
+        </p>
+        <p>
+            इंटरनेट पर उपलब्ध सामान्य विज्ञापन-युक्त कनवर्टर्स की कमियों को दूर करते हुए इसे एक <strong>संपूर्ण ऑफ़िस वर्कस्टेशन</strong> के रूप में डिज़ाइन किया गया है—जहाँ फ़ॉन्ट कन्वर्जन, इमेज से टेक्स्ट स्कैनिंग (OCR), वॉइस टाइपिंग, और डायरेक्ट MS Word एक्सपोर्ट जैसी सभी सुविधाएँ एक ही स्क्रीन पर बिना किसी रुकावट के उपलब्ध हैं।
+        </p>
+    </section>
+
+    <!-- 2. 100% Privacy & Security Guarantee -->
+    <section class="privacy-box">
+        <h2>🛡️ 100% डेटा गोपनीयता एवं सुरक्षा प्रमाण (Client-Side Security Guarantee)</h2>
+        <p>
+            यह पोर्टल पूरी तरह <strong>100% Client-Side (Local Browser Architecture)</strong> तकनीक पर कार्य करता है। आपके द्वारा यहाँ टाइप किया गया, पेस्ट किया गया या स्कैन किया गया कोई भी सरकारी पत्र, कार्यालय आदेश, नोटिंग या गोपनीय ड्राफ़्ट किसी भी बाहरी सर्वर या डेटाबेस पर <strong>कभी अपलोड या सेव नहीं होता है</strong>। आपका संपूर्ण डेटा 100% आपके अपने कंप्यूटर के ब्राउज़र में ही सुरक्षित रहता है।
+        </p>
+    </section>
+
+    <!-- 3. Key Features -->
+    <section class="card">
+        <h2 class="section-title">✨ पोर्टल की प्रमुख विशेषताएँ (Core Features & Specifications)</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <h3>🔄 100% सटीक द्विपक्षीय मैपिंग</h3>
+                <p>Devlys 010 / Kruti Dev से Unicode (Mangal) और Unicode से वापस Devlys 010 में शत-प्रतिशत शुद्ध कैरेक्टर व मात्रा रूपांतरण।</p>
+            </div>
+            <div class="feature-item">
+                <h3>👁️ इन-बिल्ट फ़ॉन्ट व्यू व .TTF लोडर</h3>
+                <p>कंप्यूटर में Devlys फ़ॉन्ट इंस्टॉल न होने पर भी <code>Font View: ON</code> और कस्टम <code>Load .TTF</code> की मदद से सीधे हिंदी अक्षर देखें।</p>
+            </div>
+            <div class="feature-item">
+                <h3>📷 स्मार्ट हिंदी + इंग्लिश OCR स्कैनर</h3>
+                <p>किसी भी पुराने सरकारी आदेश, अख़बार या कागज़ की फ़ोटो से सीधे एडिटेबल हिंदी टेक्स्ट निकालने की सुविधा एवं <code>.docx/.txt</code> ड्रैग-एंड-ड्रॉप।</p>
+            </div>
+            <div class="feature-item">
+                <h3>💾 3 ड्राफ़्ट टैब्स व रियल-टाइम ऑटो-सेव</h3>
+                <p>एक साथ 3 अलग-अलग पत्रों पर काम करने की सुविधा। अचानक लाइट जाने या टैब बंद होने पर भी आपका लिखा हुआ मैटर सुरक्षित रहता है।</p>
+            </div>
+            <div class="feature-item">
+                <h3>⌨️ 50+ स्पेशल Alt Codes पैलेट</h3>
+                <p>कठिन संयुक्ताक्षरों (क्र, ट्र, द्ध, श्र, रु, ः आदि) के कोड याद रखने की आवश्यकता नहीं—पैलेट से एक क्लिक में सीधे कर्सर पर इंसर्ट करें।</p>
+            </div>
+            <div class="feature-item">
+                <h3>✨ ऑटो-क्लीन एवं स्मार्ट फ़ॉर्मेटिंग</h3>
+                <p>एक क्लिक में अनावश्यक डबल स्पेस, खाली लाइनें और विराम चिन्हों के आस-पास की अशुद्धियाँ अपने-आप सुधारें।</p>
+            </div>
+            <div class="feature-item">
+                <h3>🎙️ डुअल वॉइस टाइपिंग व WPM स्पीड मीटर</h3>
+                <p>दोनों बॉक्स में माइक से बोलकर हिंदी टाइप करने की सुविधा, साथ ही नीचे स्टेटस बार में लाइव टाइपिंग स्पीड (WPM) व शब्द गणना।</p>
+            </div>
+            <div class="feature-item">
+                <h3>📄 1-क्लिक Word (.doc) व A4 प्रिंट</h3>
+                <p>तैयार मैटर को सीधे MS Word फ़ाइल (<code>.doc</code>), टेक्स्ट फ़ाइल (<code>.txt</code>) में डाउनलोड करें या साफ़ A4 फ़ॉर्मेट में तुरंत प्रिंट निकालें।</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Quick User Guide -->
+    <section class="card">
+        <h2 class="section-title">📖 त्वरित उपयोग गाइड एवं शॉर्टकट कीज़ (User Guide & Shortcuts)</h2>
+        <table class="guide-table">
+            <thead>
+                <tr>
+                    <th>बटन / शॉर्टकट</th>
+                    <th>उपयोग एवं कार्यप्रणाली</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge">Ctrl + K</span></td>
+                    <td>कीबोर्ड से सीधे टेक्स्ट कनवर्ट करने का त्वरित शॉर्टकट।</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">Ctrl + S</span></td>
+                    <td>तैयार यूनिकोड मैटर को तुरंत फ़ाइल के रूप में सेव/डाउनलोड करने का शॉर्टकट।</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">ड्राफ्ट: 1 | 2 | 3</span></td>
+                    <td>एक ही समय में 3 अलग-अलग दस्तावेज़ों का मैटर सुरक्षित रखने के लिए ऊपर दिए गए नंबरों पर क्लिक करें।</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">File / OCR</span></td>
+                    <td>Word/Text फ़ाइल अपलोड करने या किसी इमेज/फ़ोटो से हिंदी टेक्स्ट स्कैन करने के लिए उपयोग करें।</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">Auto-Clean</span></td>
+                    <td>टाइपिंग के बाद अतिरिक्त स्पेस और फ़ॉर्मेटिंग को सरकारी मानकों के अनुसार एक क्लिक में व्यवस्थित करें।</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">Install App</span></td>
+                    <td>इस पोर्टल को अपने कंप्यूटर या मोबाइल में ऑफ़लाइन सॉफ़्टवेयर (PWA) की तरह इंस्टॉल करें।</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 5. Feedback & Support Box (Formspree Connected) -->
+    <section class="card" id="feedback-section">
+        <h2 class="section-title">📝 सुझाव एवं सहायता बॉक्स (Feedback & Support Form)</h2>
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 18px;">
+            यदि आपको इस टूल का उपयोग करने में कोई तकनीकी समस्या आ रही है या आप इसमें कोई नया सुधार/सुझाव देना चाहते हैं, तो कृपया नीचे फॉर्म भरकर भेजें। यह सीधा हमारी आधिकारिक ईमेल (<strong>svcomputers.812@gmail.com</strong>) पर प्राप्त होगा।
+        </p>
+        
+        <form action="https://formspree.io/f/xgakwwpr" method="POST">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <div class="form-group">
+                    <label for="name">आपका नाम (Your Name)</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="अपना नाम दर्ज करें" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">आपकी ईमेल या मोबाइल नंबर (Contact Info)</label>
+                    <input type="text" id="email" name="email_or_phone" class="form-control" placeholder="email@example.com या मोबाइल नंबर" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="category">विषय / श्रेणी (Subject Category)</label>
+                <select id="category" name="category" class="form-control">
+                    <option value="Suggestion for Improvement">सुधार हेतु सुझाव (Suggestion for Improvement)</option>
+                    <option value="Technical Problem / Bug">टूल उपयोग में समस्या / एरर (Technical Problem)</option>
+                    <option value="General Inquiry">सामान्य पूछताछ (General Inquiry)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="message">संदेश या समस्या का विवरण (Message / Details)</label>
+                <textarea id="message" name="message" class="form-control" placeholder="अपनी समस्या या सुझाव यहाँ विस्तार से लिखें..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">📤 संदेश भेजें (Submit)</button>
+        </form>
+    </section>
+
+    <!-- 6. Official Contact Details -->
+    <section class="card">
+        <h2 class="section-title">📬 आधिकारिक संपर्क विवरण (Official Contact Details)</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <span class="contact-label">फ़र्म / अधिकृत नाम (Firm Name)</span>
+                <span class="contact-value">SHREE VAISHNAVI COMPUTERS</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Government Documentation & Digital Services</span>
+            </div>
+
+            <div class="contact-card">
+                <span class="contact-label">आधिकारिक ईमेल (Email ID)</span>
+                <span class="contact-value">svcomputers.812@gmail.com</span>
+                <a href="mailto:svcomputers.812@gmail.com?subject=Query%20Regarding%20SVC%20Font%20Converter" class="email-btn">✉️ ईमेल भेजें (Send Email)</a>
+            </div>
+
+            <div class="contact-card">
+                <span class="contact-label">स्थान / पता (Location)</span>
+                <span class="contact-value">Bhilwara, Rajasthan (India)</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">PIN: 311001 | स्टेट कोड: RJ (IN)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>
+            <a href="index.html" style="color: var(--gov-blue); font-weight: 700; text-decoration: none;">⬅ मुख्य कनवर्टर डैशबोर्ड पर वापस जाएँ</a>
+        </div>
+        <div>
+            Designed & Maintained Exclusively by <strong style="color: var(--gov-navy);">SHREE VAISHNAVI COMPUTERS</strong>
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>
