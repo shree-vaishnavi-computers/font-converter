@@ -1183,7 +1183,7 @@
 })();
     </script>
  <!-- ======================================================== -->
-<!-- SHREE VAISHNAVI COMPUTERS - COMPLETE MASTER PRO EXTENSION-->
+<!-- SHREE VAISHNAVI COMPUTERS - ULTIMATE PRO + SPEED METER   -->
 <!-- ======================================================== -->
 <style>
 /* प्रोफ़ेशनल सिंगल-लाइन हेडर ट्रे */
@@ -1322,7 +1322,7 @@
 }
 .svc-find-row input:focus { border-color: #0284c7; }
 
-/* 50+ Alt Codes स्क्रॉलेबल ग्रिड */
+/* 50+ Alt Codes ग्रिड */
 .svc-symbol-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1350,10 +1350,76 @@
 .svc-sym-char { font-size: 14px; font-weight: bold; color: #0f172a; }
 .svc-sym-code { font-size: 10px; color: #64748b; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; }
 
+/* फ्लोटिंग टोस्ट नोटिफ़िकेशन */
+.svc-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.svc-toast {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 9px 15px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.svc-toast.show { opacity: 1; transform: translateY(0); }
+.svc-toast.success { background: #15803d; }
+.svc-toast.info { background: #0369a1; }
+.svc-toast.warning { background: #b45309; }
+
+/* लाइव स्टेटस बार (MS Word जैसा + स्पीड मीटर) */
+.svc-status-bar {
+  width: 100%;
+  max-width: 1200px;
+  margin: 10px auto 14px auto;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.svc-status-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.svc-status-item b { color: #0f172a; }
+.svc-speed-badge {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
 /* डार्क मोड */
 body.svc-dark { background-color: #0f172a !important; color: #f1f5f9 !important; }
 body.svc-dark .svc-header-tray, 
-body.svc-dark .svc-panel-tray { background: #1e293b !important; border-color: #334155 !important; }
+body.svc-dark .svc-panel-tray,
+body.svc-dark .svc-status-bar { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+body.svc-dark .svc-status-item b { color: #f8fafc !important; }
+body.svc-dark .svc-speed-badge { background: #064e3b; color: #6ee7b7; border-color: #047857; }
 body.svc-dark .svc-pbtn, 
 body.svc-dark .svc-sym-card { background: #334155; color: #f1f5f9; border-color: #475569; }
 body.svc-dark .svc-sym-char { color: #f8fafc; }
@@ -1368,7 +1434,7 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
 /* A4 प्रिंट */
 @media print {
   body { background: white !important; color: black !important; }
-  .svc-header-tray, .svc-panel-tray, header, footer, button, .buttons, nav { display: none !important; }
+  .svc-header-tray, .svc-panel-tray, .svc-status-bar, .svc-toast-container, header, footer, button, .buttons, nav { display: none !important; }
   textarea { border: none !important; box-shadow: none !important; width: 100% !important; font-size: 14pt !important; resize: none !important; }
 }
 
@@ -1380,7 +1446,6 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
 
 <!-- मुख्य हेडर ट्रे -->
 <div class="svc-header-tray" id="svcHeaderTray">
-  <!-- ड्राफ्ट व टाइपिंग टूल्स -->
   <div class="svc-tray-group">
     <div class="svc-draft-container">
       <span class="svc-draft-label">ड्राफ्ट:</span>
@@ -1390,19 +1455,17 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
     </div>
     <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(1)" title="फॉन्ट बड़ा करें"><b>A+</b></button>
     <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(-1)" title="फॉन्ट छोटा करें"><b>A-</b></button>
-    <button type="button" class="svc-pbtn" onclick="svcPro.togglePanel('find')">🔍 Find</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.togglePanel('find')" title="शॉर्टकट: Ctrl+K">🔍 Find</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.togglePanel('symbols')">🔣 Alt Codes</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.cleanText()" title="डबल स्पेस व विराम चिन्ह सुधारें">✨ Auto-Clean</button>
   </div>
 
-  <!-- फ़ाइल व शेयरिंग टूल्स -->
   <div class="svc-tray-group">
-    <button type="button" class="svc-pbtn" onclick="svcPro.exportWord()">📄 Word</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.exportWord()" title="शॉर्टकट: Ctrl+S">📄 Word</button>
     <button type="button" class="svc-pbtn" onclick="svcPro.printA4()">🖨️ Print</button>
     <button type="button" class="svc-pbtn svc-pbtn-wa" onclick="svcPro.shareWhatsApp()">📲 WhatsApp</button>
   </div>
 
-  <!-- सिस्टम टूल्स -->
   <div class="svc-tray-group">
     <span class="svc-save-badge" id="svcSaveBadge">💾 Auto-Save</span>
     <button type="button" class="svc-pbtn svc-pbtn-install" id="svcInstallBtn" onclick="svcPro.installApp()">💻 Install App</button>
@@ -1411,7 +1474,7 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
   </div>
 </div>
 
-<!-- फाइंड एंड रिप्लेस ड्रॉपडाउन पैनल -->
+<!-- ड्रॉपडाउन पैनल्स -->
 <div class="svc-panel-tray" id="svcFindPanel">
   <div class="svc-find-row">
     <input type="text" id="svcFindIn" placeholder="ढूँढें (Find)...">
@@ -1421,7 +1484,6 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
   </div>
 </div>
 
-<!-- Alt कोड व सिंबल पैलेट ड्रॉपडाउन पैनल -->
 <div class="svc-panel-tray" id="svcSymbolPanel">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
     <span style="font-size:11px; font-weight:600; color:#475569;">अक्षर पर क्लिक करते ही वह कर्सर वाली जगह पर टाइप हो जाएगा:</span>
@@ -1429,6 +1491,24 @@ body.svc-focus header, body.svc-focus footer, body.svc-focus .hero, body.svc-foc
   </div>
   <div class="svc-symbol-grid" id="svcSymbolGrid"></div>
 </div>
+
+<!-- लाइव स्टेटस बार (MS Word जैसा + स्पीड मीटर) -->
+<div class="svc-status-bar" id="svcStatusBar">
+  <div class="svc-status-group">
+    <span class="svc-status-item">शब्द: <b id="statWords">0</b></span>
+    <span class="svc-status-item">कुल अक्षर: <b id="statChars">0</b></span>
+    <span class="svc-status-item">अक्षर (बिना स्पेस): <b id="statCharsNoSpace">0</b></span>
+    <span class="svc-status-item">लाइनें: <b id="statLines">0</b></span>
+    <span class="svc-status-item">टाइपिंग स्पीड: <span class="svc-speed-badge" id="statWpm">0 WPM</span></span>
+  </div>
+  <div class="svc-status-group">
+    <span class="svc-status-item">पढ़ने का समय: <b id="statReadTime">0 मिनट</b></span>
+    <span class="svc-status-item" style="color:#0284c7; font-weight:500;">Ctrl+K: Find | Ctrl+S: Save</span>
+  </div>
+</div>
+
+<!-- फ्लोटिंग टोस्ट कंटेनर -->
+<div class="svc-toast-container" id="svcToastContainer"></div>
 
 <!-- जावास्क्रिप्ट इंजन -->
 <script>
@@ -1439,9 +1519,12 @@ window.svcPro = (function() {
   let deferredPrompt = null;
   let lastActiveTextarea = null;
 
-  // Devlys 010 / Krutidev 50+ Alt Codes की संपूर्ण आधिकारिक मास्टर लिस्ट
+  // लाइव टाइपिंग स्पीड कैलकुलेशन स्टेट
+  let sessionStartTime = null;
+  let sessionTypedChars = 0;
+  let lastKeyStrokeTime = null;
+
   const symbolsList = [
-    // 1. सबसे कठिन व प्रचलित संयुक्त अक्षर
     { char: 'द्ध', code: '0204' }, { char: 'द्व', code: '0205' },
     { char: 'द्य', code: '0206' }, { char: 'द्म', code: '0207' },
     { char: 'द्ब', code: '0224' }, { char: 'क्क', code: '0228' },
@@ -1449,29 +1532,18 @@ window.svcPro = (function() {
     { char: 'ल्ल', code: '0233' }, { char: 'श्व', code: '0236' },
     { char: 'ष्ट', code: '0234' }, { char: 'ष्ठ', code: '0235' },
     { char: 'न्न', code: '0240' }, { char: 'शृ', code: '0218' },
-
-    // 2. 'ह' के विशेष रूप
     { char: 'हृ', code: '0227' }, { char: 'ह्न', code: '0214' },
     { char: 'ह्म', code: '0225' }, { char: 'ह्य', code: '0226' },
     { char: 'ह्र', code: '0221' }, { char: 'ह्ल', code: '0215' },
-
-    // 3. 'ट' और 'ड' वर्ग के द्वित्व अक्षर
     { char: 'ट्ट', code: '0209' }, { char: 'ट्ठ', code: '0210' },
     { char: 'ड्ड', code: '0211' }, { char: 'ड्ढ', code: '0212' },
-    { char: 'ठ्ठ', code: '0213' },
-
-    // 4. 'र' की मात्रा और पदेन रूप
-    { char: 'ट्र', code: '0170' }, { char: 'ड्र', code: '0171' },
-    { char: 'फ्र', code: '0178' }, { char: 'क्र', code: '0231' },
-    { char: 'छ्र', code: '0199' }, { char: 'र्‍', code: '0179' },
-    { char: 'रु', code: '0217' }, { char: 'रू', code: 'Shift+R' },
-
-    // 5. पंचमाक्षर व अतिरिक्त वर्ण
-    { char: 'ङ', code: '0197' }, { char: 'ञ', code: '0239' },
-    { char: 'ज्ञ', code: '0180' }, { char: 'झ्', code: '0232' },
-    { char: 'ऋ', code: 'Shift+=' },
-
-    // 6. कानूनी, वित्तीय व गणितीय प्रतीक (शपथ-पत्र, पट्टा व खाता-खेवट कार्य)
+    { char: 'ठ्ठ', code: '0213' }, { char: 'ट्र', code: '0170' },
+    { char: 'ड्र', code: '0171' }, { char: 'फ्र', code: '0178' },
+    { char: 'क्र', code: '0231' }, { char: 'छ्र', code: '0199' },
+    { char: 'र्‍', code: '0179' }, { char: 'रु', code: '0217' },
+    { char: 'रू', code: 'Shift+R' }, { char: 'ङ', code: '0197' },
+    { char: 'ञ', code: '0239' }, { char: 'ज्ञ', code: '0180' },
+    { char: 'झ्', code: '0232' }, { char: 'ऋ', code: 'Shift+=' },
     { char: '¼', code: '0188' }, { char: '½', code: '0189' },
     { char: '¾', code: '0190' }, { char: '₹', code: 'Rupee' },
     { char: 'ॐ', code: '0216' }, { char: '°', code: '0176' },
@@ -1481,6 +1553,20 @@ window.svcPro = (function() {
     { char: '§', code: 'धारा' }, { char: '¶', code: '0182' },
     { char: '×', code: 'गुणा' }, { char: '÷', code: 'भाग' }
   ];
+
+  function toast(msg, type = 'info') {
+    const container = document.getElementById('svcToastContainer');
+    if (!container) return;
+    const item = document.createElement('div');
+    item.className = `svc-toast ${type}`;
+    item.innerHTML = msg;
+    container.appendChild(item);
+    setTimeout(() => item.classList.add('show'), 20);
+    setTimeout(() => {
+      item.classList.remove('show');
+      setTimeout(() => item.remove(), 300);
+    }, 2400);
+  }
 
   function getBoxes() {
     const allTextareas = Array.from(document.querySelectorAll('textarea'));
@@ -1496,15 +1582,63 @@ window.svcPro = (function() {
     return { devlys: devlysBox, unicode: unicodeBox || devlysBox };
   }
 
+  // लाइव टाइपिंग स्पीड व आँकड़े अपडेट
+  function updateLiveStats(e) {
+    const { unicode, devlys } = getBoxes();
+    const target = lastActiveTextarea || unicode || devlys;
+    const txt = target ? target.value : "";
+
+    const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+    const chars = txt.length;
+    const charsNoSpace = txt.replace(/\s/g, '').length;
+    const lines = txt.trim() ? txt.split('\n').length : 0;
+    const readMin = Math.ceil(words / 180);
+
+    // स्पीड कैलकुलेशन (5 कैरेक्टर = 1 स्टैण्डर्ड शब्द)
+    const now = Date.now();
+    if (e && e.type === 'keydown' && e.key.length === 1) {
+      if (!sessionStartTime || (now - lastKeyStrokeTime > 3500)) {
+        sessionStartTime = now;
+        sessionTypedChars = 0;
+      }
+      lastKeyStrokeTime = now;
+      sessionTypedChars++;
+      
+      const timeElapsedMin = (now - sessionStartTime) / 60000;
+      if (timeElapsedMin > 0.02) {
+        const currentWpm = Math.round((sessionTypedChars / 5) / timeElapsedMin);
+        const elWpm = document.getElementById('statWpm');
+        if (elWpm && currentWpm > 0 && currentWpm < 160) {
+          elWpm.innerText = `${currentWpm} WPM`;
+        }
+      }
+    }
+
+    const elW = document.getElementById('statWords');
+    const elC = document.getElementById('statChars');
+    const elCNo = document.getElementById('statCharsNoSpace');
+    const elL = document.getElementById('statLines');
+    const elR = document.getElementById('statReadTime');
+
+    if (elW) elW.innerText = words;
+    if (elC) elC.innerText = chars;
+    if (elCNo) elCNo.innerText = charsNoSpace;
+    if (elL) elL.innerText = lines;
+    if (elR) elR.innerText = (words > 0 ? `${readMin} मिनट` : '0 मिनट');
+  }
+
   function trackFocus() {
     document.querySelectorAll('textarea').forEach(t => {
-      t.addEventListener('focus', () => { lastActiveTextarea = t; });
+      t.addEventListener('focus', () => { lastActiveTextarea = t; updateLiveStats(); });
+      t.addEventListener('input', updateLiveStats);
+      t.addEventListener('keydown', updateLiveStats);
     });
   }
 
   function zoomText(delta) {
     currentFontSize = Math.max(12, Math.min(32, currentFontSize + (delta * 2)));
     document.querySelectorAll('textarea').forEach(t => { t.style.fontSize = currentFontSize + 'px'; });
+    toast(`फ़ॉन्ट साइज़: ${currentFontSize}px`, 'info');
   }
 
   function togglePanel(type) {
@@ -1545,6 +1679,7 @@ window.svcPro = (function() {
     target.selectionStart = target.selectionEnd = start + symbol.length;
     target.focus();
     target.dispatchEvent(new Event('input', { bubbles: true }));
+    toast(`'${symbol}' टाइप किया गया`, 'success');
   }
 
   function switchDraft(num) {
@@ -1558,6 +1693,7 @@ window.svcPro = (function() {
     });
     localStorage.setItem('svc_active_draft_num', num);
     loadDraft(num);
+    toast(`ड्राफ्ट ${num} खोला गया`, 'info');
   }
 
   function saveCurrentDraft() {
@@ -1579,6 +1715,7 @@ window.svcPro = (function() {
       unicode.value = uVal;
       unicode.dispatchEvent(new Event('input', { bubbles: true }));
     }
+    updateLiveStats();
   }
 
   function initAutoSave() {
@@ -1612,7 +1749,7 @@ window.svcPro = (function() {
   function doReplace() {
     const findStr = document.getElementById('svcFindIn').value;
     const replaceStr = document.getElementById('svcReplaceIn').value;
-    if (!findStr) { alert("कृपया ढूँढने वाला शब्द दर्ज करें।"); return; }
+    if (!findStr) { toast("कृपया ढूँढने वाला शब्द दर्ज करें!", "warning"); return; }
 
     const { devlys, unicode } = getBoxes();
     let count = 0;
@@ -1625,12 +1762,16 @@ window.svcPro = (function() {
         box.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
-    alert(count > 0 ? `${count} शब्द बदले गए!` : "यह शब्द नहीं मिला।");
+    if (count > 0) {
+      toast(`✓ ${count} शब्द सफलतापूर्वक बदले गए!`, 'success');
+    } else {
+      toast("यह शब्द दस्तावेज़ में नहीं मिला।", 'warning');
+    }
   }
 
   function cleanText() {
     const { unicode } = getBoxes();
-    if (!unicode || !unicode.value.trim()) { alert("सुधारने के लिए टेक्स्ट बॉक्स में मैटर होना चाहिए।"); return; }
+    if (!unicode || !unicode.value.trim()) { toast("सुधारने के लिए टेक्स्ट बॉक्स में मैटर होना चाहिए।", "warning"); return; }
     let txt = unicode.value;
     txt = txt.replace(/[ \t]+/g, ' ');
     txt = txt.replace(/\s+([,।?!.])/g, '$1');
@@ -1638,13 +1779,13 @@ window.svcPro = (function() {
     txt = txt.split('\n').map(l => l.trim()).join('\n');
     unicode.value = txt;
     unicode.dispatchEvent(new Event('input', { bubbles: true }));
-    alert("अनावश्यक स्पेस व विराम चिन्ह ठीक कर दिए गए हैं!");
+    toast("✓ अनावश्यक स्पेस व विराम चिन्ह ठीक कर दिए गए!", "success");
   }
 
   function exportWord() {
     const { unicode, devlys } = getBoxes();
     const content = (unicode && unicode.value.trim()) ? unicode.value : (devlys ? devlys.value : "");
-    if (!content.trim()) { alert("डाउनलोड के लिए कोई टेक्स्ट नहीं है।"); return; }
+    if (!content.trim()) { toast("डाउनलोड के लिए कोई टेक्स्ट नहीं है!", "warning"); return; }
 
     const htmlContent = `
       <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -1661,6 +1802,7 @@ window.svcPro = (function() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast("✓ Word (.doc) फ़ाइल डाउनलोड हो गई!", "success");
   }
 
   function printA4() { window.print(); }
@@ -1668,7 +1810,7 @@ window.svcPro = (function() {
   function shareWhatsApp() {
     const { unicode, devlys } = getBoxes();
     const text = (unicode && unicode.value.trim()) ? unicode.value : (devlys ? devlys.value : "");
-    if (!text.trim()) { alert("शेयर करने के लिए कोई टेक्स्ट नहीं है।"); return; }
+    if (!text.trim()) { toast("शेयर करने के लिए कोई टेक्स्ट नहीं है!", "warning"); return; }
     window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
   }
 
@@ -1678,11 +1820,50 @@ window.svcPro = (function() {
     localStorage.setItem('svc_theme_dark', isDark ? '1' : '0');
     const btn = document.getElementById('svcDarkBtn');
     if (btn) btn.innerText = isDark ? '☀️ Light' : '🌙 Dark';
+    toast(isDark ? "डार्क मोड चालू किया गया" : "लाइट मोड चालू किया गया", "info");
   }
 
-  function toggleFocus() { document.body.classList.toggle('svc-focus'); }
+  function toggleFocus() { 
+    document.body.classList.toggle('svc-focus'); 
+    toast(document.body.classList.contains('svc-focus') ? "फ़ोकस मोड चालू (Esc से बाहर निकलें)" : "सामान्य मोड", "info");
+  }
+
+  function setupShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        togglePanel('find');
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        exportWord();
+      } else if (e.key === 'Escape') {
+        const findP = document.getElementById('svcFindPanel');
+        const symP = document.getElementById('svcSymbolPanel');
+        if (findP) findP.classList.remove('show');
+        if (symP) symP.classList.remove('show');
+        if (document.body.classList.contains('svc-focus')) document.body.classList.remove('svc-focus');
+      }
+    });
+  }
 
   function initPWA() {
+    try {
+      const manifestData = {
+        name: "Shree Vaishnavi Font Converter",
+        short_name: "SV Converter",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#0284c7"
+      };
+      const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+      const manifestUrl = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestUrl;
+      document.head.appendChild(link);
+    } catch(e) {}
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -1698,19 +1879,22 @@ window.svcPro = (function() {
         if (choiceResult.outcome === 'accepted') {
           const btn = document.getElementById('svcInstallBtn');
           if (btn) btn.style.display = 'none';
+          toast("✓ ऐप सफलतापूर्वक इंस्टॉल हो गया!", "success");
         }
         deferredPrompt = null;
       });
     } else {
-      alert("यह ऐप इंस्टॉल करने के लिए ब्राउज़र के 3-डॉट मेनू पर क्लिक करें और 'Install App' या 'Add to Home Screen' चुनें।");
+      toast("ब्राउज़र मेनू (⋮) खोलकर 'Install App' या 'Add to Home screen' चुनें।", "info");
     }
   }
 
-  function placeTrayUnderHeader() {
+  function placeTrayAndStatusBar() {
     const tray = document.getElementById('svcHeaderTray');
     const findP = document.getElementById('svcFindPanel');
     const symP = document.getElementById('svcSymbolPanel');
+    const statusBar = document.getElementById('svcStatusBar');
     const header = document.querySelector('header, .header, nav, .navbar') || document.body.firstElementChild;
+    const textareas = document.querySelectorAll('textarea');
 
     if (header && tray) {
       if (header.nextSibling) {
@@ -1721,14 +1905,23 @@ window.svcPro = (function() {
       if (findP) tray.parentNode.insertBefore(findP, tray.nextSibling);
       if (symP) tray.parentNode.insertBefore(symP, findP ? findP.nextSibling : tray.nextSibling);
     }
+
+    if (textareas.length > 0 && statusBar) {
+      const lastBoxCard = textareas[textareas.length - 1].closest('.card, .container, .box, div') || textareas[textareas.length - 1];
+      if (lastBoxCard && lastBoxCard.parentNode) {
+        lastBoxCard.parentNode.insertBefore(statusBar, lastBoxCard.nextSibling);
+      }
+    }
   }
 
   function initAll() {
-    placeTrayUnderHeader();
+    placeTrayAndStatusBar();
     initSymbols();
     initAutoSave();
     trackFocus();
+    setupShortcuts();
     initPWA();
+    updateLiveStats();
     if (localStorage.getItem('svc_theme_dark') === '1') toggleDark();
   }
 
@@ -1741,7 +1934,7 @@ window.svcPro = (function() {
   return {
     zoomText, togglePanel, doReplace, cleanText, 
     exportWord, printA4, shareWhatsApp, toggleDark, toggleFocus, 
-    switchDraft, installApp
+    switchDraft, installApp, toast
   };
 })();
 </script>
