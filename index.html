@@ -1072,100 +1072,98 @@
             refreshStats();
         };
         // ==========================================
-// 100% SAFE VOICE TYPING (ANDROID CHROME OPTIMIZED)
+// AUTO-OVERRIDE VOICE TYPING (CLEANS OLD LISTENERS)
 // ==========================================
 (function() {
     let recognition = null;
     let isRecording = false;
 
-    function runSafeVoiceTyping() {
+    function initCleanVoiceButton() {
+        // 1. पेज पर मौजूद वॉइस बटन को ढूँढें
+        const allButtons = Array.from(document.querySelectorAll('button'));
+        const oldVoiceBtn = allButtons.find(b => b.innerText.includes('Voice')) || document.getElementById('voiceBtn');
+
+        if (!oldVoiceBtn) return;
+
+        // 2. पुराने कोड का कनेक्शन पूरी तरह काटने के लिए बटन को क्लोन करें
+        const newVoiceBtn = oldVoiceBtn.cloneNode(true);
+        newVoiceBtn.removeAttribute('onclick'); // पुराना onclick खत्म
+        newVoiceBtn.onclick = null;
+        oldVoiceBtn.parentNode.replaceChild(newVoiceBtn, oldVoiceBtn);
+
+        // 3. नए सुरक्षित बटन पर सिर्फ अपना नया कोड जोड़ें
+        newVoiceBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            startSafeRecognition(newVoiceBtn);
+        });
+    }
+
+    function startSafeRecognition(btn) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
             alert("कृपया वॉइस टाइपिंग के लिए Google Chrome ब्राउज़र का उपयोग करें।");
             return;
         }
 
-        // 1. वॉइस बटन को ऑटो-डिटेक्ट करें
-        const allButtons = Array.from(document.querySelectorAll('button'));
-        const voiceBtn = allButtons.find(b => b.innerText.includes('Voice')) || document.getElementById('voiceBtn');
-
-        // 2. Unicode टेक्स्ट बॉक्स को ऑटो-डिटेक्ट करें
         const textareas = document.querySelectorAll('textarea');
         let unicodeBox = document.getElementById('unicodeText') || 
                          document.getElementById('unicode') || 
                          document.getElementById('mangalText');
 
         if (!unicodeBox) {
-            // अगर ID मैच न हो तो दायाँ/दूसरा टेक्स्ट बॉक्स Unicode का होता है
             unicodeBox = textareas.length > 1 ? textareas[1] : textareas[0];
         }
 
-        // 3. अगर पहले से सुन रहा है तो सुरक्षित बंद करें (Toggle)
         if (isRecording) {
             if (recognition) {
                 try { recognition.abort(); } catch(e) {}
             }
-            resetBtnUI(voiceBtn);
+            resetBtn(btn);
             return;
-        }
-
-        // 4. किसी भी पुराने अटके हुए सेशन को साफ़ करें
-        if (recognition) {
-            try { recognition.abort(); } catch(e) {}
-            recognition = null;
         }
 
         try {
             recognition = new SpeechRecognition();
-            recognition.lang = 'hi-IN'; // शुद्ध हिंदी भाषा
-            recognition.continuous = false; // Android पर mic lock रोकने के लिए false अनिवार्य है
+            recognition.lang = 'hi-IN';
+            recognition.continuous = false; // Android mic lock रोकने के लिए false
             recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
 
             recognition.onstart = function() {
                 isRecording = true;
-                if (voiceBtn) {
-                    voiceBtn.style.backgroundColor = '#ffebee';
-                    voiceBtn.style.borderColor = '#d32f2f';
-                    voiceBtn.style.color = '#c62828';
-                    voiceBtn.innerHTML = '🔴 सुन रहे हैं... बोलिए';
-                }
+                btn.style.backgroundColor = '#ffebee';
+                btn.style.borderColor = '#d32f2f';
+                btn.style.color = '#c62828';
+                btn.innerHTML = '🔴 सुन रहे हैं... बोलिए';
             };
 
             recognition.onresult = function(event) {
                 if (event.results && event.results[0] && event.results[0][0]) {
-                    const spokenWords = event.results[0][0].transcript;
+                    const text = event.results[0][0].transcript;
                     if (unicodeBox) {
-                        const existingText = unicodeBox.value.trim();
-                        unicodeBox.value = existingText ? (existingText + ' ' + spokenWords) : spokenWords;
-
-                        // लाइव कैरेक्टर/वर्ड काउंटर और कनवर्टर इवेंट ट्रिगर करें
+                        const cur = unicodeBox.value.trim();
+                        unicodeBox.value = cur ? (cur + ' ' + text) : text;
                         unicodeBox.dispatchEvent(new Event('input', { bubbles: true }));
-                        unicodeBox.dispatchEvent(new Event('keyup', { bubbles: true }));
-                        unicodeBox.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 }
             };
 
-            recognition.onerror = function(event) {
-                console.warn("Voice status:", event.error);
-                resetBtnUI(voiceBtn);
+            recognition.onerror = function() {
+                resetBtn(btn);
             };
 
             recognition.onend = function() {
-                resetBtnUI(voiceBtn);
+                resetBtn(btn);
             };
 
-            // माइक शुरू करें
             recognition.start();
 
         } catch (err) {
-            console.error("Speech Recognition Error:", err);
-            resetBtnUI(voiceBtn);
+            resetBtn(btn);
         }
     }
 
-    function resetBtnUI(btn) {
+    function resetBtn(btn) {
         isRecording = false;
         recognition = null;
         if (btn) {
@@ -1176,13 +1174,12 @@
         }
     }
 
-    // सभी संभावित फंक्शन नामों को सुरक्षित लिंक करना ताकि HTML का कोई भी बटन न टूटे:
-    window.startVoice = runSafeVoiceTyping;
-    window.toggleVoice = runSafeVoiceTyping;
-    window.startVoiceTyping = runSafeVoiceTyping;
-    window.startSpeechRecognition = runSafeVoiceTyping;
-    window.voiceInput = runSafeVoiceTyping;
-    window.runSafeVoiceTyping = runSafeVoiceTyping;
+    // पेज लोड होते ही पुराने कोड को हटाकर नए से बदलें
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCleanVoiceButton);
+    } else {
+        initCleanVoiceButton();
+    }
 })();
     </script>
 </body>
