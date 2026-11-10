@@ -1182,5 +1182,380 @@
     }
 })();
     </script>
+    <!-- ======================================================== -->
+<!-- SHREE VAISHNAVI COMPUTERS - PRO TOOLS EXTENSION (FINAL)  -->
+<!-- ======================================================== -->
+<style>
+/* प्रोफ़ेशनल टूलबार लेआउट */
+.svc-pro-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin: 12px auto;
+  max-width: 1200px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+  z-index: 10;
+}
+
+.svc-pro-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.svc-pbtn {
+  background: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 11px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.svc-pbtn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.svc-pbtn-wa {
+  background: #25d366;
+  color: white;
+  border-color: #20ba5a;
+}
+.svc-pbtn-wa:hover {
+  background: #1eb954;
+  color: white;
+}
+
+/* ऑटो-सेव बैज */
+.svc-save-badge {
+  font-size: 12px;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  min-width: 85px;
+}
+.svc-save-badge.saved { color: #16a34a; }
+
+/* फाइंड एंड रिप्लेस पैनल */
+.svc-find-panel {
+  display: none;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 8px auto 12px auto;
+  max-width: 1200px;
+  gap: 8px;
+  align-items: center;
+  box-sizing: border-box;
+}
+.svc-find-panel.show { display: flex; flex-wrap: wrap; }
+.svc-find-panel input {
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 13px;
+  outline: none;
+}
+.svc-find-panel input:focus { border-color: #0284c7; }
+
+/* डार्क मोड थीम */
+body.svc-dark {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+body.svc-dark .svc-pro-bar, 
+body.svc-dark .svc-find-panel {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+body.svc-dark .svc-pbtn {
+  background: #334155;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+body.svc-dark textarea {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+body.svc-dark .card, body.svc-dark .container, body.svc-dark header {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+/* फ़ुल स्क्रीन (Focus Mode) */
+body.svc-focus header, 
+body.svc-focus footer, 
+body.svc-focus .hero,
+body.svc-focus h1,
+body.svc-focus p.desc {
+  display: none !important;
+}
+
+/* A4 प्रिंट अनुकूलन */
+@media print {
+  body { background: white !important; color: black !important; }
+  .svc-pro-bar, .svc-find-panel, header, footer, button, .buttons, nav {
+    display: none !important;
+  }
+  textarea {
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    font-size: 14pt !important;
+    line-height: 1.6 !important;
+    resize: none !important;
+    overflow: visible !important;
+  }
+}
+
+/* मोबाइल रिस्पॉन्सिव */
+@media (max-width: 600px) {
+  .svc-pro-bar { justify-content: center; padding: 8px; }
+  .svc-pro-group { justify-content: center; }
+  .svc-pbtn { padding: 5px 8px; font-size: 12px; }
+}
+</style>
+
+<!-- टूलबार इंटरफ़ेस -->
+<div class="svc-pro-bar" id="svcProBar">
+  <div class="svc-pro-group">
+    <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(1)" title="फॉन्ट बड़ा करें"><b>A+</b></button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.zoomText(-1)" title="फॉन्ट छोटा करें"><b>A-</b></button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.toggleFindPanel()">🔍 Find & Replace</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.cleanText()" title="डबल स्पेस व विराम चिन्ह सुधारें">✨ Auto-Clean</button>
+  </div>
+
+  <div class="svc-pro-group">
+    <button type="button" class="svc-pbtn" onclick="svcPro.exportWord()">📄 Export .doc</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.printA4()">🖨️ Print A4</button>
+    <button type="button" class="svc-pbtn svc-pbtn-wa" onclick="svcPro.shareWhatsApp()">📲 WhatsApp</button>
+  </div>
+
+  <div class="svc-pro-group">
+    <span class="svc-save-badge" id="svcSaveBadge">💾 Auto-Save</span>
+    <button type="button" class="svc-pbtn" onclick="svcPro.toggleDark()" id="svcDarkBtn">🌙 Dark</button>
+    <button type="button" class="svc-pbtn" onclick="svcPro.toggleFocus()">🔲 Focus</button>
+  </div>
+</div>
+
+<!-- फाइंड एंड रिप्लेस पैनल -->
+<div class="svc-find-panel" id="svcFindPanel">
+  <input type="text" id="svcFindIn" placeholder="ढूँढें (Find)...">
+  <input type="text" id="svcReplaceIn" placeholder="बदलें (Replace with)...">
+  <button type="button" class="svc-pbtn" onclick="svcPro.doReplace()">Replace All</button>
+  <button type="button" class="svc-pbtn" onclick="svcPro.toggleFindPanel()" style="background:#fee2e2; border-color:#fca5a5;">✕</button>
+</div>
+
+<!-- सेफ़ जावास्क्रिप्ट इंजन -->
+<script>
+window.svcPro = (function() {
+  let currentFontSize = 16;
+  let saveTimer = null;
+
+  function getBoxes() {
+    const allTextareas = Array.from(document.querySelectorAll('textarea'));
+    let unicodeBox = document.getElementById('unicodeText') || 
+                     document.getElementById('unicode') || 
+                     document.getElementById('mangalText');
+    let devlysBox = document.getElementById('devlysText') || 
+                    document.getElementById('devlys') || 
+                    document.getElementById('legacyText');
+
+    if (!unicodeBox) {
+      unicodeBox = allTextareas.find(t => /unicode|mangal|हिंदी/i.test(t.placeholder || t.className || t.id)) || 
+                   (allTextareas.length > 1 ? allTextareas[1] : allTextareas[0]);
+    }
+    if (!devlysBox) {
+      devlysBox = allTextareas.find(t => /devlys|kruti|legacy/i.test(t.placeholder || t.className || t.id)) || 
+                  allTextareas[0];
+    }
+    return { devlys: devlysBox, unicode: unicodeBox || devlysBox };
+  }
+
+  function zoomText(delta) {
+    currentFontSize = Math.max(12, Math.min(32, currentFontSize + (delta * 2)));
+    document.querySelectorAll('textarea').forEach(t => {
+      t.style.fontSize = currentFontSize + 'px';
+    });
+  }
+
+  function toggleFindPanel() {
+    const panel = document.getElementById('svcFindPanel');
+    panel.classList.toggle('show');
+    if (panel.classList.contains('show')) {
+      document.getElementById('svcFindIn').focus();
+    }
+  }
+
+  function doReplace() {
+    const findStr = document.getElementById('svcFindIn').value;
+    const replaceStr = document.getElementById('svcReplaceIn').value;
+    if (!findStr) { alert("कृपया ढूँढने वाला शब्द दर्ज करें।"); return; }
+
+    const { devlys, unicode } = getBoxes();
+    let count = 0;
+    [devlys, unicode].forEach(box => {
+      if (box && box.value.includes(findStr)) {
+        const regex = new RegExp(findStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        const matches = box.value.match(regex);
+        if (matches) count += matches.length;
+        box.value = box.value.replace(regex, replaceStr);
+        box.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+    alert(count > 0 ? `${count} शब्द बदले गए!` : "यह शब्द नहीं मिला।");
+  }
+
+  function cleanText() {
+    const { unicode } = getBoxes();
+    if (!unicode || !unicode.value.trim()) {
+      alert("सुधारने के लिए टेक्स्ट बॉक्स में मैटर होना चाहिए।");
+      return;
+    }
+    let txt = unicode.value;
+    txt = txt.replace(/[ \t]+/g, ' ');
+    txt = txt.replace(/\s+([,।?!.])/g, '$1');
+    txt = txt.replace(/([,।?!.])([^\s\d])/g, '$1 $2');
+    txt = txt.split('\n').map(l => l.trim()).join('\n');
+    unicode.value = txt;
+    unicode.dispatchEvent(new Event('input', { bubbles: true }));
+    alert("अनावश्यक स्पेस व विराम चिन्ह ठीक कर दिए गए हैं!");
+  }
+
+  function exportWord() {
+    const { unicode, devlys } = getBoxes();
+    const content = (unicode && unicode.value.trim()) ? unicode.value : (devlys ? devlys.value : "");
+    if (!content.trim()) { alert("डाउनलोड के लिए कोई टेक्स्ट नहीं है।"); return; }
+
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>Document</title>
+      <style>body { font-family: 'Mangal', 'Arial', sans-serif; font-size: 14pt; line-height: 1.6; }</style>
+      </head>
+      <body>${content.replace(/\n/g, '<br>')}</body>
+      </html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'Shree-Vaishnavi-Document.doc';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printA4() { window.print(); }
+
+  function shareWhatsApp() {
+    const { unicode, devlys } = getBoxes();
+    const text = (unicode && unicode.value.trim()) ? unicode.value : (devlys ? devlys.value : "");
+    if (!text.trim()) { alert("शेयर करने के लिए कोई टेक्स्ट नहीं है।"); return; }
+    window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  function toggleDark() {
+    document.body.classList.toggle('svc-dark');
+    const isDark = document.body.classList.contains('svc-dark');
+    localStorage.setItem('svc_theme_dark', isDark ? '1' : '0');
+    const btn = document.getElementById('svcDarkBtn');
+    if (btn) btn.innerText = isDark ? '☀️ Light' : '🌙 Dark';
+  }
+
+  function toggleFocus() {
+    document.body.classList.toggle('svc-focus');
+  }
+
+  function initAutoSave() {
+    const { devlys, unicode } = getBoxes();
+    const badge = document.getElementById('svcSaveBadge');
+
+    const savedDevlys = localStorage.getItem('svc_save_devlys');
+    const savedUnicode = localStorage.getItem('svc_save_unicode');
+
+    if (devlys && savedDevlys && !devlys.value) {
+      devlys.value = savedDevlys;
+      devlys.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (unicode && savedUnicode && !unicode.value) {
+      unicode.value = savedUnicode;
+      unicode.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    function save() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        if (devlys) localStorage.setItem('svc_save_devlys', devlys.value);
+        if (unicode) localStorage.setItem('svc_save_unicode', unicode.value);
+        if (badge) {
+          badge.classList.add('saved');
+          badge.innerText = '✓ Saved';
+          setTimeout(() => { badge.classList.remove('saved'); badge.innerText = '💾 Auto-Save'; }, 1500);
+        }
+      }, 300);
+    }
+
+    if (devlys) devlys.addEventListener('input', save);
+    if (unicode) unicode.addEventListener('input', save);
+  }
+
+  function setupToolbarPosition() {
+    const bar = document.getElementById('svcProBar');
+    const findPanel = document.getElementById('svcFindPanel');
+    const textareas = document.querySelectorAll('textarea');
+    if (textareas.length > 0 && bar) {
+      const targetCard = textareas[0].closest('.card, .container, .box, div') || textareas[0];
+      if (targetCard && targetCard.parentNode && targetCard !== document.body) {
+        targetCard.parentNode.insertBefore(bar, targetCard);
+        if (findPanel) targetCard.parentNode.insertBefore(findPanel, targetCard);
+      }
+    }
+  }
+
+  function initAll() {
+    setupToolbarPosition();
+    initAutoSave();
+    if (localStorage.getItem('svc_theme_dark') === '1') {
+      toggleDark();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+
+  return {
+    zoomText, toggleFindPanel, doReplace, cleanText, 
+    exportWord, printA4, shareWhatsApp, toggleDark, toggleFocus
+  };
+})();
+</script>
+<!-- ======================================================== -->
 </body>
 </html>
