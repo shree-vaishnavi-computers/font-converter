@@ -6,4 +6,5 @@
 - **Voice Typing Support:** हिंदी में बोलकर सीधे टाइप और कन्वर्ट करने की सुविधा।
 - **Live Statistics:** वर्ण (Characters), शब्द (Words), पैराग्राफ और वाक्यों की लाइव गणना।
 - **Font Preview:** Devlys 010 फॉन्ट व्यू को सीधे ब्राउज़र में देखने और .TTF फ़ाइल लोड करने का विकल्प।
---- © **Shree Vaishnavi Computers** | Government Documentation & Public Works Portal
+---
+  © **Shree Vaishnavi Computers** | Government Documentation & Public Works Portal
