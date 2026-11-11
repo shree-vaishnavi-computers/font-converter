@@ -3281,26 +3281,28 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= STANDALONE MOBILE VOICE BUTTON ADD-ON ================= -->
+    <!-- ================= 100% BULLETPROOF MOBILE VOICE ADD-ON ================= -->
 <style>
-    /* यह बटन केवल एंड्रॉइड मोबाइल पर दिखाई देगा, कंप्यूटर पर छिपा रहेगा */
     #mobileVoiceDock {
         display: none;
-        margin: 12px 0;
+        margin: 12px auto;
         text-align: center;
+        width: 100%;
     }
     .mob-mic-btn {
         background: linear-gradient(135deg, #FF7722, #003366);
         color: white;
         border: none;
-        padding: 12px 24px;
-        font-size: 1rem;
+        padding: 14px 24px;
+        font-size: 1.05rem;
         font-weight: bold;
         border-radius: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
         cursor: pointer;
         width: 100%;
-        max-width: 300px;
+        max-width: 340px;
+        display: inline-block;
+        font-family: 'Segoe UI', system-ui, sans-serif;
     }
     .mob-mic-btn.listening {
         background: #dc2626;
@@ -3323,18 +3325,22 @@ window.svcPro = (function() {
         return /Android/i.test(navigator.userAgent);
     }
 
-    // यदि यूजर मोबाइल पर है, तो ही यह विशेष बटन प्रकट होगा
-    window.addEventListener('DOMContentLoaded', function() {
-        if (isAndroidMobile()) {
-            const dock = document.getElementById('mobileVoiceDock');
-            const devlysField = document.getElementById('devlysField');
-            
-            if (dock && devlysField) {
-                // आपके मुख्य देवलीस बॉक्स के ठीक नीचे यह मोबाइल बटन स्वतः जुड़ जाएगा
-                devlysField.parentNode.insertBefore(dock, devlysField.nextSibling);
-                dock.style.display = 'block';
+    if (!isAndroidMobile()) return; // कंप्यूटर पर यह कोड तुरंत बंद रहेगा
 
-                const mobBtn = document.getElementById('standaloneMobMic');
+    function setupMobileVoiceButton() {
+        const dock = document.getElementById('mobileVoiceDock');
+        if (!dock) return;
+
+        // पेज पर टेक्स्ट बॉक्स ढूंढना (textarea या text input)
+        const targetBox = document.querySelector('textarea') || document.querySelector('input[type="text"]');
+
+        if (targetBox && dock.parentNode !== targetBox.parentNode) {
+            targetBox.parentNode.insertBefore(dock, targetBox.nextSibling);
+            dock.style.display = 'block';
+
+            const mobBtn = document.getElementById('standaloneMobMic');
+            if (mobBtn && !mobBtn.dataset.bound) {
+                mobBtn.dataset.bound = "true";
                 let recognition = null;
                 let recording = false;
 
@@ -3369,22 +3375,17 @@ window.svcPro = (function() {
                             if (evt.results && evt.results[0] && evt.results[0][0]) {
                                 let spokenText = evt.results[0][0].transcript;
                                 
-                                // मोबाइल वॉइस के शब्दों को सीधे देवलीस कोड में बदलने का यूनिवर्सल लॉजिक
-                                let convertedCode = "";
+                                let convertedCode = spokenText;
                                 if (typeof window.processUnicodeToDevlys === 'function') {
                                     convertedCode = window.processUnicodeToDevlys(spokenText);
-                                } else {
-                                    // यदि मुख्य कनवर्टर फंक्शन न मिले, तो सीधा टेक्स्ट भेजें
-                                    convertedCode = spokenText;
                                 }
 
-                                devlysField.value += (devlysField.value ? " " : "") + convertedCode;
+                                targetBox.value += (targetBox.value ? " " : "") + convertedCode;
                                 
-                                // कनवर्टर को ट्रिगर करना ताकि दाईं/बाईं तरफ सही फॉन्ट अपडेट हो जाए
                                 if (typeof window.runDevlysToUnicode === 'function') {
                                     window.runDevlysToUnicode();
                                 } else {
-                                    devlysField.dispatchEvent(new Event('input', { bubbles: true }));
+                                    targetBox.dispatchEvent(new Event('input', { bubbles: true }));
                                 }
                             }
                         };
@@ -3411,9 +3412,14 @@ window.svcPro = (function() {
                 });
             }
         }
-    });
+    }
+
+    // बार-बार चेक करना ताकि मोबाइल पर बटन सौ फीसदी शो हो जाए
+    window.addEventListener('DOMContentLoaded', setupMobileVoiceButton);
+    window.addEventListener('load', setupMobileVoiceButton);
+    setInterval(setupMobileVoiceButton, 1000);
 })();
 </script>
-<!-- ====================================================================== -->
+<!-- ======================================================================= -->
 </body>
 </html>
