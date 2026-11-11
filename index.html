@@ -3281,7 +3281,7 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= LIVE HINDI PREVIEW VOICE ADD-ON ================= -->
+    <!-- ================= TWO-WAY SYNC LIVE HINDI PREVIEW ADD-ON ================= -->
 <style>
     #liveVoicePreviewBox {
         display: none;
@@ -3303,17 +3303,78 @@ window.svcPro = (function() {
             var topBar = document.querySelector('.top-nav, header, nav, .flex, [class*="toolbar"]');
             
             if (topBar && !document.getElementById('topNavVoiceBtn')) {
-                // 1. लाइव प्रीव्यू बॉक्स बनाना जो शुद्ध हिंदी दिखाएगा
+                // 1. लाइव प्रीव्यू बॉक्स बनाना
                 var previewDiv = document.createElement('div');
                 previewDiv.id = 'liveVoicePreviewBox';
-                previewDiv.innerHTML = '<b>🎙️ लाइव वॉइस प्रीव्यू (शुद्ध हिंदी):</b> <span id="previewTextContent" style="color: #000;">कुछ बोलिए...</span>';
+                previewDiv.innerHTML = '<b>🎙️ लाइव हिंदी प्रीव्यू:</b> <span id="previewTextContent" style="color: #000; font-weight: 500;">टाइप या बोलकर देखिए...</span>';
                 
                 var devlysBox = document.getElementById('devlysField') || document.querySelector('textarea');
                 if (devlysBox && devlysBox.parentNode) {
                     devlysBox.parentNode.insertBefore(previewDiv, devlysBox);
+                    previewDiv.style.display = 'block'; // इसे हमेशा खुला रखना ताकि टाइपिंग/मिटाते वक्त दिखता रहे
                 }
 
-                // 2. वॉइस बटन बनाना
+                // 2. टू-वे सिंक: जैसे ही Devlys बॉक्स में कुछ भी मिटे या लिखा जाए, प्रीव्यू अपने आप अपडेट हो जाए
+                if (devlysBox) {
+                    devlysBox.addEventListener('input', function() {
+                        updatePreviewFromDevlys(devlysBox.value);
+                    });
+                    devlysBox.addEventListener('keyup', function() {
+                        updatePreviewFromDevlys(devlysBox.value);
+                    });
+                }
+
+                function updatePreviewFromDevlys(val) {
+                    var previewSpan = document.getElementById('previewTextContent');
+                    if (!previewSpan) return;
+
+                    if (!val.trim()) {
+                        previewSpan.innerText = "खाली है...";
+                        return;
+                    }
+
+                    // यदि आपके पेज में पहले से Devlys से Unicode बदलने का कोई फ़ंक्शन है, तो उसका उपयोग करें
+                    if (typeof window.runDevlysToUnicode === 'function' || typeof window.convertDevlysToUnicode === 'function') {
+                        // मुख्य कनवर्टर से यूनिकोड मंगवाकर प्रीव्यू में दिखाना
+                        // (हम यहाँ सुरक्षित रूप से चेक करते हैं कि क्या दाईं तरफ वाला Unicode बॉक्स अपडेट हुआ है)
+                        setTimeout(function() {
+                            var unicodeBox = document.getElementById('unicodeField') || document.querySelectorAll('textarea')[1];
+                            if (unicodeBox && unicodeBox.value) {
+                                previewSpan.innerText = unicodeBox.value;
+                            } else {
+                                previewSpan.innerText = val; // यदि न मिले तो कम से कम टेक्स्ट दिखे
+                            }
+                        }, 50);
+                    } else {
+                        // बेसिक रिवर्स कनवर्टर (Devlys कोड से हिंदी दिखाने के लिए)
+                        previewSpan.innerText = reverseDevlysToHindi(val);
+                    }
+                }
+
+                function reverseDevlysToHindi(code) {
+                    if (!code) return '';
+                    let t = code;
+                    const revMap = {
+                        'Jheku': 'श्रीमान',
+                        'dk;kZy;': 'कार्यालय',
+                        'ftyk': 'जिला',
+                        'dysDVj': 'कलेक्टर',
+                        'egksn;': 'महोदय',
+                        'fo"k;': 'विषय',
+                        'varxZr': 'अंतर्गत',
+                        'fuosnu': 'निवेदन',
+                        'Øekad': 'क्रमांक',
+                        'fnukad': 'दिनांक',
+                        'vkoklh;': 'आवासीय',
+                        'vfHk;Urk': 'अभियंता'
+                    };
+                    for (let k in revMap) {
+                        t = t.replace(new RegExp(k, 'g'), revMap[k]);
+                    }
+                    return t;
+                }
+
+                // 3. वॉइस बटन बनाना
                 var btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = 'topNavVoiceBtn';
@@ -3335,11 +3396,6 @@ window.svcPro = (function() {
                         return;
                     }
 
-                    if (!devlysBox) {
-                        alert("टेक्स्ट बॉक्स नहीं मिला!");
-                        return;
-                    }
-
                     if (recording) {
                         if (recognition) { try { recognition.stop(); } catch(ex){} }
                         return;
@@ -3355,18 +3411,12 @@ window.svcPro = (function() {
                             recording = true;
                             btn.style.background = '#dc2626';
                             btn.innerHTML = "🔴 सुन रहे हैं...";
-                            previewDiv.style.display = 'block';
-                            document.getElementById('previewTextContent').innerText = "सुन रहे हैं...";
                         };
 
                         recognition.onresult = function(evt) {
                             if (evt.results && evt.results[0] && evt.results[0][0]) {
                                 var spokenText = evt.results[0][0].transcript;
                                 
-                                // स्क्रीन पर तुरंत पढ़ने के लिए शुद्ध हिंदी दिखाना
-                                document.getElementById('previewTextContent').innerText = spokenText;
-
-                                // बैकग्राउंड में Devlys 010 का असली कोड टाइप करना
                                 var convertedCode = spokenText;
                                 if (typeof window.processUnicodeToDevlys === 'function') {
                                     convertedCode = window.processUnicodeToDevlys(spokenText);
@@ -3381,6 +3431,9 @@ window.svcPro = (function() {
                                 } else {
                                     devlysBox.dispatchEvent(new Event('input', { bubbles: true }));
                                 }
+
+                                // प्रीव्यू को तुरंत अपडेट करना
+                                updatePreviewFromDevlys(devlysBox.value);
                             }
                         };
 
@@ -3421,7 +3474,9 @@ window.svcPro = (function() {
             'अंतर्गत': 'varxZr',
             'निवेदन': 'fuosnu',
             'क्रमांक': 'Øekad',
-            'दिनांक': 'fnukad'
+            'दिनांक': 'fnukad',
+            'आवासीय': 'vkoklh;',
+            'अभियंता': 'vfHk;Urk'
         };
         for (let w in directMap) {
             t = t.replace(new RegExp(w, 'g'), directMap[w]);
