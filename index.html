@@ -3281,8 +3281,15 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= TWO-WAY SYNC LIVE HINDI PREVIEW ADD-ON ================= -->
+    <!-- ================= 100% BULLETPROOF MOBILE-ONLY VOICE & PREVIEW ADD-ON ================= -->
 <style>
+    /* कंप्यूटर या बड़ी स्क्रीन पर यह बॉक्स और बटन हमेशा के लिए छिपे रहेंगे */
+    @media screen and (min-width: 769px) {
+        #liveVoicePreviewBox, #topNavVoiceBtn {
+            display: none !important;
+        }
+    }
+
     #liveVoicePreviewBox {
         display: none;
         background: #f0fdf4;
@@ -3298,12 +3305,17 @@ window.svcPro = (function() {
 
 <script>
 (function() {
+    // केवल एंड्रॉइड मोबाइल और छोटी स्क्रीन के लिए ही कोड आगे बढ़ेगा, कंप्यूटर पर यह तुरंत बंद हो जाएगा
+    if (window.innerWidth > 768 || !/Android/i.test(navigator.userAgent)) {
+        return; 
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             var topBar = document.querySelector('.top-nav, header, nav, .flex, [class*="toolbar"]');
             
             if (topBar && !document.getElementById('topNavVoiceBtn')) {
-                // 1. लाइव प्रीव्यू बॉक्स बनाना
+                // 1. लाइव प्रीव्यू बॉक्स (केवल मोबाइल के लिए)
                 var previewDiv = document.createElement('div');
                 previewDiv.id = 'liveVoicePreviewBox';
                 previewDiv.innerHTML = '<b>🎙️ लाइव हिंदी प्रीव्यू:</b> <span id="previewTextContent" style="color: #000; font-weight: 500;">टाइप या बोलकर देखिए...</span>';
@@ -3311,10 +3323,10 @@ window.svcPro = (function() {
                 var devlysBox = document.getElementById('devlysField') || document.querySelector('textarea');
                 if (devlysBox && devlysBox.parentNode) {
                     devlysBox.parentNode.insertBefore(previewDiv, devlysBox);
-                    previewDiv.style.display = 'block'; // इसे हमेशा खुला रखना ताकि टाइपिंग/मिटाते वक्त दिखता रहे
+                    previewDiv.style.display = 'block';
                 }
 
-                // 2. टू-वे सिंक: जैसे ही Devlys बॉक्स में कुछ भी मिटे या लिखा जाए, प्रीव्यू अपने आप अपडेट हो जाए
+                // 2. टू-वे सिंक (Devlys बॉक्स में मिटाने या लिखने पर लाइव प्रीव्यू का तुरंत अपडेट होना)
                 if (devlysBox) {
                     devlysBox.addEventListener('input', function() {
                         updatePreviewFromDevlys(devlysBox.value);
@@ -3333,20 +3345,16 @@ window.svcPro = (function() {
                         return;
                     }
 
-                    // यदि आपके पेज में पहले से Devlys से Unicode बदलने का कोई फ़ंक्शन है, तो उसका उपयोग करें
                     if (typeof window.runDevlysToUnicode === 'function' || typeof window.convertDevlysToUnicode === 'function') {
-                        // मुख्य कनवर्टर से यूनिकोड मंगवाकर प्रीव्यू में दिखाना
-                        // (हम यहाँ सुरक्षित रूप से चेक करते हैं कि क्या दाईं तरफ वाला Unicode बॉक्स अपडेट हुआ है)
                         setTimeout(function() {
                             var unicodeBox = document.getElementById('unicodeField') || document.querySelectorAll('textarea')[1];
                             if (unicodeBox && unicodeBox.value) {
                                 previewSpan.innerText = unicodeBox.value;
                             } else {
-                                previewSpan.innerText = val; // यदि न मिले तो कम से कम टेक्स्ट दिखे
+                                previewSpan.innerText = val;
                             }
                         }, 50);
                     } else {
-                        // बेसिक रिवर्स कनवर्टर (Devlys कोड से हिंदी दिखाने के लिए)
                         previewSpan.innerText = reverseDevlysToHindi(val);
                     }
                 }
@@ -3374,7 +3382,7 @@ window.svcPro = (function() {
                     return t;
                 }
 
-                // 3. वॉइस बटन बनाना
+                // 3. मोबाइल वॉइस बटन
                 var btn = document.createElement('button');
                 btn.type = 'button';
                 btn.id = 'topNavVoiceBtn';
@@ -3432,7 +3440,6 @@ window.svcPro = (function() {
                                     devlysBox.dispatchEvent(new Event('input', { bubbles: true }));
                                 }
 
-                                // प्रीव्यू को तुरंत अपडेट करना
                                 updatePreviewFromDevlys(devlysBox.value);
                             }
                         };
@@ -3485,6 +3492,6 @@ window.svcPro = (function() {
     }
 })();
 </script>
-<!-- =================================================================== -->
+<!-- ============================================================================== -->
 </body>
 </html>
