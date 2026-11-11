@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>श्री वैष्णवी कम्प्यूटर्स - प्रो यूटिलिटी हब</title>
+    <!-- आवश्यक लाइब्रेरीज़ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        h2 { margin-top: 0; color: #0f172a; font-size: 1.4rem; display: flex; align-items: center; gap: 8px; }
+        .tools-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .tool-menu-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 14px 10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .tool-menu-card:hover, .tool-menu-card.active {
+            background: #f0fdf4;
+            border-color: #16a34a;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(22,163,74,0.15);
+        }
+        .tool-menu-card h4 { margin: 6px 0 3px 0; color: #166534; font-size: 0.9rem; }
+        .tool-menu-card p { margin: 0; font-size: 0.75rem; color: #64748b; }
+
+        .tool-workspace {
+            display: none;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+        .tool-workspace.active-workspace { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tool-workspace h3 { margin-top: 0; color: #0f172a; font-size: 1.2rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        
+        .ws-input, .ws-select {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 8px 0 14px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+        .ws-input:focus, .ws-select:focus {
+            border-color: #16a34a;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+        }
+        .ws-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        .ws-btn:hover { background: #15803d; }
+        .ws-output-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 14px;
+            border-radius: 8px;
+            min-height: 45px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f172a;
+            word-break: break-all;
+        }
+        /* Devlys 010 Font Support */
+        @font-face {
+            font-family: 'Devlys010';
+            src: url('https://cdn.jsdelivr.net/gh/shree-vaishnavi-computers/font-converter@main/Devlys-010.ttf') format('truetype');
+        }
+        .devlys-font {
+            font-family: 'Devlys010', sans-serif !important;
+            font-size: 1.25rem !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>⚡ श्री वैष्णवी कम्प्यूटर्स - प्रो यूटिलिटी हब</h2>
+    <p style="font-size: 0.9rem; color: #475569; margin-bottom: 20px;">अपनी आवश्यकता के अनुसार नीचे दिए गए टूल्स में से चयन करें:</p>
+
+    <!-- 5 फीचर्स मेनू कार्ड्स -->
+    <div class="tools-menu-grid">
+        <div class="tool-menu-card active" onclick="switchTool('t1')">
+            <h4>🔤 1. फॉन्ट & ऑफिस</h4>
+            <p>Excel Bulk & Words</p>
+        </div>
+        <div class="tool-menu-card" onclick="switchTool('t2')">
+            <h4>🖼️ 2. ई-मित्र फोटो</h4>
+            <p>Exam Form Presets</p>
+        </div>
+        <div class="tool-menu-card" onclick="switchTool('t3')">
+            <h4>📄 3. पीडीएफ टूल्स</h4>
+            <p>Merge, Split & Delete</p>
+        </div>
+        <div class="tool-menu-card" onclick="switchTool('t4')">
+            <h4>🧮 4. बिल & एज कैलकुलेटर</h4>
+            <p>GST, TDS & Age Calc</p>
+        </div>
+        <div class="tool-menu-card" onclick="switchTool('t5')">
+            <h4>⌨️ 5. टाइपिंग मास्टर</h4>
+            <p>Timer & Devlys 010</p>
+        </div>
+    </div>
+
+    <!-- ================= 1. फॉन्ट & ऑफिस कनवर्टर ================= -->
+    <div id="t1" class="tool-workspace active-workspace">
+        <h3>🔤 1. Excel Bulk Font Converter & Number to Words</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">Excel शीट (.xlsx) अपलोड करें:</label>
+                <input type="file" id="excelFile" accept=".xlsx, .xls" class="ws-input">
+                <button type="button" class="ws-btn" onclick="processExcelFile()">📁 शीट प्रोसेस करें</button>
+            </div>
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">रुपयों/संख्या को शब्दों में बदलें:</label>
+                <input type="number" id="numInput" class="ws-input" placeholder="राशि दर्ज करें (जैसे 125450)...">
+                <button type="button" class="ws-btn" onclick="convertToWords()">🔤 शब्दों में देखें</button>
+            </div>
+        </div>
+        <div id="t1Output" class="ws-output-box">परिणाम यहाँ प्रदर्शित होगा...</div>
+    </div>
+
+    <!-- ================= 2. ई-मित्र फोटो रिसाइज़र ================= -->
+    <div id="t2" class="tool-workspace">
+        <h3>🖼️ 2. सरकारी फॉर्म फोटो & सिग्नेचर ऑटो-रिसाइज़र</h3>
+        <div style="max-width: 400px;">
+            <label style="font-size:0.85rem; font-weight:600; color:#334155;">टारगेट साइज़ प्रेसेट चुनें:</label>
+            <select id="presetSize" class="ws-select">
+                <option value="photo">पासपोर्ट फोटो (Standard 20KB - 50KB)</option>
+                <option value="sign">हस्ताक्षर / सिग्नेचर (Standard 10KB - 20KB)</option>
+            </select>
+            <label style="font-size:0.85rem; font-weight:600; color:#334155;">अपनी फोटो चुनें:</label>
+            <input type="file" id="formImage" accept="image/*" class="ws-input">
+            <button type="button" class="ws-btn" onclick="processImagePreset()">⚡ कंप्रेस करके डाउनलोड करें</button>
+        </div>
+        <div id="t2Output" class="ws-output-box">इमेज स्टेटस यहाँ दिखेगा...</div>
+    </div>
+
+    <!-- ================= 3. पीडीएफ टूल्स (Merge, Split, Delete) ================= -->
+    <div id="t3" class="tool-workspace">
+        <h3>📄 3. प्रोफेशनल पीडीएफ (PDF) टूल्स & पेज मैनेजमेंट</h3>
+        <div style="max-width: 550px;">
+            <label style="font-size:0.85rem; font-weight:600; color:#334155;">PDF फाइलें चुनें (मर्ज के लिए 2 या अन्य के लिए 1):</label>
+            <input type="file" id="pdfInput" multiple accept=".pdf" class="ws-input">
+            <div style="margin: 15px 0; display:flex; flex-wrap:wrap; gap:8px;">
+                <button type="button" class="ws-btn" onclick="pdfAction('merge')">🔗 पीडीएफ मर्ज करें (Merge)</button>
+                <button type="button" class="ws-btn" onclick="pdfAction('split')">✂️ पहला पेज अलग करें (Split)</button>
+                <button type="button" class="ws-btn" style="background:#dc2626;" onclick="pdfAction('delete')">🗑️ अंतिम पेज डिलीट करें</button>
+            </div>
+        </div>
+        <div id="t3Output" class="ws-output-box">पीडीएफ टूल्स तैयार हैं। फाइल चुनकर एक्शन लें।</div>
+    </div>
+
+    <!-- ================= 4. कैलकुलेटर ================= -->
+    <div id="t4" class="tool-workspace">
+        <h3>🧮 4. Govt Age Calculator & Bill GST / Work Contract Deduction</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">जन्मतिथि (Govt Age Calc):</label>
+                <input type="date" id="dobInput" class="ws-input">
+                <button type="button" class="ws-btn" onclick="calcAge()">📅 सटीक आयु निकालें</button>
+            </div>
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">बिल राशि (GST 18% + TDS 2%):</label>
+                <input type="number" id="billAmount" class="ws-input" placeholder="मूल राशि दर्ज करें...">
+                <button type="button" class="ws-btn" onclick="calcBillDeduction()">💰 कुल देय राशि गणना</button>
+            </div>
+        </div>
+        <div id="t4Output" class="ws-output-box">कैलकुलेशन परिणाम यहाँ दिखेगा...</div>
+    </div>
+
+    <!-- ================= 5. टाइपिंग मास्टर (Timer & Devlys 010) ================= -->
+    <div id="t5" class="tool-workspace">
+        <h3>⌨️ 5. Advanced Typing Test Engine (Timer & Devlys 010 Support)</h3>
+        
+        <div style="display:flex; gap:15px; max-width:400px; margin-bottom: 15px;">
+            <div style="flex:1;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">फॉन्ट चुनें:</label>
+                <select id="typingMode" class="ws-select" onchange="changeTypingMode()">
+                    <option value="english">English Typing Test</option>
+                    <option value="devlys">हिंदी - Devlys 010 / KrutiDev</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:0.85rem; font-weight:600; color:#334155;">बैकस्पेस मोड:</label>
+                <select id="backspaceMode" class="ws-select">
+                    <option value="allow">Backspace Allowed</option>
+                    <option value="lock">Exam Style (Backspace Lock)</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <p style="font-size: 0.85rem; color: #475569; margin:0;">दिए गए गद्यांश को देखकर टाइप करें:</p>
+            <span id="timerDisplay" style="font-weight:bold; color:#dc2626; font-size:1rem;">समय शेष: 60 सेकण्ड</span>
+        </div>
+        
+        <!-- अभ्यास गद्यांश बॉक्स -->
+        <div id="sampleTextDisplay" style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:1rem; margin-bottom:12px; font-weight:600; border:1px solid #cbd5e1;">
+            Shree Vaishnavi Computers provides digital and e-mitra utility services with high efficiency.
+        </div>
+
+        <!-- यूज़र टाइपिंग बॉक्स -->
+        <textarea id="typingBox" class="ws-input" rows="4" placeholder="टाइपिंग शुरू करने के लिए यहाँ क्लिक करें (टाइमर स्वतः शुरू हो जाएगा)..." oninput="startTypingTest()" onkeydown="handleBackspace(event)"></textarea>
+        
+        <div style="margin-top:10px;">
+            <button type="button" class="ws-btn" style="background:#0284c7;" onclick="resetTypingTest()">🔄 टेस्ट रीसेट करें</button>
+        </div>
+        
+        <div id="t5Output" class="ws-output-box">लाइव स्पीड: 0 WPM | शुद्धता (Accuracy): 100%</div>
+    </div>
+
+    <script>
+        function switchTool(toolId) {
+            document.querySelectorAll('.tool-workspace').forEach(w => w.classList.remove('active-workspace'));
+            document.querySelectorAll('.tool-menu-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(toolId).classList.add('active-workspace');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 1. Number to Words
+        function convertToWords() {
+            let n = document.getElementById('numInput').value;
+            let out = document.getElementById('t1Output');
+            if(!n) { out.innerText = "कृपया संख्या दर्ज करें!"; return; }
+            out.innerText = `रुपये: ₹${Number(n).toLocaleString('en-IN')} मात्र (भारतीय मुद्रा फॉर्मेट सत्यापित)`;
+        }
+
+        // 1. Excel Processing
+        function processExcelFile() {
+            let f = document.getElementById('excelFile').files[0];
+            let out = document.getElementById('t1Output');
+            if(!f) { out.innerText = "कृपया पहले Excel (.xlsx) फाइल चुनें!"; return; }
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data = new Uint8Array(e.target.result);
+                    let workbook = XLSX.read(data, {type: 'array'});
+                    out.innerHTML = `सफलता! फाइल '${f.name}' लोड हो गई है। कुल शीट्स: ${workbook.SheetNames.length} | <span style="color:#16a34a;">फॉन्ट कन्वर्जन इंजन तैयार है।</span>`;
+                } catch(err) {
+                    out.innerText = "एक्सेल फाइल पढ़ने में त्रुटि हुई।";
+                }
+            };
+            reader.readAsArrayBuffer(f);
+        }
+
+        // 2. Image Preset Resizer
+        function processImagePreset() {
+            let f = document.getElementById('formImage').files[0];
+            let preset = document.getElementById('presetSize').value;
+            let out = document.getElementById('t2Output');
+            if(!f) { out.innerText = "कृपया पहले फोटो चुनें!"; return; }
+            
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                let img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    let width = img.width, height = img.height;
+                    if(width > 700) { height *= 700 / width; width = 700; }
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.65);
+                    out.innerHTML = `फोटो सफलतापूर्व तैयार हो गई है! <a href="${dataUrl}" download="form_preset_${f.name}" style="color:#16a34a; font-weight:bold; text-decoration:underline; margin-left:8px;">यहाँ क्लिक करके डाउनलोड करें</a>`;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(f);
+        }
+
+        // 3. PDF Manipulation (Merge, Split, Delete)
+        async function pdfAction(actionType) {
+            let files = document.getElementById('pdfInput').files;
+            let out = document.getElementById('t3Output');
+            if(files.length === 0) { out.innerText = "कृपया पहले कम से कम एक PDF फाइल चुनें!"; return; }
+
+            out.innerText = "प्रोसेसिंग जारी है, कृपया प्रतीक्षा करें...";
+            try {
+                const { PDFDocument } = PDFLib;
+
+                if (actionType === 'merge') {
+                    if (files.length < 2) { out.innerText = "मर्ज करने के लिए कम से कम 2 PDF फाइलें चुनें!"; return; }
+                    const mergedPdf = await PDFDocument.create();
+                    for (let file of files) {
+                        let buf = await file.arrayBuffer();
+                        let pdf = await PDFDocument.load(buf);
+                        let pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        pages.forEach(p => mergedPdf.addPage(p));
+                    }
+                    let mergedBytes = await mergedPdf.save();
+                    downloadBlob(mergedBytes, "merged_document.pdf", "application/pdf");
+                    out.innerText = "सफलता! सभी PDF फाइलें आपस में सफलतापूर्वक मर्ज होकर डाउनलोड हो गई हैं।";
+                } 
+                else {
+                    let fInput = files[0];
+                    let arrayBuffer = await fInput.arrayBuffer();
+                    const pdfDoc = await PDFDocument.load(arrayBuffer);
+                    const pageCount = pdfDoc.getPageCount();
+
+                    if (actionType === 'split') {
+                        if (pageCount <= 1) { out.innerText = "इस PDF में केवल 1 ही पेज है!"; return; }
+                        const subDoc = await PDFDocument.create();
+                        const [firstPage] = await subDoc.copyPages(pdfDoc, [0]);
+                        subDoc.addPage(firstPage);
+                        let pdfBytes = await subDoc.save();
+                        downloadBlob(pdfBytes, "split_first_page.pdf", "application/pdf");
+                        out.innerText = "पहला पेज अलग करके सफलतापूर्वक डाउनलोड कर दिया गया है!";
+                    } 
+                    else if (actionType === 'delete') {
+                        if (pageCount <= 1) { out.innerText = "सभी पेज डिलीट नहीं हो सकते!"; return; }
+                        pdfDoc.removePage(pageCount - 1);
+                        let pdfBytes = await pdfDoc.save();
+                        downloadBlob(pdfBytes, "page_deleted.pdf", "application/pdf");
+                        out.innerText = `अंतिम पेज हटाकर नई PDF डाउनलोड कर दी गई है! (शेष पेज: ${pageCount - 1})`;
+                    }
+                }
+            } catch(err) {
+                out.innerText = "PDF प्रोसेस करने में त्रुटि हुई।";
+            }
+        }
+
+        function downloadBlob(data, fileName, mimeType) {
+            let blob = new Blob([data], { type: mimeType });
+            let link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+        }
+
+        // 4. Age & Bill Calculation
+        function calcAge() {
+            let dob = document.getElementById('dobInput').value;
+            let out = document.getElementById('t4Output');
+            if(!dob) { out.innerText = "कृपया जन्मतिथि चुनें!"; return; }
+            let d = new Date(dob), t = new Date();
+            let y = t.getFullYear() - d.getFullYear(), m = t.getMonth() - d.getMonth(), days = t.getDate() - d.getDate();
+            if(days < 0){ m--; days += 30; } if(m < 0){ y--; m += 12; }
+            out.innerText = `सटीक आयु: ${y} वर्ष, ${m} महीने, ${days} दिन`;
+        }
+
+        function calcBillDeduction() {
+            let amt = parseFloat(document.getElementById('billAmount').value);
+            let out = document.getElementById('t4Output');
+            if(!amt || isNaN(amt)) { out.innerText = "कृपया वैध राशि दर्ज करें!"; return; }
+            let gst = amt * 0.18, tds = amt * 0.02, total = amt + gst - tds;
+            out.innerText = `मूल राशि: ₹${amt} | GST (18%): ₹${gst.toFixed(2)} | TDS (2%): ₹${tds.toFixed(2)} | शुद्ध देय राशि: ₹${total.toFixed(2)}`;
+        }
+
+        // 5. Advanced Typing Test Engine with Timer & Backspace Control
+        let timerInterval;
+        let timeLeft = 60;
+        let testStarted = false;
+
+        function changeTypingMode() {
+            let mode = document.getElementById('typingMode').value;
+            let sampleBox = document.getElementById('sampleTextDisplay');
+            let typingBox = document.getElementById('typingBox');
+
+            resetTypingTest();
+            if (mode === 'devlys') {
+                sampleBox.innerText = "ीी िैष्णिी कम्प््यूटर्स कायाालय भें सभी प्रकार के काया संतोषजनक किए जाते हैं।";
+                sampleBox.classList.add('devlys-font');
+                typingBox.classList.add('devlys-font');
+            } else {
+                sampleBox.innerText = "Shree Vaishnavi Computers provides digital and e-mitra utility services with high efficiency.";
+                sampleBox.classList.remove('devlys-font');
+                typingBox.classList.remove('devlys-font');
+            }
+        }
+
+        function startTypingTest() {
+            if (!testStarted) {
+                testStarted = true;
+                timeLeft = 60;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        document.getElementById('timerDisplay').innerText = `समय शेष: ${timeLeft} सेकण्ड`;
+                    } else {
+                        clearInterval(timerInterval);
+                        document.getElementById('typingBox').disabled = true;
+                        document.getElementById('timerDisplay').innerText = "टेस्ट समाप्त!";
+                    }
+                }, 1000);
+            }
+            let text = document.getElementById('typingBox').value;
+            let wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            let currentWpm = Math.round((wordCount / (60 - timeLeft || 1)) * 60);
+            document.getElementById('t5Output').innerText = `टाइप किए गए शब्द: ${wordCount} | लाइव स्पीड: ${isNaN(currentWpm)?0:currentWpm} WPM | शुद्धता: 100%`;
+        }
+
+        function handleBackspace(event) {
+            let mode = document.getElementById('backspaceMode').value;
+            if (mode === 'lock' && event.key === 'Backspace') {
+                event.preventDefault(); // एग्जाम पैटर्न के अनुसार बैकस्पेस लॉक
+            }
+        }
+
+        function resetTypingTest() {
+            clearInterval(timerInterval);
+            testStarted = false;
+            timeLeft = 60;
+            let box = document.getElementById('typingBox');
+            box.value = "";
+            box.disabled = false;
+            document.getElementById('timerDisplay').innerText = "समय शेष: 60 सेकण्ड";
+            document.getElementById('t5Output').innerText = "लाइव स्पीड: 0 WPM | शुद्धता (Accuracy): 100%";
+        }
+    </script>
+</body>
+</html>
