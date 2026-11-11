@@ -3281,12 +3281,17 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= 100% BULLETPROOF MOBILE-ONLY VOICE & PREVIEW ADD-ON ================= -->
+    <!-- ================= 100% GUARANTEED DESKTOP HIDDEN FIX ================= -->
 <style>
-    /* कंप्यूटर या बड़ी स्क्रीन पर यह बॉक्स और बटन हमेशा के लिए छिपे रहेंगे */
+    /* यह कोड कंप्यूटर और लैपटॉप (769px से बड़ी स्क्रीन) पर इस बॉक्स और बटन को कभी प्रकट नहीं होने देगा */
     @media screen and (min-width: 769px) {
         #liveVoicePreviewBox, #topNavVoiceBtn {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            pointer-events: none !important;
         }
     }
 
@@ -3305,17 +3310,15 @@ window.svcPro = (function() {
 
 <script>
 (function() {
-    // केवल एंड्रॉइड मोबाइल और छोटी स्क्रीन के लिए ही कोड आगे बढ़ेगा, कंप्यूटर पर यह तुरंत बंद हो जाएगा
-    if (window.innerWidth > 768 || !/Android/i.test(navigator.userAgent)) {
-        return; 
-    }
+    // यदि स्क्रीन कंप्यूटर जितनी बड़ी है, तो जावास्क्रिप्ट पूरी तरह बंद रहेगी
+    if (window.innerWidth > 769) return;
 
     window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             var topBar = document.querySelector('.top-nav, header, nav, .flex, [class*="toolbar"]');
             
             if (topBar && !document.getElementById('topNavVoiceBtn')) {
-                // 1. लाइव प्रीव्यू बॉक्स (केवल मोबाइल के लिए)
+                // 1. लाइव प्रीव्यू बॉक्स
                 var previewDiv = document.createElement('div');
                 previewDiv.id = 'liveVoicePreviewBox';
                 previewDiv.innerHTML = '<b>🎙️ लाइव हिंदी प्रीव्यू:</b> <span id="previewTextContent" style="color: #000; font-weight: 500;">टाइप या बोलकर देखिए...</span>';
@@ -3326,7 +3329,7 @@ window.svcPro = (function() {
                     previewDiv.style.display = 'block';
                 }
 
-                // 2. टू-वे सिंक (Devlys बॉक्स में मिटाने या लिखने पर लाइव प्रीव्यू का तुरंत अपडेट होना)
+                // 2. टू-वे सिंक (लिखने या मिटाने पर प्रीव्यू का अपडेट होना)
                 if (devlysBox) {
                     devlysBox.addEventListener('input', function() {
                         updatePreviewFromDevlys(devlysBox.value);
@@ -3492,6 +3495,6 @@ window.svcPro = (function() {
     }
 })();
 </script>
-<!-- ============================================================================== -->
+<!-- ===================================================================== -->
 </body>
 </html>
