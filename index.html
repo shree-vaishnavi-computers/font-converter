@@ -2127,5 +2127,1159 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ======================================================== -->
+    <!-- ================= COMPLETE ULTIMATE OCR UPGRADE (ALL-IN-ONE) ================= -->
+<style>
+    .ocr-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(11, 37, 69, 0.75);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    }
+
+    .ocr-modal-box {
+        background: #ffffff;
+        width: 94%;
+        max-width: 460px;
+        border-radius: 14px;
+        padding: 24px 20px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+        border-top: 5px solid #003366;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1e293b;
+    }
+
+    .ocr-spinner-wrap {
+        position: relative;
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 14px auto;
+    }
+
+    .ocr-spinner {
+        width: 88px;
+        height: 88px;
+        border: 6px solid #e2e8f0;
+        border-top: 6px solid #FF7722;
+        border-right: 6px solid #003366;
+        border-radius: 50%;
+        animation: ocrWheelSpin 0.9s linear infinite;
+    }
+
+    .ocr-percent-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #003366;
+    }
+
+    @keyframes ocrWheelSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .ocr-status-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0B2545;
+        margin-bottom: 5px;
+    }
+
+    .ocr-status-sub {
+        font-size: 0.86rem;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .ocr-enhance-badge {
+        display: inline-block;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+    }
+
+    .ocr-progress-track {
+        width: 100%;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .ocr-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #003366, #FF7722);
+        transition: width 0.2s ease;
+    }
+
+    .ocr-size-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 8px;
+        margin-bottom: 10px;
+    }
+
+    .ocr-size-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ocr-size-label {
+        font-size: 0.72rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .ocr-size-val {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .ocr-size-val.done-val { color: #16a34a; }
+    .ocr-size-val.rem-val { color: #ea580c; }
+
+    .ocr-error-box {
+        display: none;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 4px solid #dc2626;
+        color: #991b1b;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 0.86rem;
+        text-align: left;
+        margin-top: 12px;
+        line-height: 1.5;
+    }
+
+    .ocr-close-btn {
+        display: none;
+        margin-top: 14px;
+        background: #003366;
+        color: #ffffff;
+        border: none;
+        padding: 9px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .ocr-close-btn:hover {
+        background: #FF7722;
+    }
+</style>
+
+<div id="ocrProgressModal" class="ocr-modal-overlay">
+    <div class="ocr-modal-box">
+        <div class="ocr-spinner-wrap">
+            <div class="ocr-spinner" id="ocrSpinnerWheel"></div>
+            <div class="ocr-percent-center" id="ocrPercentText">0%</div>
+        </div>
+
+        <div class="ocr-status-title" id="ocrStatusTitle">फ़ाइल अपलोड हो रही है...</div>
+        <div class="ocr-status-sub" id="ocrStatusSub">कृपया प्रतीक्षा करें, पेज को बंद न करें।</div>
+        <div class="ocr-enhance-badge" id="ocrEnhanceBadge">✨ स्मार्ट HD Enhancer & Line-Wise Corrector सक्रिय</div>
+
+        <div class="ocr-progress-track">
+            <div class="ocr-progress-fill" id="ocrProgressFill"></div>
+        </div>
+
+        <div class="ocr-size-grid">
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">कुल साइज (Total)</span>
+                <span class="ocr-size-val" id="ocrTotalSize">0 KB</span>
+            </div>
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">पूरा हुआ (Done)</span>
+                <span class="ocr-size-val done-val" id="ocrDoneSize">0 KB</span>
+            </div>
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">बाकी है (Left)</span>
+                <span class="ocr-size-val rem-val" id="ocrRemSize">0 KB</span>
+            </div>
+        </div>
+
+        <div class="ocr-error-box" id="ocrErrorBox"></div>
+        <button class="ocr-close-btn" id="ocrCloseBtn" onclick="closeOcrModal()">ठीक है (Close)</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    var currentFileTotalBytes = 0;
+
+    function formatFileSize(bytes) {
+        if (!bytes || bytes <= 0) return '0.00 KB';
+        var mb = bytes / (1024 * 1024);
+        if (mb >= 1) return mb.toFixed(2) + ' MB';
+        return (bytes / 1024).toFixed(2) + ' KB';
+    }
+
+    function updateByteMetrics(pct) {
+        var cleanPct = Math.min(100, Math.max(0, pct));
+        var doneBytes = (currentFileTotalBytes * cleanPct) / 100;
+        var remBytes = Math.max(0, currentFileTotalBytes - doneBytes);
+        document.getElementById('ocrTotalSize').innerText = formatFileSize(currentFileTotalBytes);
+        document.getElementById('ocrDoneSize').innerText = formatFileSize(doneBytes);
+        document.getElementById('ocrRemSize').innerText = formatFileSize(remBytes);
+    }
+
+    function openOcrModal(fileSize, title, sub) {
+        currentFileTotalBytes = fileSize || 0;
+        document.getElementById('ocrProgressModal').style.display = 'flex';
+        var wheel = document.getElementById('ocrSpinnerWheel');
+        wheel.style.animationPlayState = 'running';
+        wheel.style.borderTopColor = '#FF7722';
+        document.getElementById('ocrErrorBox').style.display = 'none';
+        document.getElementById('ocrCloseBtn').style.display = 'none';
+        document.getElementById('ocrEnhanceBadge').style.display = 'inline-block';
+        setOcrProgress(0, title || '📂 फ़ाइल अपलोड हो रही है...', sub || 'कृपया प्रतीक्षा करें...');
+    }
+
+    function setOcrProgress(pct, title, sub) {
+        var cleanPct = Math.min(100, Math.max(0, Math.round(pct)));
+        document.getElementById('ocrPercentText').innerText = cleanPct + '%';
+        document.getElementById('ocrProgressFill').style.width = cleanPct + '%';
+        updateByteMetrics(cleanPct);
+        if (title) document.getElementById('ocrStatusTitle').innerText = title;
+        if (sub) document.getElementById('ocrStatusSub').innerText = sub;
+    }
+
+    function failOcrModal(reason) {
+        var wheel = document.getElementById('ocrSpinnerWheel');
+        wheel.style.animationPlayState = 'paused';
+        wheel.style.borderTopColor = '#dc2626';
+        document.getElementById('ocrStatusTitle').innerText = '❌ फ़ाइल प्रोसेस नहीं हो सकी!';
+        document.getElementById('ocrStatusSub').innerText = 'नीचे दिए गए कारण की जाँच करें:';
+        document.getElementById('ocrEnhanceBadge').style.display = 'none';
+        var errBox = document.getElementById('ocrErrorBox');
+        errBox.style.display = 'block';
+        errBox.innerHTML = '<strong>कारण (Reason):</strong> ' + reason;
+        document.getElementById('ocrCloseBtn').style.display = 'inline-block';
+    }
+
+    window.closeOcrModal = function() {
+        document.getElementById('ocrProgressModal').style.display = 'none';
+    };
+
+    function loadScriptIfMissing(srcCheck, url) {
+        return new Promise(function(resolve, reject) {
+            if (srcCheck()) return resolve();
+            var s = document.createElement('script');
+            s.src = url;
+            s.onload = resolve;
+            s.onerror = function() { reject(new Error('इंटरनेट धीमा या बंद होने के कारण OCR इंजन लोड नहीं हो सका।')); };
+            document.head.appendChild(s);
+        });
+    }
+
+    // स्मार्ट हिंदी करेक्शन और लाइन-वाइज सुधारक
+    function fixOcrHindiText(rawText) {
+        if (!rawText) return '';
+        var t = rawText;
+        t = t.replace(/जी एस टी/g, 'जीएसटी');
+        t = t.replace(/संलग्न —/g, 'संलग्न –');
+        t = t.replace(/कांउटर/g, 'काउंटर');
+        t = t.replace(/([क-ह])्\s+([क-ह])/g, '$1्$2');
+        
+        var lines = t.split('\n');
+        var cleanedLines = lines.map(function(line) {
+            return line.replace(/\s+/g, ' ').trim();
+        });
+        return cleanedLines.filter(function(l) { return l.length > 0; }).join('\n');
+    }
+
+    function sortTesseractWordsLineWise(builder) {
+        if (!builder || !builder.blocks) return '';
+        var allLines = [];
+        builder.blocks.forEach(function(block) {
+            if (!block.paragraphs) return;
+            block.paragraphs.forEach(function(para) {
+                if (!para.lines) return;
+                para.lines.forEach(function(line) {
+                    var lineText = line.text ? line.text.trim() : '';
+                    if (lineText && line.bbox) {
+                        allLines.push({ text: lineText, y0: line.bbox.y0, x0: line.bbox.x0 });
+                    }
+                });
+            });
+        });
+        if (allLines.length === 0) return builder.text ? fixOcrHindiText(builder.text) : '';
+        
+        allLines.sort(function(a, b) {
+            if (Math.abs(a.y0 - b.y0) > 8) return a.y0 - b.y0;
+            return a.x0 - b.x0;
+        });
+
+        var finalLines = [];
+        var currentMergedLine = '';
+        var lastY = -999;
+        allLines.forEach(function(l) {
+            if (lastY === -999 || Math.abs(l.y0 - lastY) <= 8) {
+                currentMergedLine += (currentMergedLine ? ' ' : '') + l.text;
+            } else {
+                if (currentMergedLine) finalLines.push(currentMergedLine);
+                currentMergedLine = l.text;
+            }
+            lastY = l.y0;
+        });
+        if (currentMergedLine) finalLines.push(currentMergedLine);
+        return fixOcrHindiText(finalLines.join('\n'));
+    }
+
+    function processLineWiseOcrResult(res) {
+        if (!res || !res.data) return '';
+        try {
+            if (res.data.blocks && res.data.blocks.length > 0) {
+                var sorted = sortTesseractWordsLineWise(res.data);
+                if (sorted && sorted.trim().length > 0) return sorted;
+            }
+        } catch (e) {}
+        return fixOcrHindiText(res.data.text ? res.data.text.trim() : '');
+    }
+
+    function enhanceBlurryCanvas(sourceCanvas) {
+        var w = sourceCanvas.width;
+        var h = sourceCanvas.height;
+        var scale = (w < 1600 && h < 1600) ? 2 : 1.5;
+        var targetW = Math.min(3200, Math.round(w * scale));
+        var targetH = Math.min(3200, Math.round(h * scale));
+
+        var outCanvas = document.createElement('canvas');
+        outCanvas.width = targetW;
+        outCanvas.height = targetH;
+        var ctx = outCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(sourceCanvas, 0, 0, targetW, targetH);
+
+        try {
+            var imgData = ctx.getImageData(0, 0, targetW, targetH);
+            var d = imgData.data;
+            var len = d.length;
+            var minLum = 255, maxLum = 0;
+            var gray = new Uint8ClampedArray(targetW * targetH);
+
+            for (var i = 0, p = 0; i < len; i += 4, p++) {
+                var lum = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+                gray[p] = lum;
+                if (lum < minLum) minLum = lum;
+                if (lum > maxLum) maxLum = lum;
+            }
+            var range = Math.max(1, maxLum - minLum);
+            var contrasted = new Uint8ClampedArray(targetW * targetH);
+            for (var k = 0; k < gray.length; k++) {
+                var norm = ((gray[k] - minLum) / range) * 255;
+                norm = (norm < 155) ? Math.max(0, norm * 0.65) : Math.min(255, norm * 1.18);
+                contrasted[k] = Math.round(norm);
+            }
+            for (var y = 1; y < targetH - 1; y++) {
+                for (var x = 1; x < targetW - 1; x++) {
+                    var idx = y * targetW + x;
+                    var sharpVal = (contrasted[idx] * 5 - contrasted[idx - 1] - contrasted[idx + 1] - contrasted[idx - targetW] - contrasted[idx + targetW]);
+                    var finalPixel = Math.min(255, Math.max(0, sharpVal));
+                    var rgbaIdx = idx * 4;
+                    d[rgbaIdx] = finalPixel; d[rgbaIdx+1] = finalPixel; d[rgbaIdx+2] = finalPixel; d[rgbaIdx+3] = 255;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } catch (e) {}
+        return outCanvas;
+    }
+
+    function imageUrlToCanvas(dataUrl) {
+        return new Promise(function(resolve, reject) {
+            var img = new Image();
+            img.onload = function() {
+                var c = document.createElement('canvas');
+                c.width = img.naturalWidth || img.width;
+                c.height = img.naturalHeight || img.height;
+                var ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                resolve(c);
+            };
+            img.onerror = function() { reject(new Error('इमेज फ़ाइल क्षतिग्रस्त है।')); };
+            img.src = dataUrl;
+        });
+    }
+
+    function applyExtractedText(extractedText) {
+        var uniBox = document.getElementById('unicodeField');
+        if (uniBox) {
+            uniBox.value = fixOcrHindiText(extractedText.trim());
+            if (typeof window.autoReverseConvert === 'function') {
+                window.autoReverseConvert();
+            } else {
+                uniBox.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    }
+
+    async function processOcrFileWithProgress(file) {
+        if (!file) return;
+        openOcrModal(file.size, '📂 फ़ाइल की जाँच और अपलोड शुरू...', 'फ़ाइल: ' + file.name);
+
+        if (file.size === 0) return failOcrModal('चयनित फ़ाइल बिल्कुल खाली (0 KB) है।');
+        if (file.size > 35 * 1024 * 1024) return failOcrModal('फ़ाइल साइज बहुत बड़ा है (' + formatFileSize(file.size) + ')।');
+
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        var isImage = file.type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'jfif'].indexOf(ext) !== -1;
+        var isPdf = file.type === 'application/pdf' || ext === 'pdf';
+        var isTxt = file.type === 'text/plain' || ext === 'txt';
+
+        if (!isImage && !isPdf && !isTxt) return failOcrModal('अमान्य फ़ाइल फ़ॉर्मेट (.' + ext + ')! कृपया फोटो, PDF या .TXT फ़ाइल चुनें।');
+
+        try {
+            var fileData = await new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onprogress = function(evt) {
+                    if (evt.lengthComputable && evt.total > 0) {
+                        var pct = Math.round((evt.loaded / evt.total) * 30);
+                        setOcrProgress(pct, '📤 फ़ाइल अपलोड हो रही है...', formatFileSize(evt.loaded) + ' / ' + formatFileSize(evt.total));
+                    }
+                };
+                reader.onload = function(e) {
+                    setOcrProgress(30, '✅ फ़ाइल लोड हुई!', 'अक्षरों को साफ और व्यवस्थित किया जा रहा है...');
+                    resolve(e.target.result);
+                };
+                reader.onerror = function() { reject(new Error('फ़ाइल पढ़ने में त्रुटि।')); };
+
+                if (isTxt) reader.readAsText(file);
+                else if (isPdf) reader.readAsArrayBuffer(file);
+                else reader.readAsDataURL(file);
+            });
+
+            if (isTxt) {
+                if (!fileData.trim()) return failOcrModal('यह टेक्स्ट फ़ाइल खाली है।');
+                setOcrProgress(100, '✅ टेक्स्ट लोड पूर्ण!', 'कन्वर्ट कर दिया गया है।');
+                applyExtractedText(fileData);
+                setTimeout(window.closeOcrModal, 900);
+                return;
+            }
+
+            if (!navigator.onLine && typeof Tesseract === 'undefined') {
+                return failOcrModal('इंटरनेट कनेक्शन बंद है!');
+            }
+
+            if (isPdf) {
+                setOcrProgress(35, '📄 PDF रीडर लोड हो रहा है...', 'कृपया प्रतीक्षा करें...');
+                await loadScriptIfMissing(function() { return typeof window.pdfjsLib !== 'undefined'; }, 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+                var pdfDoc = await window.pdfjsLib.getDocument({ data: fileData }).promise;
+                await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+
+                var totalPages = pdfDoc.numPages;
+                var fullPdfText = '';
+
+                for (var p = 1; p <= totalPages; p++) {
+                    var pageStartPct = 38 + Math.round(((p - 1) / totalPages) * 58);
+                    setOcrProgress(pageStartPct, '📄 PDF पेज ' + p + '/' + totalPages + ' स्कैन हो रहा है...', 'शब्द लाइन-वाइज और शुद्ध किए जा रहे हैं...');
+
+                    var page = await pdfDoc.getPage(p);
+                    var viewport = page.getViewport({ scale: 2.5 });
+                    var rawCanvas = document.createElement('canvas');
+                    var ctx = rawCanvas.getContext('2d');
+                    rawCanvas.width = viewport.width;
+                    rawCanvas.height = viewport.height;
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    var sharpPdfCanvas = enhanceBlurryCanvas(rawCanvas);
+                    var res = await window.Tesseract.recognize(sharpPdfCanvas, 'hin+eng');
+                    var pageText = processLineWiseOcrResult(res);
+
+                    if (!pageText || pageText.length < 5) {
+                        var fallbackRes = await window.Tesseract.recognize(rawCanvas, 'hin+eng');
+                        var fbText = processLineWiseOcrResult(fallbackRes);
+                        if (fbText.length > pageText.length) pageText = fbText;
+                    }
+
+                    if (pageText) fullPdfText += pageText + '\n\n';
+                }
+
+                if (!fullPdfText.trim()) return failOcrModal('PDF में कोई टेक्स्ट नहीं मिला!');
+                setOcrProgress(100, '✅ PDF स्कैनिंग पूर्ण!', 'टेक्स्ट बॉक्स में भर दिया गया है।');
+                applyExtractedText(fullPdfText);
+                setTimeout(window.closeOcrModal, 1100);
+                return;
+            }
+
+            setOcrProgress(36, '✨ इमेज HD Sharp की जा रही है...', 'कंट्रास्ट सुधारा जा रहा है...');
+            var origCanvas = await imageUrlToCanvas(fileData);
+            var enhancedCanvas = enhanceBlurryCanvas(origCanvas);
+
+            setOcrProgress(44, '⚙️ OCR इंजन लोड हो रहा है...', '...');
+            await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+
+            var result = await window.Tesseract.recognize(enhancedCanvas, 'hin+eng', {
+                logger: function(m) {
+                    if (m.status === 'recognizing text') {
+                        var scanPct = 64 + Math.round((m.progress || 0) * 34);
+                        setOcrProgress(scanPct, '🔍 लाइन-वाइज शब्द स्कैन हो रहे हैं...', Math.round((m.progress || 0) * 100) + '%');
+                    }
+                }
+            });
+
+            var finalText = processLineWiseOcrResult(result);
+            if (finalText.length < 8) {
+                var backupRes = await window.Tesseract.recognize(origCanvas, 'hin+eng');
+                var backupText = processLineWiseOcrResult(backupRes);
+                if (backupText.length > finalText.length) finalText = backupText;
+            }
+
+            if (!finalText) return failOcrModal('इमेज में कोई अक्षर नहीं मिला!');
+            setOcrProgress(100, '✅ स्कैनिंग शत-प्रतिशत पूर्ण!', 'टेक्स्ट कन्वर्ट हो गया है।');
+            applyExtractedText(finalText);
+            setTimeout(window.closeOcrModal, 1100);
+
+        } catch (err) {
+            failOcrModal(err.message || 'त्रुटि आई। कृपया पुनः प्रयास करें।');
+        }
+    }
+
+    function interceptFileEvent(e) {
+        var t = e.target;
+        if (t && t.tagName === 'INPUT' && t.type === 'file') {
+            var acceptVal = t.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                t.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+            if (t.files && t.files.length > 0) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                var selectedFile = t.files[0];
+                t.value = '';
+                processOcrFileWithProgress(selectedFile);
+            }
+        }
+    }
+
+    document.addEventListener('change', interceptFileEvent, true);
+    var origInputClick = HTMLInputElement.prototype.click;
+    HTMLInputElement.prototype.click = function() {
+        if (this.type === 'file') {
+            var acceptVal = this.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                this.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+        }
+        return origInputClick.apply(this, arguments);
+    };
+
+    function fixFileInputs() {
+        var fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(inp) {
+            var acceptVal = inp.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                inp.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', fixFileInputs);
+    window.addEventListener('click', fixFileInputs);
+    setInterval(fixFileInputs, 1000);
+})();
+</script>
+<!-- ================= UNIVERSAL SMART OCR CLEANER ENGINE ================= -->
+<style>
+    .ocr-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(11, 37, 69, 0.75);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    }
+
+    .ocr-modal-box {
+        background: #ffffff;
+        width: 94%;
+        max-width: 460px;
+        border-radius: 14px;
+        padding: 24px 20px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+        border-top: 5px solid #003366;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #1e293b;
+    }
+
+    .ocr-spinner-wrap {
+        position: relative;
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 14px auto;
+    }
+
+    .ocr-spinner {
+        width: 88px;
+        height: 88px;
+        border: 6px solid #e2e8f0;
+        border-top: 6px solid #FF7722;
+        border-right: 6px solid #003366;
+        border-radius: 50%;
+        animation: ocrWheelSpin 0.9s linear infinite;
+    }
+
+    .ocr-percent-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #003366;
+    }
+
+    @keyframes ocrWheelSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .ocr-status-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0B2545;
+        margin-bottom: 5px;
+    }
+
+    .ocr-status-sub {
+        font-size: 0.86rem;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .ocr-enhance-badge {
+        display: inline-block;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+    }
+
+    .ocr-progress-track {
+        width: 100%;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .ocr-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #003366, #FF7722);
+        transition: width 0.2s ease;
+    }
+
+    .ocr-size-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 8px;
+        margin-bottom: 10px;
+    }
+
+    .ocr-size-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ocr-size-label {
+        font-size: 0.72rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .ocr-size-val {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .ocr-size-val.done-val { color: #16a34a; }
+    .ocr-size-val.rem-val { color: #ea580c; }
+
+    .ocr-error-box {
+        display: none;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 4px solid #dc2626;
+        color: #991b1b;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 0.86rem;
+        text-align: left;
+        margin-top: 12px;
+        line-height: 1.5;
+    }
+
+    .ocr-close-btn {
+        display: none;
+        margin-top: 14px;
+        background: #003366;
+        color: #ffffff;
+        border: none;
+        padding: 9px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .ocr-close-btn:hover {
+        background: #FF7722;
+    }
+</style>
+
+<div id="ocrProgressModal" class="ocr-modal-overlay">
+    <div class="ocr-modal-box">
+        <div class="ocr-spinner-wrap">
+            <div class="ocr-spinner" id="ocrSpinnerWheel"></div>
+            <div class="ocr-percent-center" id="ocrPercentText">0%</div>
+        </div>
+
+        <div class="ocr-status-title" id="ocrStatusTitle">फ़ाइल अपलोड हो रही है...</div>
+        <div class="ocr-status-sub" id="ocrStatusSub">कृपया प्रतीक्षा करें, पेज को बंद न करें।</div>
+        <div class="ocr-enhance-badge" id="ocrEnhanceBadge">✨ यूनिवर्सल स्मार्ट OCR क्लीनर सक्रिय</div>
+
+        <div class="ocr-progress-track">
+            <div class="ocr-progress-fill" id="ocrProgressFill"></div>
+        </div>
+
+        <div class="ocr-size-grid">
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">कुल साइज (Total)</span>
+                <span class="ocr-size-val" id="ocrTotalSize">0 KB</span>
+            </div>
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">पूरा हुआ (Done)</span>
+                <span class="ocr-size-val done-val" id="ocrDoneSize">0 KB</span>
+            </div>
+            <div class="ocr-size-item">
+                <span class="ocr-size-label">बाकी है (Left)</span>
+                <span class="ocr-size-val rem-val" id="ocrRemSize">0 KB</span>
+            </div>
+        </div>
+
+        <div class="ocr-error-box" id="ocrErrorBox"></div>
+        <button class="ocr-close-btn" id="ocrCloseBtn" onclick="closeOcrModal()">ठीक है (Close)</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    var currentFileTotalBytes = 0;
+
+    function formatFileSize(bytes) {
+        if (!bytes || bytes <= 0) return '0.00 KB';
+        var mb = bytes / (1024 * 1024);
+        if (mb >= 1) return mb.toFixed(2) + ' MB';
+        return (bytes / 1024).toFixed(2) + ' KB';
+    }
+
+    function updateByteMetrics(pct) {
+        var cleanPct = Math.min(100, Math.max(0, pct));
+        var doneBytes = (currentFileTotalBytes * cleanPct) / 100;
+        var remBytes = Math.max(0, currentFileTotalBytes - doneBytes);
+        document.getElementById('ocrTotalSize').innerText = formatFileSize(currentFileTotalBytes);
+        document.getElementById('ocrDoneSize').innerText = formatFileSize(doneBytes);
+        document.getElementById('ocrRemSize').innerText = formatFileSize(remBytes);
+    }
+
+    function openOcrModal(fileSize, title, sub) {
+        currentFileTotalBytes = fileSize || 0;
+        document.getElementById('ocrProgressModal').style.display = 'flex';
+        var wheel = document.getElementById('ocrSpinnerWheel');
+        wheel.style.animationPlayState = 'running';
+        wheel.style.borderTopColor = '#FF7722';
+        document.getElementById('ocrErrorBox').style.display = 'none';
+        document.getElementById('ocrCloseBtn').style.display = 'none';
+        document.getElementById('ocrEnhanceBadge').style.display = 'inline-block';
+        setOcrProgress(0, title || '📂 फ़ाइल अपलोड हो रही है...', sub || 'कृपया प्रतीक्षा करें...');
+    }
+
+    function setOcrProgress(pct, title, sub) {
+        var cleanPct = Math.min(100, Math.max(0, Math.round(pct)));
+        document.getElementById('ocrPercentText').innerText = cleanPct + '%';
+        document.getElementById('ocrProgressFill').style.width = cleanPct + '%';
+        updateByteMetrics(cleanPct);
+        if (title) document.getElementById('ocrStatusTitle').innerText = title;
+        if (sub) document.getElementById('ocrStatusSub').innerText = sub;
+    }
+
+    function failOcrModal(reason) {
+        var wheel = document.getElementById('ocrSpinnerWheel');
+        wheel.style.animationPlayState = 'paused';
+        wheel.style.borderTopColor = '#dc2626';
+        document.getElementById('ocrStatusTitle').innerText = '❌ फ़ाइल प्रोसेस नहीं हो सकी!';
+        document.getElementById('ocrStatusSub').innerText = 'नीचे दिए गए कारण की जाँच करें:';
+        document.getElementById('ocrEnhanceBadge').style.display = 'none';
+        var errBox = document.getElementById('ocrErrorBox');
+        errBox.style.display = 'block';
+        errBox.innerHTML = '<strong>कारण (Reason):</strong> ' + reason;
+        document.getElementById('ocrCloseBtn').style.display = 'inline-block';
+    }
+
+    window.closeOcrModal = function() {
+        document.getElementById('ocrProgressModal').style.display = 'none';
+    };
+
+    function loadScriptIfMissing(srcCheck, url) {
+        return new Promise(function(resolve, reject) {
+            if (srcCheck()) return resolve();
+            var s = document.createElement('script');
+            s.src = url;
+            s.onload = resolve;
+            s.onerror = function() { reject(new Error('इंटरनेट धीमा होने के कारण OCR इंजन लोड नहीं हो सका।')); };
+            document.head.appendChild(s);
+        });
+    }
+
+    // ⭐ यूनिवर्सल स्मार्ट टेक्स्ट क्लीनर (किसी भी हिंदी/अंग्रेज़ी शब्द और मात्रा को व्यवस्थित करने के लिए)
+    function universalSmartCleaner(text) {
+        if (!text) return '';
+        var t = text;
+
+        // 1. हलंकार (्) और मात्राओं के बीच के फालतू गैप हटाना ताकि शब्द टूटे नहीं
+        t = t.replace(/([क-ह])्\s+([क-ह])/g, '$1्$2');
+
+        // 2. छोटी 'ि' की मात्रा का सही स्थान पर समायोजन
+        t = t.replace(/(\S)ि\s+([क-ह])/g, 'ि$1$2');
+
+        // 3. लाइनों और शब्दों के बीच के अत्यधिक खाली स्पेस को एक समान करना
+        var lines = t.split('\n');
+        var cleanedLines = lines.map(function(line) {
+            return line.replace(/\s+/g, ' ').trim();
+        });
+        
+        return cleanedLines.filter(function(l) { return l.length > 0; }).join('\n');
+    }
+
+    // Tesseract के शब्दों को सटीक लाइन-वाइज (ऊपर से नीचे) क्रम में जमाने का इंजन
+    function sortTesseractWordsLineWise(builder) {
+        if (!builder || !builder.blocks) return '';
+        var allLines = [];
+        builder.blocks.forEach(function(block) {
+            if (!block.paragraphs) return;
+            block.paragraphs.forEach(function(para) {
+                if (!para.lines) return;
+                para.lines.forEach(function(line) {
+                    var lineText = line.text ? line.text.trim() : '';
+                    if (lineText && line.bbox) {
+                        allLines.push({ text: lineText, y0: line.bbox.y0, x0: line.bbox.x0 });
+                    }
+                });
+            });
+        });
+        if (allLines.length === 0) return builder.text ? universalSmartCleaner(builder.text) : '';
+        
+        allLines.sort(function(a, b) {
+            if (Math.abs(a.y0 - b.y0) > 8) return a.y0 - b.y0;
+            return a.x0 - b.x0;
+        });
+
+        var finalLines = [];
+        var currentMergedLine = '';
+        var lastY = -999;
+        allLines.forEach(function(l) {
+            if (lastY === -999 || Math.abs(l.y0 - lastY) <= 8) {
+                currentMergedLine += (currentMergedLine ? ' ' : '') + l.text;
+            } else {
+                if (currentMergedLine) finalLines.push(currentMergedLine);
+                currentMergedLine = l.text;
+            }
+            lastY = l.y0;
+        });
+        if (currentMergedLine) finalLines.push(currentMergedLine);
+        return universalSmartCleaner(finalLines.join('\n'));
+    }
+
+    function processLineWiseOcrResult(res) {
+        if (!res || !res.data) return '';
+        try {
+            if (res.data.blocks && res.data.blocks.length > 0) {
+                var sorted = sortTesseractWordsLineWise(res.data);
+                if (sorted && sorted.trim().length > 0) return sorted;
+            }
+        } catch (e) {}
+        return universalSmartCleaner(res.data.text ? res.data.text.trim() : '');
+    }
+
+    function enhanceBlurryCanvas(sourceCanvas) {
+        var w = sourceCanvas.width;
+        var h = sourceCanvas.height;
+        var scale = (w < 1600 && h < 1600) ? 2 : 1.5;
+        var targetW = Math.min(3200, Math.round(w * scale));
+        var targetH = Math.min(3200, Math.round(h * scale));
+
+        var outCanvas = document.createElement('canvas');
+        outCanvas.width = targetW;
+        outCanvas.height = targetH;
+        var ctx = outCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(sourceCanvas, 0, 0, targetW, targetH);
+
+        try {
+            var imgData = ctx.getImageData(0, 0, targetW, targetH);
+            var d = imgData.data;
+            var len = d.length;
+            var minLum = 255, maxLum = 0;
+            var gray = new Uint8ClampedArray(targetW * targetH);
+
+            for (var i = 0, p = 0; i < len; i += 4, p++) {
+                var lum = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+                gray[p] = lum;
+                if (lum < minLum) minLum = lum;
+                if (lum > maxLum) maxLum = lum;
+            }
+            var range = Math.max(1, maxLum - minLum);
+            var contrasted = new Uint8ClampedArray(targetW * targetH);
+            for (var k = 0; k < gray.length; k++) {
+                var norm = ((gray[k] - minLum) / range) * 255;
+                norm = (norm < 155) ? Math.max(0, norm * 0.65) : Math.min(255, norm * 1.18);
+                contrasted[k] = Math.round(norm);
+            }
+            for (var y = 1; y < targetH - 1; y++) {
+                for (var x = 1; x < targetW - 1; x++) {
+                    var idx = y * targetW + x;
+                    var sharpVal = (contrasted[idx] * 5 - contrasted[idx - 1] - contrasted[idx + 1] - contrasted[idx - targetW] - contrasted[idx + targetW]);
+                    var finalPixel = Math.min(255, Math.max(0, sharpVal));
+                    var rgbaIdx = idx * 4;
+                    d[rgbaIdx] = finalPixel; d[rgbaIdx+1] = finalPixel; d[rgbaIdx+2] = finalPixel; d[rgbaIdx+3] = 255;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } catch (e) {}
+        return outCanvas;
+    }
+
+    function imageUrlToCanvas(dataUrl) {
+        return new Promise(function(resolve, reject) {
+            var img = new Image();
+            img.onload = function() {
+                var c = document.createElement('canvas');
+                c.width = img.naturalWidth || img.width;
+                c.height = img.naturalHeight || img.height;
+                var ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                resolve(c);
+            };
+            img.onerror = function() { reject(new Error('इमेज फ़ाइल क्षतिग्रस्त है।')); };
+            img.src = dataUrl;
+        });
+    }
+
+    function applyExtractedText(extractedText) {
+        var uniBox = document.getElementById('unicodeField');
+        if (uniBox) {
+            uniBox.value = universalSmartCleaner(extractedText.trim());
+            if (typeof window.autoReverseConvert === 'function') {
+                window.autoReverseConvert();
+            } else {
+                uniBox.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    }
+
+    async function processOcrFileWithProgress(file) {
+        if (!file) return;
+        openOcrModal(file.size, '📂 फ़ाइल की जाँच और अपलोड शुरू...', 'फ़ाइल: ' + file.name);
+
+        if (file.size === 0) return failOcrModal('चयनित फ़ाइल बिल्कुल खाली (0 KB) है।');
+        if (file.size > 35 * 1024 * 1024) return failOcrModal('फ़ाइल साइज बहुत बड़ा है (' + formatFileSize(file.size) + ')।');
+
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        var isImage = file.type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'jfif'].indexOf(ext) !== -1;
+        var isPdf = file.type === 'application/pdf' || ext === 'pdf';
+        var isTxt = file.type === 'text/plain' || ext === 'txt';
+
+        if (!isImage && !isPdf && !isTxt) return failOcrModal('अमान्य फ़ाइल फ़ॉर्मेट (.' + ext + ')! कृपया फोटो, PDF या .TXT फ़ाइल चुनें।');
+
+        try {
+            var fileData = await new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onprogress = function(evt) {
+                    if (evt.lengthComputable && evt.total > 0) {
+                        var pct = Math.round((evt.loaded / evt.total) * 30);
+                        setOcrProgress(pct, '📤 फ़ाइल अपलोड हो रही है...', formatFileSize(evt.loaded) + ' / ' + formatFileSize(evt.total));
+                    }
+                };
+                reader.onload = function(e) {
+                    setOcrProgress(30, '✅ फ़ाइल लोड हुई!', 'डेटा को व्यवस्थित किया जा रहा है...');
+                    resolve(e.target.result);
+                };
+                reader.onerror = function() { reject(new Error('फ़ाइल पढ़ने में त्रुटि।')); };
+
+                if (isTxt) reader.readAsText(file);
+                else if (isPdf) reader.readAsArrayBuffer(file);
+                else reader.readAsDataURL(file);
+            });
+
+            if (isTxt) {
+                if (!fileData.trim()) return failOcrModal('यह टेक्स्ट फ़ाइल खाली है।');
+                setOcrProgress(100, '✅ टेक्स्ट लोड पूर्ण!', 'कन्वर्ट कर दिया गया है।');
+                applyExtractedText(fileData);
+                setTimeout(window.closeOcrModal, 900);
+                return;
+            }
+
+            if (!navigator.onLine && typeof Tesseract === 'undefined') {
+                return failOcrModal('इंटरनेट कनेक्शन बंद है!');
+            }
+
+            if (isPdf) {
+                setOcrProgress(35, '📄 PDF रीडर लोड हो रहा है...', 'कृपया प्रतीक्षा करें...');
+                await loadScriptIfMissing(function() { return typeof window.pdfjsLib !== 'undefined'; }, 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+                var pdfDoc = await window.pdfjsLib.getDocument({ data: fileData }).promise;
+                await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+
+                var totalPages = pdfDoc.numPages;
+                var fullPdfText = '';
+
+                for (var p = 1; p <= totalPages; p++) {
+                    var pageStartPct = 38 + Math.round(((p - 1) / totalPages) * 58);
+                    setOcrProgress(pageStartPct, '📄 PDF पेज ' + p + '/' + totalPages + ' स्कैन हो रहा है...', 'शब्द लाइन-वाइज सेट किए जा रहे हैं...');
+
+                    var page = await pdfDoc.getPage(p);
+                    var viewport = page.getViewport({ scale: 2.5 });
+                    var rawCanvas = document.createElement('canvas');
+                    var ctx = rawCanvas.getContext('2d');
+                    rawCanvas.width = viewport.width;
+                    rawCanvas.height = viewport.height;
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    var sharpPdfCanvas = enhanceBlurryCanvas(rawCanvas);
+                    var res = await window.Tesseract.recognize(sharpPdfCanvas, 'hin+eng');
+                    var pageText = processLineWiseOcrResult(res);
+
+                    if (!pageText || pageText.length < 5) {
+                        var fallbackRes = await window.Tesseract.recognize(rawCanvas, 'hin+eng');
+                        var fbText = processLineWiseOcrResult(fallbackRes);
+                        if (fbText.length > pageText.length) pageText = fbText;
+                    }
+
+                    if (pageText) fullPdfText += pageText + '\n\n';
+                }
+
+                if (!fullPdfText.trim()) return failOcrModal('PDF में कोई टेक्स्ट नहीं मिला!');
+                setOcrProgress(100, '✅ PDF स्कैनिंग पूर्ण!', 'टेक्स्ट बॉक्स में भर दिया गया है।');
+                applyExtractedText(fullPdfText);
+                setTimeout(window.closeOcrModal, 1100);
+                return;
+            }
+
+            setOcrProgress(36, '✨ इमेज HD Sharp की जा रही है...', 'कंट्रास्ट सुधारा जा रहा है...');
+            var origCanvas = await imageUrlToCanvas(fileData);
+            var enhancedCanvas = enhanceBlurryCanvas(origCanvas);
+
+            setOcrProgress(44, '⚙️ OCR इंजन लोड हो रहा है...', '...');
+            await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+
+            var result = await window.Tesseract.recognize(enhancedCanvas, 'hin+eng', {
+                logger: function(m) {
+                    if (m.status === 'recognizing text') {
+                        var scanPct = 64 + Math.round((m.progress || 0) * 34);
+                        setOcrProgress(scanPct, '🔍 लाइन-वाइज शब्द स्कैन हो रहे हैं...', Math.round((m.progress || 0) * 100) + '%');
+                    }
+                }
+            });
+
+            var finalText = processLineWiseOcrResult(result);
+            if (finalText.length < 8) {
+                var backupRes = await window.Tesseract.recognize(origCanvas, 'hin+eng');
+                var backupText = processLineWiseOcrResult(backupRes);
+                if (backupText.length > finalText.length) finalText = backupText;
+            }
+
+            if (!finalText) return failOcrModal('इमेज में कोई अक्षर नहीं मिला!');
+            setOcrProgress(100, '✅ स्कैनिंग शत-प्रतिशत पूर्ण!', 'टेक्स्ट कन्वर्ट हो गया है।');
+            applyExtractedText(finalText);
+            setTimeout(window.closeOcrModal, 1100);
+
+        } catch (err) {
+            failOcrModal(err.message || 'त्रुटि आई। कृपया पुनः प्रयास करें।');
+        }
+    }
+
+    function interceptFileEvent(e) {
+        var t = e.target;
+        if (t && t.tagName === 'INPUT' && t.type === 'file') {
+            var acceptVal = t.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                t.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+            if (t.files && t.files.length > 0) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                var selectedFile = t.files[0];
+                t.value = '';
+                processOcrFileWithProgress(selectedFile);
+            }
+        }
+    }
+
+    document.addEventListener('change', interceptFileEvent, true);
+    var origInputClick = HTMLInputElement.prototype.click;
+    HTMLInputElement.prototype.click = function() {
+        if (this.type === 'file') {
+            var acceptVal = this.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                this.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+        }
+        return origInputClick.apply(this, arguments);
+    };
+
+    function fixFileInputs() {
+        var fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(inp) {
+            var acceptVal = inp.getAttribute('accept') || '';
+            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
+                inp.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', fixFileInputs);
+    window.addEventListener('click', fixFileInputs);
+    setInterval(fixFileInputs, 1000);
+})();
+</script>
+<!-- ================================================================================= -->
 </body>
 </html>
