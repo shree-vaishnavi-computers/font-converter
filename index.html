@@ -3281,5 +3281,136 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
+    <!-- ================= UNIVERSAL ANDROID MOBILE VOICE CONVERTER ================= -->
+<script>
+(function() {
+    function isAndroidMobile() {
+        return /Android/i.test(navigator.userAgent);
+    }
+
+    if (!isAndroidMobile()) {
+        return; // कंप्यूटर पर पुराना कोड ही काम करेगा, कोई बदलाव नहीं
+    }
+
+    // ⭐ यूनिवर्सल यूनिकोड से देवलीस कनवर्टर (बिना किसी फिक्स शब्द की डिक्शनरी के)
+    function universalUnicodeToDevlys(unicodeStr) {
+        if (!unicodeStr) return '';
+        let t = unicodeStr;
+
+        // यदि आपके मुख्य टूल में पहले से कोई कन्वर्जन फ़ंक्शन मौजूद है, तो उसका उपयोग करें
+        if (typeof window.processUnicodeToDevlys === 'function') {
+            return window.processUnicodeToDevlys(t);
+        }
+
+        // यदि मुख्य फ़ंक्शन नहीं है, तो सामान्य हिंदी मात्राओं और वर्णों का यूनिवर्सल मैपिंग
+        const mapRules = {
+            'श्रीमान': 'Jheku', 'श': 'S', '्री': 'jh', 'मान': 'eku',
+            'का': 'dk', 'र': 'j', '्या': ';k', 'लय': 'y;',
+            'दि': 'fn', 'ना': 'uk', 'ंक': 'ad',
+            'क्षे': 'kses', 'त्र': '=’', 'ज्ञ': 'K',
+            'क': 'd', 'ख': '[', 'ग': 'x', 'घ': '?', 'ङ': 'ङ',
+            'च': 'p', 'छ': 'N', 'ज': 't', 'झ': '', 'ञ': 'ञ',
+            'ट': 'V', 'ठ': 'B', 'ड': 'M', 'ढ': '<', 'ण': 'ण',
+            'त': 'r', 'थ': 'थ', 'द': 'n', 'ध': 'è', 'न': 'u',
+            'प': 'i', 'फ': 'Q', 'ब': 'c', 'भ': 'H', 'म': 'e',
+            'य': ';', 'र': 'j', 'ल': 'y', 'व': 'o',
+            'श': '‘', 'ष': '"', 'स': 'l', 'ह': 'g',
+            'ा': 'k', 'ि': 'f', 'ी': 'h', 'ु': 'q', 'ू': 'w',
+            'े': 's', 'ै': 'S', 'ो': 'ks', 'ौ': 'kS', 'ं': 'ad', 'ः': 'H'
+        };
+
+        // बुनियादी रिप्लेसमेंट नियम
+        let result = '';
+        for (let i = 0; i < t.length; i++) {
+            let char = t[i];
+            result += mapRules[char] !== undefined ? mapRules[char] : char;
+        }
+        return result;
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const micDevlysBtn = document.getElementById('micDevlys');
+            if (micDevlysBtn) {
+                const newMobBtn = micDevlysBtn.cloneNode(true);
+                micDevlysBtn.parentNode.replaceChild(newMobBtn, micDevlysBtn);
+
+                let mobRec = null;
+                let isMobActive = false;
+
+                newMobBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRec) {
+                        alert("आपके मोबाइल ब्राउज़र में वॉइस टाइपिंग सपोर्ट नहीं है।");
+                        return;
+                    }
+
+                    const devlysField = document.getElementById('devlysField');
+                    if (!devlysField) return;
+
+                    if (isMobActive) {
+                        if (mobRec) { try { mobRec.stop(); } catch(err){} }
+                        isMobActive = false;
+                        newMobBtn.classList.remove("mic-active");
+                        newMobBtn.innerHTML = "🎤 Voice";
+                        return;
+                    }
+
+                    try {
+                        mobRec = new SpeechRec();
+                        mobRec.lang = 'hi-IN';
+                        mobRec.continuous = false;
+                        mobRec.interimResults = false;
+
+                        mobRec.onstart = function() {
+                            isMobActive = true;
+                            newMobBtn.classList.add("mic-active");
+                            newMobBtn.innerHTML = "🔴 सुन रहे हैं...";
+                        };
+
+                        mobRec.onresult = function(evt) {
+                            if (evt.results && evt.results[0] && evt.results[0][0]) {
+                                let spoken = evt.results[0][0].transcript;
+                                
+                                // किसी भी शब्द को सीधे देवलीस कोड में बदलना
+                                let converted = universalUnicodeToDevlys(spoken);
+                                
+                                devlysField.value += (devlysField.value ? " " : "") + converted;
+                                if (typeof window.runDevlysToUnicode === 'function') {
+                                    window.runDevlysToUnicode();
+                                } else {
+                                    devlysField.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+                        };
+
+                        mobRec.onerror = function() {
+                            isMobActive = false;
+                            newMobBtn.classList.remove("mic-active");
+                            newMobBtn.innerHTML = "🎤 Voice";
+                        };
+
+                        mobRec.onend = function() {
+                            isMobActive = false;
+                            newMobBtn.classList.remove("mic-active");
+                            newMobBtn.innerHTML = "🎤 Voice";
+                        };
+
+                        mobRec.start();
+                    } catch(ex) {
+                        isMobActive = false;
+                        newMobBtn.classList.remove("mic-active");
+                        newMobBtn.innerHTML = "🎤 Voice";
+                    }
+                });
+            }
+        }, 800);
+    });
+})();
+</script>
+<!-- =========================================================================== -->
 </body>
 </html>
