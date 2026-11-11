@@ -3496,5 +3496,26 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ===================================================================== -->
+    <!-- ================= PLUG & PLAY "ALL TOOLS" BUTTON ================= -->
+<div style="margin: 10px 0;">
+    <button type="button" onclick="openPlugAndPlayTools()" style="width: 100%; background: linear-gradient(135deg, #FF7722, #ea580c); color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.9rem; text-align: left; display: flex; align-items: center; justify-content: space-between;">
+        <span>🛠️ All Tools Hub</span>
+        <span>➔</span>
+    </button>
+</div>
+
+<div id="plugAndPlayModal" style="display:none; position:fixed; z-index:99999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px);">
+    <div style="background:#fff; margin:1.5% auto; width:95%; max-width:1050px; height:92vh; border-radius:12px; overflow:hidden; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+        <button onclick="closePlugAndPlayTools()" style="position:absolute; right:15px; top:12px; background:#dc2626; color:white; border:none; width:36px; height:36px; border-radius:50%; font-size:1.3rem; font-weight:bold; cursor:pointer; z-index:100000;">&times;</button>
+        <iframe src="tools.html" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+</div>
+
+<script>
+    function openPlugAndPlayTools() { document.getElementById('plugAndPlayModal').style.display = 'block'; document.body.style.overflow = 'hidden'; }
+    function closePlugAndPlayTools() { document.getElementById('plugAndPlayModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+    window.onclick = function(e) { if(e.target == document.getElementById('plugAndPlayModal')) { closePlugAndPlayTools(); } }
+</script>
+<!-- ================================================================= -->
 </body>
 </html>
