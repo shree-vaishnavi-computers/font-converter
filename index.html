@@ -3281,104 +3281,106 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= UNIVERSAL ANDROID MOBILE VOICE CONVERTER ================= -->
+    <!-- ================= STANDALONE MOBILE VOICE BUTTON ADD-ON ================= -->
+<style>
+    /* यह बटन केवल एंड्रॉइड मोबाइल पर दिखाई देगा, कंप्यूटर पर छिपा रहेगा */
+    #mobileVoiceDock {
+        display: none;
+        margin: 12px 0;
+        text-align: center;
+    }
+    .mob-mic-btn {
+        background: linear-gradient(135deg, #FF7722, #003366);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        cursor: pointer;
+        width: 100%;
+        max-width: 300px;
+    }
+    .mob-mic-btn.listening {
+        background: #dc2626;
+        animation: mobPulse 1.2s infinite;
+    }
+    @keyframes mobPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.03); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div id="mobileVoiceDock">
+    <button type="button" id="standaloneMobMic" class="mob-mic-btn">🎙️ मोबाइल वॉइस टाइपिंग (Devlys)</button>
+</div>
+
 <script>
 (function() {
     function isAndroidMobile() {
         return /Android/i.test(navigator.userAgent);
     }
 
-    if (!isAndroidMobile()) {
-        return; // कंप्यूटर पर पुराना कोड ही काम करेगा, कोई बदलाव नहीं
-    }
-
-    // ⭐ यूनिवर्सल यूनिकोड से देवलीस कनवर्टर (बिना किसी फिक्स शब्द की डिक्शनरी के)
-    function universalUnicodeToDevlys(unicodeStr) {
-        if (!unicodeStr) return '';
-        let t = unicodeStr;
-
-        // यदि आपके मुख्य टूल में पहले से कोई कन्वर्जन फ़ंक्शन मौजूद है, तो उसका उपयोग करें
-        if (typeof window.processUnicodeToDevlys === 'function') {
-            return window.processUnicodeToDevlys(t);
-        }
-
-        // यदि मुख्य फ़ंक्शन नहीं है, तो सामान्य हिंदी मात्राओं और वर्णों का यूनिवर्सल मैपिंग
-        const mapRules = {
-            'श्रीमान': 'Jheku', 'श': 'S', '्री': 'jh', 'मान': 'eku',
-            'का': 'dk', 'र': 'j', '्या': ';k', 'लय': 'y;',
-            'दि': 'fn', 'ना': 'uk', 'ंक': 'ad',
-            'क्षे': 'kses', 'त्र': '=’', 'ज्ञ': 'K',
-            'क': 'd', 'ख': '[', 'ग': 'x', 'घ': '?', 'ङ': 'ङ',
-            'च': 'p', 'छ': 'N', 'ज': 't', 'झ': '', 'ञ': 'ञ',
-            'ट': 'V', 'ठ': 'B', 'ड': 'M', 'ढ': '<', 'ण': 'ण',
-            'त': 'r', 'थ': 'थ', 'द': 'n', 'ध': 'è', 'न': 'u',
-            'प': 'i', 'फ': 'Q', 'ब': 'c', 'भ': 'H', 'म': 'e',
-            'य': ';', 'र': 'j', 'ल': 'y', 'व': 'o',
-            'श': '‘', 'ष': '"', 'स': 'l', 'ह': 'g',
-            'ा': 'k', 'ि': 'f', 'ी': 'h', 'ु': 'q', 'ू': 'w',
-            'े': 's', 'ै': 'S', 'ो': 'ks', 'ौ': 'kS', 'ं': 'ad', 'ः': 'H'
-        };
-
-        // बुनियादी रिप्लेसमेंट नियम
-        let result = '';
-        for (let i = 0; i < t.length; i++) {
-            let char = t[i];
-            result += mapRules[char] !== undefined ? mapRules[char] : char;
-        }
-        return result;
-    }
-
+    // यदि यूजर मोबाइल पर है, तो ही यह विशेष बटन प्रकट होगा
     window.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const micDevlysBtn = document.getElementById('micDevlys');
-            if (micDevlysBtn) {
-                const newMobBtn = micDevlysBtn.cloneNode(true);
-                micDevlysBtn.parentNode.replaceChild(newMobBtn, micDevlysBtn);
+        if (isAndroidMobile()) {
+            const dock = document.getElementById('mobileVoiceDock');
+            const devlysField = document.getElementById('devlysField');
+            
+            if (dock && devlysField) {
+                // आपके मुख्य देवलीस बॉक्स के ठीक नीचे यह मोबाइल बटन स्वतः जुड़ जाएगा
+                devlysField.parentNode.insertBefore(dock, devlysField.nextSibling);
+                dock.style.display = 'block';
 
-                let mobRec = null;
-                let isMobActive = false;
+                const mobBtn = document.getElementById('standaloneMobMic');
+                let recognition = null;
+                let recording = false;
 
-                newMobBtn.addEventListener('click', function(e) {
+                mobBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
 
                     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRec) {
-                        alert("आपके मोबाइल ब्राउज़र में वॉइस टाइपिंग सपोर्ट नहीं है।");
+                        alert("आपके मोबाइल ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है। कृपया Google Chrome का उपयोग करें।");
                         return;
                     }
 
-                    const devlysField = document.getElementById('devlysField');
-                    if (!devlysField) return;
-
-                    if (isMobActive) {
-                        if (mobRec) { try { mobRec.stop(); } catch(err){} }
-                        isMobActive = false;
-                        newMobBtn.classList.remove("mic-active");
-                        newMobBtn.innerHTML = "🎤 Voice";
+                    if (recording) {
+                        if (recognition) { try { recognition.stop(); } catch(ex){} }
                         return;
                     }
 
                     try {
-                        mobRec = new SpeechRec();
-                        mobRec.lang = 'hi-IN';
-                        mobRec.continuous = false;
-                        mobRec.interimResults = false;
+                        recognition = new SpeechRec();
+                        recognition.lang = 'hi-IN';
+                        recognition.continuous = false;
+                        recognition.interimResults = false;
 
-                        mobRec.onstart = function() {
-                            isMobActive = true;
-                            newMobBtn.classList.add("mic-active");
-                            newMobBtn.innerHTML = "🔴 सुन रहे हैं...";
+                        recognition.onstart = function() {
+                            recording = true;
+                            mobBtn.classList.add('listening');
+                            mobBtn.innerHTML = "🔴 बोलिए, सुन रहे हैं...";
                         };
 
-                        mobRec.onresult = function(evt) {
+                        recognition.onresult = function(evt) {
                             if (evt.results && evt.results[0] && evt.results[0][0]) {
-                                let spoken = evt.results[0][0].transcript;
+                                let spokenText = evt.results[0][0].transcript;
                                 
-                                // किसी भी शब्द को सीधे देवलीस कोड में बदलना
-                                let converted = universalUnicodeToDevlys(spoken);
+                                // मोबाइल वॉइस के शब्दों को सीधे देवलीस कोड में बदलने का यूनिवर्सल लॉजिक
+                                let convertedCode = "";
+                                if (typeof window.processUnicodeToDevlys === 'function') {
+                                    convertedCode = window.processUnicodeToDevlys(spokenText);
+                                } else {
+                                    // यदि मुख्य कनवर्टर फंक्शन न मिले, तो सीधा टेक्स्ट भेजें
+                                    convertedCode = spokenText;
+                                }
+
+                                devlysField.value += (devlysField.value ? " " : "") + convertedCode;
                                 
-                                devlysField.value += (devlysField.value ? " " : "") + converted;
+                                // कनवर्टर को ट्रिगर करना ताकि दाईं/बाईं तरफ सही फॉन्ट अपडेट हो जाए
                                 if (typeof window.runDevlysToUnicode === 'function') {
                                     window.runDevlysToUnicode();
                                 } else {
@@ -3387,30 +3389,31 @@ window.svcPro = (function() {
                             }
                         };
 
-                        mobRec.onerror = function() {
-                            isMobActive = false;
-                            newMobBtn.classList.remove("mic-active");
-                            newMobBtn.innerHTML = "🎤 Voice";
+                        recognition.onerror = function() {
+                            recording = false;
+                            mobBtn.classList.remove('listening');
+                            mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
                         };
 
-                        mobRec.onend = function() {
-                            isMobActive = false;
-                            newMobBtn.classList.remove("mic-active");
-                            newMobBtn.innerHTML = "🎤 Voice";
+                        recognition.onend = function() {
+                            recording = false;
+                            mobBtn.classList.remove('listening');
+                            mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
                         };
 
-                        mobRec.start();
-                    } catch(ex) {
-                        isMobActive = false;
-                        newMobBtn.classList.remove("mic-active");
-                        newMobBtn.innerHTML = "🎤 Voice";
+                        recognition.start();
+
+                    } catch(err) {
+                        recording = false;
+                        mobBtn.classList.remove('listening');
+                        mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
                     }
                 });
             }
-        }, 800);
+        }
     });
 })();
 </script>
-<!-- =========================================================================== -->
+<!-- ====================================================================== -->
 </body>
 </html>
