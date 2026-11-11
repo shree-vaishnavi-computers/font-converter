@@ -3281,72 +3281,41 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= PURE PLUG & PLAY MOBILE FLOATING VOICE ADD-ON ================= -->
-<style>
-    /* यह बटन कंप्यूटर पर बिल्कुल नहीं दिखेगा */
-    #plugAndPlayMobVoice {
-        display: none;
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        z-index: 999999;
-        background: linear-gradient(135deg, #FF7722, #003366);
-        color: white;
-        border: none;
-        padding: 14px 22px;
-        font-size: 1rem;
-        font-weight: bold;
-        border-radius: 50px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-        cursor: pointer;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-    }
-    #plugAndPlayMobVoice.listening {
-        background: #dc2626;
-        animation: pnpPulse 1.2s infinite;
-    }
-    @keyframes pnpPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.08); }
-        100% { transform: scale(1); }
-    }
-</style>
-
-<button type="button" id="plugAndPlayMobVoice">🎙️ Voice</button>
+    <!-- ================= 100% GUARANTEED INSTANT MOBILE FLOATING BUTTON ================= -->
+<div id="pnpMobVoiceBox" style="display: none; position: fixed; bottom: 30px; right: 20px; z-index: 2147483647;">
+    <button type="button" id="pnpMobVoiceBtn" style="background: linear-gradient(135deg, #FF7722, #003366); color: white; border: none; padding: 14px 22px; font-size: 1rem; font-weight: bold; border-radius: 50px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; font-family: 'Segoe UI', sans-serif;">🎙️ Voice</button>
+</div>
 
 <script>
 (function() {
-    function isAndroidMobile() {
-        return /Android/i.test(navigator.userAgent);
-    }
+    // केवल एंड्रॉइड मोबाइल की पहचान
+    if (/Android/i.test(navigator.userAgent)) {
+        var box = document.getElementById('pnpMobVoiceBox');
+        if (box) {
+            box.style.display = 'block'; // मोबाइल पर तुरंत दिखाना
+        }
 
-    window.addEventListener('DOMContentLoaded', function() {
-        if (!isAndroidMobile()) return; // कंप्यूटर/लैपटॉप पर यह पूरी तरह बंद रहेगा
+        var btn = document.getElementById('pnpMobVoiceBtn');
+        if (btn) {
+            var recognition = null;
+            var recording = false;
 
-        const pnpBtn = document.getElementById('plugAndPlayMobVoice');
-        if (pnpBtn) {
-            pnpBtn.style.display = 'block'; // केवल मोबाइल पर दिखाई देगा
-
-            let recognition = null;
-            let recording = false;
-
-            pnpBtn.addEventListener('click', function(e) {
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SpeechRec) {
                     alert("आपके मोबाइल ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है। कृपया Google Chrome का उपयोग करें।");
                     return;
                 }
 
-                // पेज पर जो भी एक्टिव Devlys या टेक्स्ट बॉक्स खुला हो उसे ढूंढना
-                const activeBox = document.activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') 
-                                  ? activeElement 
-                                  : (document.getElementById('devlysField') || document.querySelector('textarea'));
+                var activeBox = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') 
+                                ? document.activeElement 
+                                : (document.getElementById('devlysField') || document.querySelector('textarea'));
 
                 if (!activeBox) {
-                    alert("कृपया पहले किसी टेक्स्ट बॉक्स पर क्लिक करें जहाँ टाइप करना है।");
+                    alert("कृपया पहले स्क्रीन पर उस बॉक्स पर क्लिक करें जहाँ टाइप करना है।");
                     return;
                 }
 
@@ -3363,15 +3332,15 @@ window.svcPro = (function() {
 
                     recognition.onstart = function() {
                         recording = true;
-                        pnpBtn.classList.add('listening');
-                        pnpBtn.innerHTML = "🔴 सुन रहे हैं...";
+                        btn.style.background = '#dc2626';
+                        btn.innerHTML = "🔴 सुन रहे हैं...";
                     };
 
                     recognition.onresult = function(evt) {
                         if (evt.results && evt.results[0] && evt.results[0][0]) {
-                            let spokenText = evt.results[0][0].transcript;
+                            var spokenText = evt.results[0][0].transcript;
                             
-                            let convertedCode = spokenText;
+                            var convertedCode = spokenText;
                             if (typeof window.processUnicodeToDevlys === 'function') {
                                 convertedCode = window.processUnicodeToDevlys(spokenText);
                             }
@@ -3388,28 +3357,28 @@ window.svcPro = (function() {
 
                     recognition.onerror = function() {
                         recording = false;
-                        pnpBtn.classList.remove('listening');
-                        pnpBtn.innerHTML = "🎙️ Voice";
+                        btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
+                        btn.innerHTML = "🎙️ Voice";
                     };
 
                     recognition.onend = function() {
                         recording = false;
-                        pnpBtn.classList.remove('listening');
-                        pnpBtn.innerHTML = "🎙️ Voice";
+                        btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
+                        btn.innerHTML = "🎙️ Voice";
                     };
 
                     recognition.start();
 
                 } catch(err) {
                     recording = false;
-                    pnpBtn.classList.remove('listening');
-                    pnpBtn.innerHTML = "🎙️ Voice";
+                    btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
+                    btn.innerHTML = "🎙️ Voice";
                 }
             });
         }
-    });
+    }
 })();
 </script>
-<!-- =============================================================================== -->
+<!-- ================================================================================= -->
 </body>
 </html>
