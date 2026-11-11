@@ -3281,104 +3281,155 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= 100% GUARANTEED INSTANT MOBILE FLOATING BUTTON ================= -->
-<div id="pnpMobVoiceBox" style="display: none; position: fixed; bottom: 30px; right: 20px; z-index: 2147483647;">
-    <button type="button" id="pnpMobVoiceBtn" style="background: linear-gradient(135deg, #FF7722, #003366); color: white; border: none; padding: 14px 22px; font-size: 1rem; font-weight: bold; border-radius: 50px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; font-family: 'Segoe UI', sans-serif;">🎙️ Voice</button>
-</div>
+    <!-- ================= LIVE HINDI PREVIEW VOICE ADD-ON ================= -->
+<style>
+    #liveVoicePreviewBox {
+        display: none;
+        background: #f0fdf4;
+        border: 2px dashed #16a34a;
+        padding: 8px 12px;
+        margin: 10px 0;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: #166534;
+        font-family: 'Segoe UI', sans-serif;
+    }
+</style>
 
 <script>
 (function() {
-    // केवल एंड्रॉइड मोबाइल की पहचान
-    if (/Android/i.test(navigator.userAgent)) {
-        var box = document.getElementById('pnpMobVoiceBox');
-        if (box) {
-            box.style.display = 'block'; // मोबाइल पर तुरंत दिखाना
-        }
-
-        var btn = document.getElementById('pnpMobVoiceBtn');
-        if (btn) {
-            var recognition = null;
-            var recording = false;
-
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRec) {
-                    alert("आपके मोबाइल ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है। कृपया Google Chrome का उपयोग करें।");
-                    return;
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var topBar = document.querySelector('.top-nav, header, nav, .flex, [class*="toolbar"]');
+            
+            if (topBar && !document.getElementById('topNavVoiceBtn')) {
+                // 1. लाइव प्रीव्यू बॉक्स बनाना जो शुद्ध हिंदी दिखाएगा
+                var previewDiv = document.createElement('div');
+                previewDiv.id = 'liveVoicePreviewBox';
+                previewDiv.innerHTML = '<b>🎙️ लाइव वॉइस प्रीव्यू (शुद्ध हिंदी):</b> <span id="previewTextContent" style="color: #000;">कुछ बोलिए...</span>';
+                
+                var devlysBox = document.getElementById('devlysField') || document.querySelector('textarea');
+                if (devlysBox && devlysBox.parentNode) {
+                    devlysBox.parentNode.insertBefore(previewDiv, devlysBox);
                 }
 
-                var activeBox = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') 
-                                ? document.activeElement 
-                                : (document.getElementById('devlysField') || document.querySelector('textarea'));
+                // 2. वॉइस बटन बनाना
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = 'topNavVoiceBtn';
+                btn.innerHTML = '🎙️ Voice (Devlys)';
+                btn.style.cssText = 'background: #FF7722; color: white; border: none; padding: 6px 14px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin-left: 8px; vertical-align: middle; box-shadow: 0 2px 5px rgba(0,0,0,0.2);';
 
-                if (!activeBox) {
-                    alert("कृपया पहले स्क्रीन पर उस बॉक्स पर क्लिक करें जहाँ टाइप करना है।");
-                    return;
-                }
+                topBar.appendChild(btn);
 
-                if (recording) {
-                    if (recognition) { try { recognition.stop(); } catch(ex){} }
-                    return;
-                }
+                var recognition = null;
+                var recording = false;
 
-                try {
-                    recognition = new SpeechRec();
-                    recognition.lang = 'hi-IN';
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                    recognition.onstart = function() {
-                        recording = true;
-                        btn.style.background = '#dc2626';
-                        btn.innerHTML = "🔴 सुन रहे हैं...";
-                    };
+                    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRec) {
+                        alert("आपके ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है।");
+                        return;
+                    }
 
-                    recognition.onresult = function(evt) {
-                        if (evt.results && evt.results[0] && evt.results[0][0]) {
-                            var spokenText = evt.results[0][0].transcript;
-                            
-                            var convertedCode = spokenText;
-                            if (typeof window.processUnicodeToDevlys === 'function') {
-                                convertedCode = window.processUnicodeToDevlys(spokenText);
+                    if (!devlysBox) {
+                        alert("टेक्स्ट बॉक्स नहीं मिला!");
+                        return;
+                    }
+
+                    if (recording) {
+                        if (recognition) { try { recognition.stop(); } catch(ex){} }
+                        return;
+                    }
+
+                    try {
+                        recognition = new SpeechRec();
+                        recognition.lang = 'hi-IN';
+                        recognition.continuous = false;
+                        recognition.interimResults = false;
+
+                        recognition.onstart = function() {
+                            recording = true;
+                            btn.style.background = '#dc2626';
+                            btn.innerHTML = "🔴 सुन रहे हैं...";
+                            previewDiv.style.display = 'block';
+                            document.getElementById('previewTextContent').innerText = "सुन रहे हैं...";
+                        };
+
+                        recognition.onresult = function(evt) {
+                            if (evt.results && evt.results[0] && evt.results[0][0]) {
+                                var spokenText = evt.results[0][0].transcript;
+                                
+                                // स्क्रीन पर तुरंत पढ़ने के लिए शुद्ध हिंदी दिखाना
+                                document.getElementById('previewTextContent').innerText = spokenText;
+
+                                // बैकग्राउंड में Devlys 010 का असली कोड टाइप करना
+                                var convertedCode = spokenText;
+                                if (typeof window.processUnicodeToDevlys === 'function') {
+                                    convertedCode = window.processUnicodeToDevlys(spokenText);
+                                } else {
+                                    convertedCode = convertVoiceToDevlysDirect(spokenText);
+                                }
+
+                                devlysBox.value += (devlysBox.value ? " " : "") + convertedCode;
+                                
+                                if (typeof window.runDevlysToUnicode === 'function') {
+                                    window.runDevlysToUnicode();
+                                } else {
+                                    devlysBox.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
                             }
+                        };
 
-                            activeBox.value += (activeBox.value ? " " : "") + convertedCode;
-                            
-                            if (typeof window.runDevlysToUnicode === 'function') {
-                                window.runDevlysToUnicode();
-                            } else {
-                                activeBox.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        }
-                    };
+                        recognition.onerror = function() {
+                            recording = false;
+                            btn.style.background = '#FF7722';
+                            btn.innerHTML = "🎙️ Voice (Devlys)";
+                        };
 
-                    recognition.onerror = function() {
+                        recognition.onend = function() {
+                            recording = false;
+                            btn.style.background = '#FF7722';
+                            btn.innerHTML = "🎙️ Voice (Devlys)";
+                        };
+
+                        recognition.start();
+
+                    } catch(err) {
                         recording = false;
-                        btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
-                        btn.innerHTML = "🎙️ Voice";
-                    };
+                        btn.style.background = '#FF7722';
+                        btn.innerHTML = "🎙️ Voice (Devlys)";
+                    }
+                });
+            }
+        }, 1200);
+    });
 
-                    recognition.onend = function() {
-                        recording = false;
-                        btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
-                        btn.innerHTML = "🎙️ Voice";
-                    };
-
-                    recognition.start();
-
-                } catch(err) {
-                    recording = false;
-                    btn.style.background = 'linear-gradient(135deg, #FF7722, #003366)';
-                    btn.innerHTML = "🎙️ Voice";
-                }
-            });
+    function convertVoiceToDevlysDirect(txt) {
+        if (!txt) return '';
+        let t = txt;
+        const directMap = {
+            'श्रीमान': 'Jheku',
+            'कार्यालय': 'dk;kZy;',
+            'जिला': 'ftyk',
+            'कलेक्टर': 'dysDVj',
+            'महोदय': 'egksn;',
+            'विषय': 'fo"k;',
+            'अंतर्गत': 'varxZr',
+            'निवेदन': 'fuosnu',
+            'क्रमांक': 'Øekad',
+            'दिनांक': 'fnukad'
+        };
+        for (let w in directMap) {
+            t = t.replace(new RegExp(w, 'g'), directMap[w]);
         }
+        return t;
     }
 })();
 </script>
-<!-- ================================================================================= -->
+<!-- =================================================================== -->
 </body>
 </html>
