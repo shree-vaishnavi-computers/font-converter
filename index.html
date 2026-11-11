@@ -3281,43 +3281,31 @@ window.svcPro = (function() {
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= 100% BULLETPROOF MOBILE VOICE ADD-ON ================= -->
+ <!-- ================= EXACT PLACEMENT MOBILE VOICE BUTTON ================= -->
 <style>
-    #mobileVoiceDock {
+    .mob-voice-inline-btn {
         display: none;
-        margin: 12px auto;
-        text-align: center;
-        width: 100%;
-    }
-    .mob-mic-btn {
-        background: linear-gradient(135deg, #FF7722, #003366);
-        color: white;
-        border: none;
-        padding: 14px 24px;
-        font-size: 1.05rem;
-        font-weight: bold;
-        border-radius: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        background: #003366 !important;
+        color: #fff !important;
+        border: 1px solid #FF7722 !important;
+        padding: 4px 10px !important;
+        font-size: 0.78rem !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
         cursor: pointer;
-        width: 100%;
-        max-width: 340px;
-        display: inline-block;
-        font-family: 'Segoe UI', system-ui, sans-serif;
+        margin-left: 5px;
+        vertical-align: middle;
     }
-    .mob-mic-btn.listening {
-        background: #dc2626;
+    .mob-voice-inline-btn.listening {
+        background: #dc2626 !important;
         animation: mobPulse 1.2s infinite;
     }
     @keyframes mobPulse {
         0% { transform: scale(1); }
-        50% { transform: scale(1.03); }
+        50% { transform: scale(1.05); }
         100% { transform: scale(1); }
     }
 </style>
-
-<div id="mobileVoiceDock">
-    <button type="button" id="standaloneMobMic" class="mob-mic-btn">🎙️ मोबाइल वॉइस टाइपिंग (Devlys)</button>
-</div>
 
 <script>
 (function() {
@@ -3325,99 +3313,104 @@ window.svcPro = (function() {
         return /Android/i.test(navigator.userAgent);
     }
 
-    if (!isAndroidMobile()) return; // कंप्यूटर पर यह कोड तुरंत बंद रहेगा
+    if (!isAndroidMobile()) return; // कंप्यूटर पर यह पूरी तरह बंद रहेगा
 
-    function setupMobileVoiceButton() {
-        const dock = document.getElementById('mobileVoiceDock');
-        if (!dock) return;
+    function injectMobileMicButton() {
+        // Devlys 010 वाले बॉक्स के ऊपर जो छोटे एक्शन बटन (जैसे Paste, Copy, Clear) हैं, उन्हें खोजना
+        const toolbars = document.querySelectorAll('.toolbar, [class*="toolbar"], [class*="btn"], .flex');
+        
+        toolbars.forEach(function(bar) {
+            // देखना कि क्या यह Devlys वाले हिस्से का टूलबार है
+            if ((bar.innerHTML.includes('Paste') || bar.innerHTML.includes('Copy') || bar.innerHTML.includes('Clear') || bar.innerHTML.includes('पेस्ट')) && !bar.querySelector('#exactMobMicBtn')) {
+                
+                const targetTextarea = bar.parentNode.querySelector('textarea');
+                if (targetTextarea) {
+                    const mobBtn = document.createElement('button');
+                    mobBtn.type = 'button';
+                    mobBtn.id = 'exactMobMicBtn';
+                    mobBtn.className = 'mob-voice-inline-btn';
+                    mobBtn.innerHTML = '🎙️ Voice';
+                    mobBtn.style.display = 'inline-block';
 
-        // पेज पर टेक्स्ट बॉक्स ढूंढना (textarea या text input)
-        const targetBox = document.querySelector('textarea') || document.querySelector('input[type="text"]');
+                    bar.appendChild(mobBtn);
 
-        if (targetBox && dock.parentNode !== targetBox.parentNode) {
-            targetBox.parentNode.insertBefore(dock, targetBox.nextSibling);
-            dock.style.display = 'block';
+                    let recognition = null;
+                    let recording = false;
 
-            const mobBtn = document.getElementById('standaloneMobMic');
-            if (mobBtn && !mobBtn.dataset.bound) {
-                mobBtn.dataset.bound = "true";
-                let recognition = null;
-                let recording = false;
+                    mobBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                mobBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        if (!SpeechRec) {
+                            alert("आपके मोबाइल ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है।");
+                            return;
+                        }
 
-                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SpeechRec) {
-                        alert("आपके मोबाइल ब्राउज़र में वॉइस सपोर्ट उपलब्ध नहीं है। कृपया Google Chrome का उपयोग करें।");
-                        return;
-                    }
+                        if (recording) {
+                            if (recognition) { try { recognition.stop(); } catch(ex){} }
+                            return;
+                        }
 
-                    if (recording) {
-                        if (recognition) { try { recognition.stop(); } catch(ex){} }
-                        return;
-                    }
+                        try {
+                            recognition = new SpeechRec();
+                            recognition.lang = 'hi-IN';
+                            recognition.continuous = false;
+                            recognition.interimResults = false;
 
-                    try {
-                        recognition = new SpeechRec();
-                        recognition.lang = 'hi-IN';
-                        recognition.continuous = false;
-                        recognition.interimResults = false;
+                            recognition.onstart = function() {
+                                recording = true;
+                                mobBtn.classList.add('listening');
+                                mobBtn.innerHTML = "🔴 सुन रहे हैं...";
+                            };
 
-                        recognition.onstart = function() {
-                            recording = true;
-                            mobBtn.classList.add('listening');
-                            mobBtn.innerHTML = "🔴 बोलिए, सुन रहे हैं...";
-                        };
+                            recognition.onresult = function(evt) {
+                                if (evt.results && evt.results[0] && evt.results[0][0]) {
+                                    let spokenText = evt.results[0][0].transcript;
+                                    
+                                    let convertedCode = spokenText;
+                                    if (typeof window.processUnicodeToDevlys === 'function') {
+                                        convertedCode = window.processUnicodeToDevlys(spokenText);
+                                    }
 
-                        recognition.onresult = function(evt) {
-                            if (evt.results && evt.results[0] && evt.results[0][0]) {
-                                let spokenText = evt.results[0][0].transcript;
-                                
-                                let convertedCode = spokenText;
-                                if (typeof window.processUnicodeToDevlys === 'function') {
-                                    convertedCode = window.processUnicodeToDevlys(spokenText);
+                                    targetTextarea.value += (targetTextarea.value ? " " : "") + convertedCode;
+                                    
+                                    if (typeof window.runDevlysToUnicode === 'function') {
+                                        window.runDevlysToUnicode();
+                                    } else {
+                                        targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
                                 }
+                            };
 
-                                targetBox.value += (targetBox.value ? " " : "") + convertedCode;
-                                
-                                if (typeof window.runDevlysToUnicode === 'function') {
-                                    window.runDevlysToUnicode();
-                                } else {
-                                    targetBox.dispatchEvent(new Event('input', { bubbles: true }));
-                                }
-                            }
-                        };
+                            recognition.onerror = function() {
+                                recording = false;
+                                mobBtn.classList.remove('listening');
+                                mobBtn.innerHTML = "🎙️ Voice";
+                            };
 
-                        recognition.onerror = function() {
+                            recognition.onend = function() {
+                                recording = false;
+                                mobBtn.classList.remove('listening');
+                                mobBtn.innerHTML = "🎙️ Voice";
+                            };
+
+                            recognition.start();
+
+                        } catch(err) {
                             recording = false;
                             mobBtn.classList.remove('listening');
-                            mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
-                        };
-
-                        recognition.onend = function() {
-                            recording = false;
-                            mobBtn.classList.remove('listening');
-                            mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
-                        };
-
-                        recognition.start();
-
-                    } catch(err) {
-                        recording = false;
-                        mobBtn.classList.remove('listening');
-                        mobBtn.innerHTML = "🎙️ मोबाइल वॉइस टाइपिंग (Devlys)";
-                    }
-                });
+                            mobBtn.innerHTML = "🎙️ Voice";
+                        }
+                    });
+                }
             }
-        }
+        });
     }
 
-    // बार-बार चेक करना ताकि मोबाइल पर बटन सौ फीसदी शो हो जाए
-    window.addEventListener('DOMContentLoaded', setupMobileVoiceButton);
-    window.addEventListener('load', setupMobileVoiceButton);
-    setInterval(setupMobileVoiceButton, 1000);
+    window.addEventListener('DOMContentLoaded', injectMobileMicButton);
+    window.addEventListener('load', injectMobileMicButton);
+    setInterval(injectMobileMicButton, 1000);
 })();
 </script>
 <!-- ======================================================================= -->
