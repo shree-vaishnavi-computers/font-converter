@@ -74,7 +74,7 @@
         "Word .doc export",
         "Image OCR Hindi text scanner",
         "Live Typing Speed WPM meter",
-        "50+ Devlys Alt Codes Palette"
+        "Custom Devlys Alt Codes Palette"
       ]
     }
     </script>
@@ -566,23 +566,82 @@
             text = text.replace(/\(/g, "द्ग");
 
             const altCodeMappings = [
-                ["‘", "'"], ["’", "'"], ["“", '"'], ["”", '"'], ["—", "—"], ["–", "–"],
-                ["¡", "ँ"], ["¿", "ऋ"], ["¾", "दृ"], ["ä", "हृ"], ["í", "ी"], ["ñ", "्"], ["º", "र्"],
-                ["À", "ज्ञ"], ["Á", "द्ब"], ["Â", "द्ध"], ["Ã", "श्च"], ["Ä", "ष्ठ"], ["Å", "ष्ट"],
-                ["Æ", "ह्र"], ["Ç", "ह्म"], ["È", "ह्य"], ["É", "ह्ल"], ["Ê", "ह्व"], ["Ë", "ङ्क"],
-                ["Ì", "ङ्ख"], ["Í", "ङ्ग"], ["Î", "ङ्घ"], ["Ï", "त्त"], ["Ð", "क्त"], ["Ñ", "द्व"],
-                ["Ò", "द्म"], ["»", "द्य"], ["Ó", "द्र"], ["Ô", "प्र"], ["Õ", "क्र"], ["Ö", "फ्र"],
-                ["×", "ग्र"], ["Ø", "क्र"], ["Ù", "त्र"], ["Ú", "श्व"], ["Û", "श्र"], ["Ü", "श्र"],
-                ["Ý", "ह्न"], ["Þ", "्र"], ["ß", "्र"], ["à", "त्त"], ["á", "दृ"], ["â", "ह्न"],
-                ["ã", "ह्य"], ["å", "ह्ल"], ["æ", "ह्व"], ["ç", "्र"], ["è", "्र"], ["é", "्र"],
-                ["ê", "्र"], ["ë", "्र"], ["ì", "्र"], ["î", "्र"], ["ï", "्र"], ["ð", "्र"],
-                ["«", "त्र"],
-                ["ò", "रु"], ["ó", "रू"], ["ô", "र्क"], ["õ", "र्ट"], ["ö", "र्ठ"], ["÷", "र्ड"],
-                ["ø", "र्ढ"], ["ù", "र्ण"], ["ú", "र्त"], ["û", "र्थ"], ["ü", "र्द"], ["ý", "र्ध"],
-                ["þ", "र्न"], ["ÿ", "र्प"]
+                ["‡", "्"],
+                ["ˆ", "ै"],
+                ["‰", "ो"],
+                ["Š", "ौ"],
+                ["‹", "ॅ"],
+                ["Œ", "ॉ"],
+                ["‘", "ण्"],
+                ["’", "प्"],
+                ["“", "र्"],
+                ["”", "र्य"],
+                ["–", "दू"],
+                ["—", "ट्र"],
+                ["˜", "रु"],
+                ["™", "ृ"],
+                ["›", "ल्"],
+                ["Ÿ", "र"],
+                [" ", "॰"],
+                ["¡", "।"],
+                ["¢", "ऽ"],
+                ["£", "ख"],
+                ["¤", "ृ"],
+                ["¥", "त्र"],
+                ["§", "ी"],
+                ["¨", "ु"],
+                ["©", "ू"],
+                ["ª", "ट"],
+                ["«", "ै"],
+                ["®", "ॉ"],
+                ["±", "्र"],
+                ["³", "ज्"],
+                ["´", "न"],
+                ["¶", "फ्"],
+                ["·", "S"],
+                ["¸", "य्"],
+                ["Å", "ऊ"],
+                ["Ì", "ह"],
+                ["Í", "व"],
+                ["Î", "व"],
+                ["Ø", "क्र"],
+                ["Ù", "रु"],
+                ["Ý", "फ्र"],
+                ["Þ", "“"],
+                ["ß", "”"],
+                ["à", "ह"],
+                ["á", "हृ"],
+                ["â", "ह्"],
+                ["ã", "ह्य"],
+                ["ä", "त्क"],
+                ["å", "ो"],
+                ["æ", "द्र"],
+                ["ç", "प्र"],
+                ["è", "ं"],
+                ["é", "त्र"],
+                ["ê", "ट"],
+                ["ë", "ढ"],
+                ["ì", "ख"],
+                ["í", "र्"],
+                ["î", "य"],
+                ["ï", "ड़"],
+                ["ð", "ढ़"],
+                ["ñ", "."],
+                ["ó", "स्त्र"],
+                ["ô", "क्ष"],
+                ["õ", "ै"],
+                ["ö", "द्र"],
+                ["÷", "इ"],
+                ["ø", "{"],
+                ["ù", "च"]
             ];
+            // Keep Alt-code outputs protected from the ordinary DevLys keyboard
+            // table (e.g. user code 183 must remain literal "S", not become "ै").
+            const altCodeRestoreTokens = [];
             for (let i = 0; i < altCodeMappings.length; i++) {
-                text = text.replace(new RegExp(altCodeMappings[i][0], 'g'), altCodeMappings[i][1]);
+                const token = "\uE100" + String.fromCharCode(0xE200 + i) + "\uE101";
+                text = text.replace(new RegExp(altCodeMappings[i][0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'), token);
+                altCodeRestoreTokens.push([token, altCodeMappings[i][1]]);
             }
 
             text = text.replace(/eSuas/g, "मैंने");
@@ -715,6 +774,11 @@
             text = text.replace(/र्इ/g, "ई");
             text = text.replace(/क्षैत्र/g, "क्षेत्र");
             text = text.replace(/एे/g, "ऐ");
+
+            // Restore exact user-supplied Alt-code outputs after keyboard conversion.
+            for (let i = 0; i < altCodeRestoreTokens.length; i++) {
+                text = text.replaceAll(altCodeRestoreTokens[i][0], altCodeRestoreTokens[i][1]);
+            }
 
             // Restore protected tokens
             text = text.replace(/\uE020/g, ".");
@@ -1598,33 +1662,45 @@ window.svcPro = (function() {
   let lastKeyStrokeTime = null;
 
   const symbolsList = [
-    { char: 'द्ध', code: '0204' }, { char: 'द्व', code: '0205' },
-    { char: 'द्य', code: '0206' }, { char: 'द्म', code: '0207' },
-    { char: 'द्ब', code: '0224' }, { char: 'क्क', code: '0228' },
-    { char: 'क्त', code: '0230' }, { char: 'क्व', code: '0229' },
-    { char: 'ल्ल', code: '0233' }, { char: 'श्व', code: '0236' },
-    { char: 'ष्ट', code: '0234' }, { char: 'ष्ठ', code: '0235' },
-    { char: 'न्न', code: '0240' }, { char: 'शृ', code: '0218' },
-    { char: 'हृ', code: '0227' }, { char: 'ह्न', code: '0214' },
-    { char: 'ह्म', code: '0225' }, { char: 'ह्य', code: '0226' },
-    { char: 'ह्र', code: '0221' }, { char: 'ह्ल', code: '0215' },
-    { char: 'ट्ट', code: '0209' }, { char: 'ट्ठ', code: '0210' },
-    { char: 'ड्ड', code: '0211' }, { char: 'ड्ढ', code: '0212' },
-    { char: 'ठ्ठ', code: '0213' }, { char: 'ट्र', code: '0170' },
-    { char: 'ड्र', code: '0171' }, { char: 'फ्र', code: '0178' },
-    { char: 'क्र', code: '0231' }, { char: 'छ्र', code: '0199' },
-    { char: 'र्‍', code: '0179' }, { char: 'रु', code: '0217' },
-    { char: 'रू', code: 'Shift+R' }, { char: 'ङ', code: '0197' },
-    { char: 'ञ', code: '0239' }, { char: 'ज्ञ', code: '0180' },
-    { char: 'झ्', code: '0232' }, { char: 'ऋ', code: 'Shift+=' },
-    { char: '¼', code: '0188' }, { char: '½', code: '0189' },
-    { char: '¾', code: '0190' }, { char: '₹', code: 'Rupee' },
-    { char: 'ॐ', code: '0216' }, { char: '°', code: '0176' },
-    { char: '±', code: '0177' }, { char: '“', code: '0147' },
-    { char: '”', code: '0148' }, { char: '‘', code: '0172' },
-    { char: '’', code: '0173' }, { char: '।', code: 'विराम' },
-    { char: '§', code: 'धारा' }, { char: '¶', code: '0182' },
-    { char: '×', code: 'गुणा' }, { char: '÷', code: 'भाग' }
+    { char: '!', code: '0033' }, { char: 'ठ', code: '0034' }, { char: 'छ', code: '0035' }, { char: '+', code: '0036' },
+    { char: ':', code: '0037' }, { char: '–', code: '0038' }, { char: 'च', code: '0039' }, { char: ';', code: '0040' },
+    { char: 'द्र', code: '0041' }, { char: '’', code: '0042' }, { char: '.', code: '0043' }, { char: 'ए', code: '0044' },
+    { char: '।', code: '0045' }, { char: 'ण', code: '0046' }, { char: '&', code: '0047' }, { char: '0', code: '0048' },
+    { char: '1', code: '0049' }, { char: '2', code: '0050' }, { char: '3', code: '0051' }, { char: '4', code: '0052' },
+    { char: '5', code: '0053' }, { char: '6', code: '0054' }, { char: '7', code: '0055' }, { char: '8', code: '0056' },
+    { char: '9', code: '0057' }, { char: 'रू', code: '0058' }, { char: 'य', code: '0059' }, { char: 'ज', code: '0060' },
+    { char: 'ज्ञ', code: '0061' }, { char: 'झ', code: '0062' }, { char: 'ष', code: '0063' }, { char: '/', code: '0064' },
+    { char: '|', code: '0065' }, { char: 'ड', code: '0066' }, { char: 'ढ', code: '0067' }, { char: 'ट', code: '0068' },
+    { char: 'ठ', code: '0069' }, { char: 'ण', code: '0070' }, { char: 'ध', code: '0071' }, { char: 'भ', code: '0072' },
+    { char: 'ळ', code: '0073' }, { char: 'श्र', code: '0074' }, { char: 'ज्ञ', code: '0075' }, { char: 'र', code: '0076' },
+    { char: 'ड़', code: '0077' }, { char: 'ढ़', code: '0078' }, { char: 'त', code: '0079' }, { char: 'ट', code: '0080' },
+    { char: 'फ', code: '0081' }, { char: 'र', code: '0082' }, { char: '`', code: '0083' }, { char: 'ज', code: '0084' },
+    { char: '=', code: '0085' }, { char: 'ट', code: '0086' }, { char: 'ठ', code: '0087' }, { char: 'र', code: '0088' },
+    { char: 'ल', code: '0089' }, { char: 'ख', code: '0090' }, { char: '?', code: '0091' }, { char: '‘', code: '0092' },
+    { char: '’', code: '0093' }, { char: 'क', code: '0094' }, { char: 'क्ष', code: '0095' }, { char: '़', code: '0096' },
+    { char: '्', code: '0097' }, { char: 'झ', code: '0098' }, { char: 'ब', code: '0099' }, { char: 'क', code: '0100' },
+    { char: 'म', code: '0101' }, { char: 'ि', code: '0102' }, { char: 'ह', code: '0103' }, { char: 'ग', code: '0104' },
+    { char: 'प', code: '0105' }, { char: 'र', code: '0106' }, { char: 'ि', code: '0107' }, { char: 'स', code: '0108' },
+    { char: 'ज', code: '0109' }, { char: 'द', code: '0110' }, { char: 'व', code: '0111' }, { char: 'च', code: '0112' },
+    { char: 'भ', code: '0113' }, { char: 'त', code: '0114' }, { char: '`', code: '0115' }, { char: 'ज', code: '0116' },
+    { char: 'न', code: '0117' }, { char: 'अ', code: '0118' }, { char: '्', code: '0135' }, { char: 'ै', code: '0136' },
+    { char: 'ो', code: '0137' }, { char: 'ौ', code: '0138' }, { char: 'ॅ', code: '0139' }, { char: 'ॉ', code: '0140' },
+    { char: 'ण्', code: '0145' }, { char: 'प्', code: '0146' }, { char: 'र्', code: '0147' }, { char: 'र्य', code: '0148' },
+    { char: 'दू', code: '0150' }, { char: 'ट्र', code: '0151' }, { char: 'रु', code: '0152' }, { char: 'ृ', code: '0153' },
+    { char: 'ल्', code: '0155' }, { char: 'र', code: '0159' }, { char: '॰', code: '0160' }, { char: '।', code: '0161' },
+    { char: 'ऽ', code: '0162' }, { char: 'ख', code: '0163' }, { char: 'ृ', code: '0164' }, { char: 'त्र', code: '0165' },
+    { char: 'ी', code: '0167' }, { char: 'ु', code: '0168' }, { char: 'ू', code: '0169' }, { char: 'ट', code: '0170' },
+    { char: 'ै', code: '0171' }, { char: 'ॉ', code: '0174' }, { char: '्र', code: '0177' }, { char: 'ज्', code: '0179' },
+    { char: 'न', code: '0180' }, { char: 'फ्', code: '0182' }, { char: 'S', code: '0183' }, { char: 'य्', code: '0184' },
+    { char: '(', code: '0188' }, { char: ')', code: '0189' }, { char: 'ऊ', code: '0197' }, { char: 'ह', code: '0204' },
+    { char: 'व', code: '0205' }, { char: 'व', code: '0206' }, { char: 'क्र', code: '0216' }, { char: 'रु', code: '0217' },
+    { char: 'फ्र', code: '0221' }, { char: '“', code: '0222' }, { char: '”', code: '0223' }, { char: 'ह', code: '0224' },
+    { char: 'हृ', code: '0225' }, { char: 'ह्', code: '0226' }, { char: 'ह्य', code: '0227' }, { char: 'त्क', code: '0228' },
+    { char: 'ो', code: '0229' }, { char: 'द्र', code: '0230' }, { char: 'प्र', code: '0231' }, { char: 'ं', code: '0232' },
+    { char: 'त्र', code: '0233' }, { char: 'ट', code: '0234' }, { char: 'ढ', code: '0235' }, { char: 'ख', code: '0236' },
+    { char: 'र्', code: '0237' }, { char: 'य', code: '0238' }, { char: 'ड़', code: '0239' }, { char: 'ढ़', code: '0240' },
+    { char: '.', code: '0241' }, { char: 'स्त्र', code: '0243' }, { char: 'क्ष', code: '0244' }, { char: 'ै', code: '0245' },
+    { char: 'द्र', code: '0246' }, { char: 'इ', code: '0247' }, { char: '{', code: '0248' }, { char: 'च', code: '0249' }
   ];
 
   function toast(msg, type = 'info') {
