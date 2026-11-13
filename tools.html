@@ -1,223 +1,708 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHREE VAISHNAVI COMPUTERS | All Tools</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#12366b">
+<title>SHREE VAISHNAVI COMPUTERS | Professional Tools Suite</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <style>
-:root{--bg:#f3f6fb;--card:#fff;--ink:#182235;--muted:#64748b;--primary:#155eef;--line:#dce4ef;--good:#087443;--bad:#b42318}
+:root{--bg:#f3f6fb;--card:#fff;--ink:#182235;--muted:#64748b;--primary:#155eef;--line:#dce4ef;--good:#087443;--bad:#b42318;--shadow:0 8px 24px #102a5610}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,"Noto Sans Devanagari",sans-serif}
-header{background:linear-gradient(120deg,#102a56,#155eef);color:#fff;padding:22px 16px;text-align:center}header h1{font-size:clamp(20px,4vw,30px);margin:0;letter-spacing:.5px}header p{margin:6px 0 0;color:#dbeafe}
-.wrap{max-width:1200px;margin:auto;padding:16px}.tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 14px;position:sticky;top:0;background:var(--bg);z-index:5}
-.tabs button{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
-.tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px #102a560b}
+header{background:linear-gradient(120deg,#102a56,#155eef);color:#fff;padding:24px 16px;text-align:center}header h1{font-size:clamp(21px,4vw,31px);margin:0}header p{margin:6px 0 0;color:#dbeafe}
+.wrap{max-width:1250px;margin:auto;padding:16px}.tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 14px;position:sticky;top:0;background:var(--bg);z-index:8}
+.tabs button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700;white-space:nowrap}
+.tabs button.active,.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.danger{background:#fff1f0;color:#b42318;border-color:#ffd5d2}.btn:disabled{opacity:.5;cursor:not-allowed}
+.panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
 h2{font-size:20px;margin:0 0 12px}h3{font-size:16px;margin:12px 0 8px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-label{display:block;font-weight:700;font-size:13px;margin:8px 0 4px}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:var(--ink);font:inherit}
-textarea{min-height:105px;resize:vertical}button.action{border:0;background:var(--primary);color:#fff;padding:10px 14px;border-radius:9px;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}
-button.secondary{background:#e8eef8;color:#17345e}button.danger{background:#b42318}button:disabled{opacity:.5;cursor:not-allowed}
-.small{font-size:12px;color:var(--muted)}.status{padding:10px;border-radius:9px;background:#eff6ff;margin-top:10px;white-space:pre-wrap}.status.good{background:#ecfdf3;color:var(--good)}.status.bad{background:#fef3f2;color:var(--bad)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1;min-width:130px}.preview{max-width:100%;max-height:420px;border:1px solid var(--line);border-radius:8px;background:#f8fafc}
-#pdfCanvas{width:100%;max-width:100%;border:1px solid var(--line);background:#fff}.page-list{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.page-chip{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:#fff;cursor:pointer}.page-chip.selected{background:#dbeafe;border-color:var(--primary)}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid var(--line);padding:7px;text-align:left}th{background:#eef3fa}
-.typing-area{font-size:20px;line-height:1.9;min-height:110px;background:#f8fafc;padding:12px;border-radius:10px;border:1px solid var(--line);white-space:pre-wrap}
-#typingInput{min-height:130px;font-size:18px}.metric{background:#f8fafc;border:1px solid var(--line);padding:12px;border-radius:10px}.metric b{display:block;font-size:23px}
-footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
-@font-face{font-family:DevLys010;src:url('https://cdn.jsdelivr.net/gh/shree-vaishnavi-computers/font-converter@main/Devlys-010.ttf') format('truetype')}
-@font-face{font-family:KrutiDev010;src:url('https://cdn.jsdelivr.net/gh/shree-vaishnavi-computers/font-converter@main/Kruti-Dev-010.ttf') format('truetype')}
-@media(max-width:600px){.wrap{padding:10px}.card{padding:12px}.tabs{top:0}.row>*{min-width:100%}}
+label{display:block;font-weight:700;font-size:13px;color:#344054;margin:8px 0 5px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px;font:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:110px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:0 0 auto}.row .grow{flex:1 1 180px}
+.hint{font-size:12px;color:var(--muted)}.status{padding:10px;border-radius:9px;margin-top:10px;display:none;white-space:pre-wrap}.status.good{display:block;background:#ecfdf3;color:#067647}.status.bad{display:block;background:#fff1f0;color:#b42318}.status.info{display:block;background:#eff6ff;color:#1d4ed8}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px}.stat{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px}.stat b{display:block;font-size:23px}
+.preview{max-width:100%;max-height:420px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#f8fafc}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border:1px solid var(--line);padding:7px;text-align:left}th{background:#f1f5f9}
+#typingPassage{font-size:22px;line-height:1.9;white-space:pre-wrap;background:#f8fafc;padding:15px;border:1px solid var(--line);border-radius:10px;min-height:120px}
+#typingInput{font-size:22px;line-height:1.8;min-height:160px;font-family:Arial,"Noto Sans Devanagari",sans-serif}
+.keyhint{background:#eef4ff;padding:10px;border-radius:9px;font-size:13px}
+.progress{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;background:var(--primary);width:0}
+.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}.sheetwrap{overflow:auto;max-height:420px}
+@media(max-width:600px){.wrap{padding:10px}.card{padding:12px}.tabs{top:0}#typingPassage,#typingInput{font-size:19px}}
+
+/* ===== SVC Professional Colour UI refresh ===== */
+:root{
+ --bg:#f2f6fc;--card:#ffffff;--ink:#172b4d;--muted:#667792;
+ --primary:#2457d6;--line:#dbe5f2;--good:#087a55;--bad:#c43232;
+ --shadow:0 10px 28px rgba(24,52,99,.075);--navy:#102b56;--teal:#0d9488;
+}
+body{background:radial-gradient(ellipse at 8% 0%,#e4edff 0,transparent 32%),linear-gradient(180deg,#f5f8fe 0%,#eef3fa 100%);color:var(--ink)}
+header{position:relative;overflow:hidden;text-align:left;padding:30px max(20px,calc((100% - 1210px)/2));background:linear-gradient(115deg,#10264f 0%,#174a91 55%,#2869d8 100%);box-shadow:0 8px 26px rgba(15,43,86,.2)}
+header:before,header:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+header:before{width:300px;height:300px;right:7%;top:-190px;background:rgba(255,255,255,.09)}
+header:after{width:190px;height:190px;right:22%;bottom:-145px;border:1px solid rgba(255,255,255,.16)}
+header h1{position:relative;z-index:1;letter-spacing:.5px;font-weight:800;text-shadow:0 2px 12px #071b3c55}
+header p{position:relative;z-index:1;color:#d8e8ff;font-size:14px;letter-spacing:.25px}
+.wrap{max-width:1280px;padding:18px 18px 34px}
+.tabs{gap:9px;padding:12px 4px 16px;background:rgba(242,246,252,.92);backdrop-filter:blur(12px);border-bottom:1px solid #dce6f3;margin-bottom:12px}
+.tabs button{border:1px solid #d8e2f0;background:#fff;color:#365071;border-radius:12px;padding:11px 16px;box-shadow:0 2px 7px #18345f0a;transition:transform .18s,box-shadow .18s,background .18s;}
+.tabs button:hover{transform:translateY(-2px);box-shadow:0 6px 14px #18345f18;border-color:#a9c0e8}
+.tabs button.active{background:linear-gradient(135deg,#174a9b,#3474e8);border-color:#2457d6;color:#fff;box-shadow:0 6px 16px #2457d640}
+.panel.active{animation:panelIn .24s ease-out}@keyframes panelIn{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:none}}
+.card{position:relative;border:1px solid #dfe7f2;border-radius:17px;padding:19px;margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#3474e8,#18a6a0);opacity:.9}
+.panel#pdf .card:before{background:linear-gradient(180deg,#3975e8,#7c5ce7)}
+.panel#photo .card:before{background:linear-gradient(180deg,#0d9488,#36b6a0)}
+.panel#typing .card:before{background:linear-gradient(180deg,#e18a24,#e9b84d)}
+.panel#excel .card:before{background:linear-gradient(180deg,#15976a,#55bd83)}
+.panel#calc .card:before{background:linear-gradient(180deg,#d65b83,#ee8ba4)}
+.panel#words .card:before{background:linear-gradient(180deg,#7657d6,#a58be9)}
+h2{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;letter-spacing:-.2px;color:#18345f;margin:0 0 14px}
+h2:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,#dce6f3,transparent);margin-left:4px}
+h3{color:#29466d;font-weight:750}
+label{color:#344d70;font-size:13px;font-weight:750;letter-spacing:.1px}
+input,select,textarea{border:1px solid #ccd8e8;border-radius:10px;padding:11px 12px;background:#fbfdff;transition:border-color .15s,box-shadow .15s,background .15s}
+input:hover,select:hover,textarea:hover{border-color:#9db5dc}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#3974df;background:#fff;box-shadow:0 0 0 3px rgba(57,116,223,.13)}
+input[type=file]{padding:8px;background:#f7faff;border-style:dashed}
+input[type=color]{height:43px;padding:4px}
+.btn{border:1px solid #d6e1ef;background:linear-gradient(180deg,#fff,#f7faff);color:#29466d;border-radius:10px;padding:10px 15px;box-shadow:0 2px 6px #18345f0a;transition:all .16s;font-weight:750}
+.btn:hover:not(:disabled){transform:translateY(-1px);border-color:#9fb8df;box-shadow:0 5px 12px #18345f18}
+.btn.primary{background:linear-gradient(135deg,#1d4fb5,#3475e7);border-color:#2457d6;color:#fff;box-shadow:0 4px 10px #2457d62a}
+.btn.primary:hover:not(:disabled){background:linear-gradient(135deg,#173f94,#2865d1);box-shadow:0 7px 16px #2457d640}
+.btn.danger{background:linear-gradient(180deg,#fff8f7,#fff0ee);color:#b52c2c;border-color:#f4ceca}
+.btn:disabled{filter:grayscale(.25);opacity:.48}
+.hint,.small{color:#71819a}
+.status{border:1px solid transparent;border-radius:11px;padding:12px 14px;font-weight:600}
+.status.good{background:#eaf8f1;color:#08734d;border-color:#c8ecd9}
+.status.bad{background:#fff0ef;color:#b42318;border-color:#f5d0cc}
+.status.info{background:#edf4ff;color:#2257b3;border-color:#d3e2ff}
+.stat{border-radius:13px;padding:14px;background:linear-gradient(145deg,#f8fbff,#eef4fc);border:1px solid #dce7f5}
+.stat b{font-size:25px;color:#1f56b3;font-variant-numeric:tabular-nums}
+.preview{border-color:#d7e2f0;box-shadow:0 3px 12px #18345f0a}
+table{border-radius:10px;overflow:hidden}th{background:#eaf1fb;color:#2a4770;font-weight:800}td,th{border-color:#dce5f0}
+#typing .card:first-child{overflow:visible}
+#typingPassage{background:linear-gradient(145deg,#f8fbff,#eef4fc);border:1px solid #d9e5f4;border-radius:13px;color:#203d66;position:sticky;top:76px;z-index:6;max-height:220px;min-height:130px;overflow-y:auto;overscroll-behavior:contain;padding:14px;box-shadow:0 8px 22px rgba(24,52,99,.12);scrollbar-gutter:stable}
+#typingInput{background:#fff;border:1px solid #c9d8ed;border-radius:13px;box-shadow:inset 0 2px 5px #18345f08;height:210px;min-height:180px;max-height:36vh;overflow-y:auto;resize:vertical;overscroll-behavior:contain}
+@media(max-width:700px){#typingPassage{top:8px;max-height:24vh;min-height:100px;font-size:17px;line-height:1.65}#typingInput{height:180px;min-height:150px;max-height:30vh;font-size:18px}}
+.keyhint{background:linear-gradient(110deg,#edf4ff,#e8f8f6);border:1px solid #d8e8f5;color:#355578}
+.progress{height:10px;background:#e4ebf5}.progress span{background:linear-gradient(90deg,#2457d6,#16a69a);border-radius:99px;transition:width .2s}
+.sheetwrap{border:1px solid #dce5f0;border-radius:10px}
+.pdf-thumb{width:112px;padding:6px;border:1px solid #d5dfec;border-radius:10px;background:#fff;cursor:pointer;text-align:center}.pdf-thumb canvas{width:100%;height:130px;object-fit:contain;background:#f5f7fb}.pdf-thumb.selected{outline:3px solid #8bb5ff}.pdf-thumb.dragging{opacity:.4}
+button:focus-visible{outline:3px solid #86b3ff;outline-offset:2px}
+@media(max-width:700px){header{padding:24px 16px;text-align:center}.wrap{padding:10px}.card{padding:15px 13px 14px}.tabs{margin-left:-2px;margin-right:-2px}.tabs button{padding:10px 13px;font-size:13px}.btn{padding:10px 12px;font-size:13px}h2{font-size:19px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Centered PDF task progress overlay */
+#pdfTaskOverlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,25,49,.48);backdrop-filter:blur(5px)}
+#pdfTaskOverlay.active{display:flex}
+.pdf-task-card{width:min(390px,94vw);background:#fff;border:1px solid #dbe5f2;border-radius:20px;padding:25px 22px 22px;text-align:center;box-shadow:0 24px 70px rgba(7,24,52,.28)}
+.pdf-task-ring{--pct:0deg;width:88px;height:88px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#2457d6 var(--pct),#e7edf6 0);position:relative}
+.pdf-task-ring:before{content:"";position:absolute;inset:8px;background:#fff;border-radius:50%}
+.pdf-task-ring span{position:relative;z-index:1;font-size:20px;font-weight:800;color:#1e4fae;font-variant-numeric:tabular-nums}
+#pdfTaskOverlay.indeterminate .pdf-task-ring{background:conic-gradient(#2457d6 0 28%,#e7edf6 28% 100%);animation:pdfRingSpin 1s linear infinite}
+#pdfTaskOverlay.indeterminate .pdf-task-ring:before{inset:8px}
+@keyframes pdfRingSpin{to{transform:rotate(360deg)}}
+.pdf-task-title{font-size:17px;font-weight:800;color:#18345f;margin-bottom:5px}
+.pdf-task-detail{font-size:13px;color:#657792;min-height:20px;overflow-wrap:anywhere}
+.pdf-task-track{height:7px;border-radius:99px;background:#e8eef7;overflow:hidden;margin-top:17px}
+.pdf-task-track span{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#2457d6,#16a69a);transition:width .2s}
+@media(prefers-reduced-motion:reduce){#pdfTaskOverlay.indeterminate .pdf-task-ring{animation:none}}
+
 </style>
 </head>
 <body>
-<header><h1>SHREE VAISHNAVI COMPUTERS</h1><p>All-in-One Online Tools Hub</p></header>
+
+<div id="pdfTaskOverlay" role="status" aria-live="polite" aria-label="PDF processing">
+ <div class="pdf-task-card"><div class="pdf-task-ring" id="pdfTaskRing"><span id="pdfTaskPct">0%</span></div>
+ <div class="pdf-task-title" id="pdfTaskTitle">PDF प्रक्रिया जारी है</div><div class="pdf-task-detail" id="pdfTaskDetail">कृपया प्रतीक्षा करें…</div>
+ <div class="pdf-task-track"><span id="pdfTaskBar"></span></div></div>
+</div>
+
+<header><h1>SHREE VAISHNAVI COMPUTERS</h1><p>Professional Tools Suite · PDF · Photo · Typing · Excel · Calculators</p></header>
 <div class="wrap">
-<nav class="tabs" aria-label="Tools navigation">
-<button class="active" data-tab="pdf">PDF Tools</button><button data-tab="photo">Photo / Signature</button><button data-tab="typing">Typing Test</button><button data-tab="excel">Excel Tools</button><button data-tab="calc">Calculators</button><button data-tab="number">Number to Words</button>
+<nav class="tabs" id="tabs">
+<button class="active" data-tab="pdf">PDF Tools</button><button data-tab="photo">Photo / Signature</button><button data-tab="typing">Typing Test</button><button data-tab="excel">Excel Tools</button><button data-tab="calc">Calculators</button><button data-tab="words">Number to Words</button>
 </nav>
 
-<section id="pdf" class="panel active">
-<div class="card">
-<h2>PDF Manager</h2>
-<p class="small">एक या अधिक PDF चुनें। सभी processing आपके browser में होती है; फाइल server पर upload नहीं होती।</p>
-<label>PDF फाइलें चुनें</label><input id="pdfFiles" type="file" accept="application/pdf" multiple>
-<div class="row">
-<div><label>मुख्य PDF (जिसमें बदलाव करना है)</label><select id="mainPdf"><option value="">पहले PDF चुनें</option></select></div>
-<div><label>दूसरी PDF (insert / merge के लिए)</label><select id="insertPdf"><option value="">पहले PDF चुनें</option></select></div>
-</div>
-<div class="row">
-<div><label>पेज नंबर / रेंज (उदा. 1,3,5-7)</label><input id="pageRange" placeholder="1,3,5-7"></div>
-<div><label>Insert position</label><select id="insertPosition"><option value="before">चुने हुए पेज से पहले</option><option value="after">चुने हुए पेज के बाद</option><option value="end">अंत में</option></select></div>
-</div>
-<div class="row">
-<button class="action" id="previewPdf">Preview PDF</button><button class="action" id="mergePdf">Merge PDFs</button><button class="action" id="insertPdfBtn">Insert PDF</button>
-</div>
-<div class="row">
-<button class="action secondary" id="extractPdf">Extract selected pages</button><button class="action secondary" id="deletePdf">Delete selected pages</button><button class="action secondary" id="rotatePdf">Rotate selected 90°</button>
-</div>
-<div class="row">
-<button class="action secondary" id="reorderPdf">Reorder pages</button><button class="action secondary" id="numberPdf">Add page numbers</button><button class="action secondary" id="watermarkPdf">Add watermark</button>
-</div>
-<div class="row">
-<div><label>Page size</label><select id="pageSize"><option value="keep">Keep original size</option><option value="A4">A4</option><option value="A3">A3</option><option value="A5">A5</option><option value="Letter">Letter</option><option value="Legal">Legal</option></select></div>
-<div><label>Watermark text</label><input id="watermarkText" value="SHREE VAISHNAVI COMPUTERS"></div>
-<div><label>Page number position</label><select id="numPosition"><option value="bottom-center">Bottom center</option><option value="bottom-right">Bottom right</option><option value="top-right">Top right</option></select></div>
-</div>
-<div class="row">
-<button class="action secondary" id="resizePdf">Resize pages</button><button class="action secondary" id="compressPdf">Compress PDF (image-based)</button><button class="action secondary" id="imagesToPdf">Images to PDF</button><button class="action secondary" id="pdfToImages">PDF to JPG</button>
-</div>
-<div class="row"><div><label>Image quality for PDF compression (lower = smaller file)</label><input id="compressQuality" type="number" min=".2" max=".9" step=".1" value=".6"></div><div><label>PDF to JPG quality</label><input id="jpgQuality" type="number" min=".3" max="1" step=".1" value=".85"></div></div>
-<div id="pdfStatus" class="status">PDF चुनने के बाद tools इस्तेमाल करें।</div>
-</div>
-<div class="card">
-<h2>PDF Page Preview</h2>
-<div class="row"><button class="action secondary" id="prevPage">◀ Previous</button><div class="metric"><b id="pageCounter">0 / 0</b><span class="small">Preview page</span></div><button class="action secondary" id="nextPage">Next ▶</button></div>
-<canvas id="pdfCanvas"></canvas><div id="pageChips" class="page-list"></div>
-<p class="small">Page chip पर क्लिक करके page चुनें। Multiple pages चुनने के लिए Ctrl (desktop) या long-press (mobile) पर निर्भर न रहें—page range field में पेज नंबर लिखें।</p>
-</div>
-</section>
-
-<section id="photo" class="panel">
-<div class="card">
-<h2>eMitra Photo / Signature Resizer</h2>
+<section class="panel active" id="pdf">
+<div class="card"><h2>PDF Manager</h2><p class="hint">फाइलें आपके ब्राउज़र में ही प्रोसेस होती हैं। बड़ी PDF में समय लग सकता है।</p>
+<div class="grid"><div><label>मुख्य PDF चुनें</label><input id="pdfFile" type="file" accept="application/pdf"><div class="row" style="margin-top:7px"><button class="btn danger" id="pdfRemove1" type="button" disabled>× Remove PDF</button><span class="small" id="pdfFileInfo">कोई PDF चयनित नहीं</span></div></div><div><label>दूसरी PDF (Merge / Insert)</label><input id="pdfFile2" type="file" accept="application/pdf"><div class="row" style="margin-top:7px"><button class="btn danger" id="pdfRemove2" type="button" disabled>× Remove Second PDF</button><span class="small" id="pdfFileInfo2">कोई दूसरी PDF चयनित नहीं</span></div></div><div><label>Page Range (उदा. 1,3,5-7)</label><input id="pdfRange" placeholder="1,3,5-7"></div></div>
+<div class="row" style="margin-top:12px"><button class="btn primary" id="pdfLoad">Preview PDF</button><button class="btn" id="pdfMerge">Merge PDFs</button><button class="btn" id="pdfInsert">Insert Second PDF</button><button class="btn" id="pdfExtract">Extract Pages</button><button class="btn danger" id="pdfDelete">Delete Pages</button></div>
+<div class="grid" style="margin-top:12px"><div><label>Rotate selected pages</label><select id="pdfRotate"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select><button class="btn" id="pdfRotateBtn">Rotate</button></div><div><label>Reorder (उदा. 3,1,2,4)</label><input id="pdfOrder" placeholder="3,1,2,4"><button class="btn" id="pdfReorder">Reorder Pages</button></div><div><label>Resize page</label><select id="pdfSize"><option value="a4">A4</option><option value="letter">Letter</option><option value="fit">Original</option></select><button class="btn" id="pdfResize">Set Page Size</button></div></div>
+<div class="grid" style="margin-top:12px"><div><label>Watermark Text</label><input id="pdfWatermark" placeholder="CONFIDENTIAL"></div><div><label>Page Number</label><select id="pdfNumPos"><option value="bottom">Bottom Center</option><option value="top">Top Center</option></select></div><div><label>Raster Fallback Quality</label><select id="pdfQuality"><option value="0.8">High</option><option value="0.6">Medium</option><option value="0.4">Small size</option></select></div></div>
+<div class="row" style="margin-top:10px"><button class="btn" id="pdfWatermarkBtn">Add Watermark</button><button class="btn" id="pdfNumbers">Add Page Numbers</button><button class="btn" id="pdfCompress">Smart Compress</button><button class="btn" id="pdfJpg">PDF to JPG</button></div>
+<div class="card" style="margin-top:14px;background:#f8fbff">
+<h3>Smart Compression & Batch Processing</h3>
 <div class="grid">
-<div><label>Photo / Signature चुनें</label><input type="file" id="photoFile" accept="image/*"></div>
-<div><label>Preset</label><select id="photoPreset"><option value="custom">Custom</option><option value="photo">Passport photo 3.5 × 4.5 cm (approx 413×531 px)</option><option value="small">Small photo 200×230 px</option><option value="sign">Signature 140×60 px</option><option value="sign2">Signature 200×100 px</option></select></div>
-<div><label>Width (px)</label><input type="number" id="photoW" value="413"></div>
-<div><label>Height (px)</label><input type="number" id="photoH" value="531"></div>
-<div><label>Target maximum size (KB)</label><input type="number" id="photoKB" value="50"></div>
-<div><label>Output format</label><select id="photoFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>
+<div><label>Compression Profile</label><select id="pdfSmartProfile"><option value="balanced">Smart Hybrid · Recommended</option><option value="quality">Lossless · Preserve text & vector</option><option value="small">Maximum reduction · Raster fallback</option></select></div>
+<div><label>Batch PDFs (multiple files)</label><input id="pdfBatchFiles" type="file" accept="application/pdf" multiple></div>
+<div><label>OCR Language</label><select id="pdfOcrLang"><option value="eng">English</option><option value="hin">Hindi</option><option value="eng+hin">Hindi + English</option></select></div>
 </div>
-<label>Crop / preview</label><div><img id="photoPreview" class="preview" alt="Photo preview" style="display:none"></div>
-<div class="row"><button class="action" id="makePhoto">Resize & Compress</button><button class="action secondary" id="downloadPhoto" disabled>Download image</button></div>
-<div id="photoStatus" class="status">Image चुनें और dimensions / KB सेट करें।</div>
+<div class="row" style="margin-top:10px"><button class="btn primary" id="pdfBatchCompress" type="button">Compress All & Download ZIP</button><button class="btn" id="pdfOcrBtn" type="button">OCR · Extract Text</button><button class="btn" id="pdfHistoryClear" type="button">Clear Session History</button></div>
+<p class="hint">पहले lossless optimization होगा, जिससे text और vector content सुरक्षित रहता है। जरूरत पड़ने पर ही चुनी गई profile के अनुसार raster fallback इस्तेमाल होगा। OCR अलग TXT फाइल बनाता है।</p>
+<div id="pdfOcrStatus" class="status" aria-live="polite"></div><div id="pdfHistory" class="small" style="margin-top:8px"></div>
 </div>
-</section>
-
-<section id="typing" class="panel">
-<div class="card">
-<h2>Government Vacancy Typing Test</h2>
+<div class="grid" style="margin-top:12px"><div><label>Images to PDF</label><input id="imagesPdf" type="file" accept="image/*" multiple><button class="btn" id="imagesToPdf">Create PDF</button></div><div><label>PDF page thumbnails</label><div id="pdfPages" class="row"></div></div></div>
+<div id="pdfStatus" class="status" role="status" aria-live="polite"></div>
+<div id="pdfProgressWrap" class="hidden" style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fbff"><div class="row" style="justify-content:space-between"><strong id="pdfProgressText">प्रक्रिया शुरू हो रही है…</strong><strong id="pdfProgressPct">0%</strong></div><div class="progress" style="margin-top:8px"><span id="pdfProgressBar" style="width:0%"></span></div></div>
+<div id="pdfResult" class="hidden" style="margin:12px 0;padding:14px;border:1px solid #b7e4cd;border-radius:12px;background:#f0fdf4"><h3 style="margin:0 0 10px;color:#166534">Compression Comparison</h3><div class="statgrid"><div class="stat"><span class="small">Original Size</span><b id="pdfOriginalSize">—</b></div><div class="stat"><span class="small">Compressed Size</span><b id="pdfCompressedSize">—</b></div><div class="stat"><span class="small">Space Saved</span><b id="pdfSavedSize">—</b></div><div class="stat"><span class="small">Reduction</span><b id="pdfSavedPct">—</b></div></div><p class="small" id="pdfCompareNote" style="margin:10px 0"></p><button class="btn primary" id="pdfDownloadResult" type="button">Download Compressed PDF</button></div>
+<div class="grid" style="margin-top:12px"><div><h3>Original Preview</h3><canvas id="pdfBeforePreview" class="preview"></canvas></div><div><h3>Compressed Preview</h3><canvas id="pdfAfterPreview" class="preview"></canvas></div></div>
+<div id="pdfPreview" class="grid"></div>
+<div class="card" style="margin-top:14px;background:#f8fbff" id="pdfPasswordCard">
+<h3>PDF Password Protection</h3>
+<p class="hint">AES पासवर्ड सुरक्षा · फाइल आपके ब्राउज़र में ही प्रोसेस होगी।</p>
 <div class="grid">
-<div><label>Language</label><select id="typingLang"><option value="en">English</option><option value="hi">Hindi (Unicode / Inscript or phonetic input)</option></select></div>
-<div><label>Display font</label><select id="typingFont"><option value="unicode">Unicode</option><option value="devlys">DevLys 010 display</option><option value="krutidev">Kruti Dev display</option></select></div>
-<div><label>Duration</label><select id="typingDuration"><option value="1">1 minute</option><option value="5" selected>5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option></select></div>
-<div><label>Backspace mode</label><select id="backspaceMode"><option value="allow">Backspace allowed</option><option value="lock">Backspace disabled (exam mode)</option></select></div>
+<div><label>Open Password (PDF खोलने के लिए)</label><input id="pdfUserPassword" type="password" autocomplete="new-password" placeholder="कम से कम 8 अक्षर"></div>
+<div><label>Owner Password (सुरक्षा/अनुमतियों के लिए)</label><input id="pdfOwnerPassword" type="password" autocomplete="new-password" placeholder="अलग मजबूत पासवर्ड"></div>
+<div><label>Encryption / Reader Compatibility</label><select id="pdfEncryption"><option value="128" selected>AES-128 · Adobe Reader 7.0 और बाद के संस्करण</option><option value="256">AES-256 · आधुनिक Adobe Reader (नया संस्करण)</option></select></div>
+<div><label>Permissions</label><select id="pdfPermission"><option value="standard">Print allowed · Copy/Edit restricted</option><option value="full">All actions allowed</option><option value="strict">Print, Copy & Edit restricted</option></select></div>
 </div>
-<h3>Passage</h3><div id="typingPassage" class="typing-area">Success comes from regular practice, patience and discipline. A good typist focuses on accuracy first and gradually improves speed. Keep your fingers relaxed and maintain a steady rhythm.</div>
-<div class="row"><button class="action" id="newPassage">New passage</button><button class="action" id="startTyping">Start test</button><button class="action danger" id="resetTyping">Reset</button><div class="metric"><b id="typingClock">05:00</b><span class="small">Time remaining</span></div></div>
-<label>यहाँ typing करें</label><textarea id="typingInput" placeholder="Start test दबाने के बाद यहाँ typing करें..." disabled></textarea>
+<div class="row" style="margin-top:10px"><button class="btn primary" id="pdfLockBtn" type="button">Protect PDF · AES</button><input id="pdfUnlockPassword" type="password" autocomplete="current-password" placeholder="मौजूदा PDF का पासवर्ड" style="max-width:260px"><button class="btn" id="pdfUnlockBtn" type="button">Unlock / Remove Password</button></div>
+<div id="pdfPasswordStatus" class="status" role="status" aria-live="polite"></div>
+</div>
+</div></section>
+
+<section class="panel" id="photo">
+<div class="card"><h2>Photo / Signature Resizer</h2><div class="grid">
+<div><label>Image चुनें</label><input type="file" id="photoFile" accept="image/*"></div>
+<div><label>Preset</label><select id="photoPreset"><option value="413x531">Passport Photo · 413×531</option><option value="200x230">Small Photo · 200×230</option><option value="140x60">Signature · 140×60</option><option value="200x100">Signature · 200×100</option><option value="custom">Custom Size</option></select></div>
+<div><label>Width (px)</label><input type="number" id="photoW" value="413" min="1"></div><div><label>Height (px)</label><input type="number" id="photoH" value="531" min="1"></div>
+<div><label>Maximum file size (KB)</label><input type="number" id="photoKB" value="50" min="1"></div><div><label>Format</label><select id="photoFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>
+<div><label>Background (JPG)</label><input type="color" id="photoBg" value="#ffffff"></div><div><label>Output DPI (print size reference)</label><select id="photoDpi"><option>300</option><option>200</option><option>150</option></select></div>
+</div><div class="row" style="margin-top:12px"><button class="btn primary" id="photoApply">Apply Crop & Resize</button><button class="btn" id="photoRotate">Rotate 90°</button><button class="btn" id="photoReset">Reset Crop</button></div>
+<div class="grid" style="margin-top:12px"><div><h3>Crop</h3><img id="photoImage" class="preview hidden" alt="Crop preview"></div><div><h3>Output Preview</h3><canvas id="photoCanvas" class="preview"></canvas><div id="photoInfo" class="small"></div><button class="btn primary" id="photoDownload" disabled>Download Image</button></div></div><div id="photoStatus" class="status"></div></div>
+</section>
+
+<section class="panel" id="typing">
+<div class="card"><h2>Typing Test</h2>
 <div class="grid">
-<div class="metric"><b id="wpm">0</b><span class="small">Gross WPM</span></div><div class="metric"><b id="accuracy">100%</b><span class="small">Accuracy</span></div><div class="metric"><b id="errors">0</b><span class="small">Errors</span></div><div class="metric"><b id="typedChars">0</b><span class="small">Typed characters</span></div>
+<div><label>Exam Profile</label><select id="typeProfile"><option value="general">General Practice</option><option value="rssb">RSSB / Rajasthan IA-style</option><option value="ssc">SSC-style Practice</option><option value="custom">Custom Practice</option></select></div>
+<div><label>Typing Language</label><select id="typeLang"><option value="en">English</option><option value="hi">Hindi</option></select></div>
+<div><label>Hindi Keyboard Layout</label><select id="typeLayout"><option value="remington">Remington GAIL / DevLys-Kruti Practice</option><option value="inscript">Inscript</option><option value="phonetic">Phonetic</option></select></div>
+<div><label>Display / Input Font</label><select id="typeFont"><option value="unicode">Unicode</option><option value="devlys">DevLys 010</option><option value="kruti">Kruti Dev 010</option></select></div>
+<div><label>Test Duration</label><select id="typeDuration"><option value="1">1 Minute</option><option value="5" selected>5 Minutes</option><option value="10">10 Minutes</option><option value="15">15 Minutes</option></select></div>
+<div><label>Backspace</label><select id="typeBackspace"><option value="yes">Allowed</option><option value="rssb">Word Lock</option><option value="no">Disabled</option></select></div>
+<div><label>Passage</label><select id="typePassage"><option value="0">Passage 1</option><option value="1">Passage 2</option><option value="2">Passage 3</option></select></div>
 </div>
-<div id="typingStatus" class="status">Typing test शुरू करने के लिए Start test दबाएँ।</div>
-<p class="small">महत्वपूर्ण: DevLys/Kruti Dev यहाँ केवल display-font विकल्प हैं। सही legacy keyboard layout conversion / exam-grade mapping इस tool में शामिल नहीं है। Hindi typing के लिए अपने system/mobile का Hindi input (Unicode) इस्तेमाल करें।</p>
-</div>
-</section>
-
-<section id="excel" class="panel">
-<div class="card">
-<h2>Excel Reader & Basic Tools</h2>
-<label>Excel / CSV file</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv">
-<div class="row"><div><label>Worksheet</label><select id="sheetSelect"></select></div><button class="action" id="loadExcel">Read file</button><button class="action secondary" id="downloadCsv">Download current sheet as CSV</button></div>
-<div id="excelStatus" class="status">Excel file चुनें।</div><div id="excelTable" style="overflow:auto;max-height:440px"></div>
-</div>
-<div class="card">
-<h2>Bulk Text Font Preview</h2>
-<label>Text paste करें</label><textarea id="bulkText" placeholder="यहाँ text paste करें..."></textarea>
-<div class="row"><button class="action secondary" id="copyBulk">Copy text</button><button class="action secondary" id="clearBulk">Clear</button></div>
-<p class="small">यह bulk text area है। Legacy DevLys/Kruti Dev text का सही Unicode conversion करने के लिए verified key-mapping table आवश्यक है; केवल font बदलने से conversion नहीं होता।</p>
+<div class="row" style="margin:12px 0"><button class="btn" id="loadDevlysFont">Load DevLys Font</button><button class="btn" id="loadKrutiFont">Load Kruti Dev Font</button><input type="file" id="devlysFont" accept=".ttf,.otf,font/ttf" hidden><input type="file" id="krutiFont" accept=".ttf,.otf,font/ttf" hidden></div>
+<div class="row" style="margin:12px 0"><button class="btn primary" id="typeStart">Start Test</button><button class="btn" id="typeReset">Reset</button><button class="btn" id="typePrint">Print Result</button></div>
+<div class="statgrid"><div class="stat"><span class="small">Time Left</span><b id="typeTime">05:00</b></div><div class="stat"><span class="small">Gross WPM</span><b id="typeGross">0</b></div><div class="stat"><span class="small">Net WPM</span><b id="typeNet">0</b></div><div class="stat"><span class="small">Accuracy</span><b id="typeAccuracy">100%</b></div><div class="stat"><span class="small">Char. Errors</span><b id="typeErrors">0</b></div><div class="stat"><span class="small">Characters</span><b id="typeChars">0</b></div></div>
+<div class="progress" style="margin:12px 0"><span id="typeProgress"></span></div>
+<h3>Passage</h3><div id="typingPassage">यहाँ परीक्षा का passage दिखाई देगा।</div>
+<h3>Your Typing</h3><textarea id="typingInput" placeholder="Start Test दबाकर यहाँ टाइप करें..." disabled spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+<div id="typingResult" class="status"></div><div id="fontStatus" class="status" aria-live="polite"></div>
 </div>
 </section>
 
-<section id="calc" class="panel">
-<div class="card"><h2>Age Calculator</h2><div class="grid"><div><label>Date of birth</label><input type="date" id="dob"></div><div><label>Calculate as on</label><input type="date" id="asOn"></div></div><button class="action" id="ageCalc">Calculate age</button><div id="ageResult" class="status"></div></div>
-<div class="card"><h2>Percentage Calculator</h2><div class="grid"><div><label>Obtained marks / value</label><input type="number" id="obtained"></div><div><label>Total marks / value</label><input type="number" id="total"></div></div><button class="action" id="percentCalc">Calculate percentage</button><div id="percentResult" class="status"></div></div>
-<div class="card"><h2>GST Calculator</h2><div class="grid"><div><label>Amount (₹)</label><input type="number" id="gstAmount"></div><div><label>GST rate (%)</label><select id="gstRate"><option>0</option><option>5</option><option>12</option><option selected>18</option><option>28</option></select></div><div><label>Calculation</label><select id="gstType"><option value="add">Add GST</option><option value="remove">Remove GST (inclusive)</option></select></div></div><button class="action" id="gstCalc">Calculate GST</button><div id="gstResult" class="status"></div></div>
-<div class="card"><h2>TDS Calculator</h2><div class="grid"><div><label>Payment amount (₹)</label><input type="number" id="tdsAmount"></div><div><label>TDS rate (%)</label><input type="number" id="tdsRate" value="2" step=".1"></div></div><button class="action" id="tdsCalc">Calculate TDS</button><div id="tdsResult" class="status"></div><p class="small">TDS rate transaction type, PAN, threshold और applicable law पर निर्भर करती है। सही दर स्वयं verify करें।</p></div>
-</section>
+<section class="panel" id="excel">
+<div class="card"><h2>Excel / CSV Tools</h2><div class="grid"><div><label>Excel / CSV File</label><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div><div><label>Worksheet</label><select id="excelSheet" disabled></select></div><div><label>Search</label><input id="excelSearch" placeholder="Search in visible sheet"></div></div>
+<div class="row" style="margin:12px 0"><button class="btn primary" id="excelLoad">Load File</button><button class="btn" id="excelSearchBtn">Find</button><button class="btn" id="excelRemoveBlank">Remove Blank Rows</button><button class="btn" id="excelRemoveDup">Remove Duplicate Rows</button><button class="btn" id="excelCsv">Export CSV</button><button class="btn" id="excelXlsx">Export XLSX</button></div>
+<div class="grid"><div><label>Find text</label><input id="excelFind" placeholder="Text to find"></div><div><label>Replace with</label><input id="excelReplace" placeholder="Replacement"></div><div><label>Sort by column number (1-based)</label><input type="number" id="excelSortCol" min="1" value="1"></div><div><label>Sort order</label><select id="excelSortOrder"><option value="asc">Ascending</option><option value="desc">Descending</option></select></div></div>
+<div class="row" style="margin-top:10px"><button class="btn" id="excelReplaceBtn">Replace All</button><button class="btn" id="excelSortBtn">Sort Rows</button></div>
+<div id="excelStatus" class="status"></div><div class="sheetwrap" style="margin-top:12px"><table id="excelTable"></table></div>
+<p class="hint">Note: spreadsheet formulas and advanced Excel formatting may not survive CSV export. XLSX export preserves cell data and sheet names, but not every advanced workbook feature.</p></div></section>
 
-<section id="number" class="panel">
-<div class="card"><h2>Number to Words (Indian System)</h2><label>Number</label><input id="numberInput" type="number" step="any" placeholder="उदा. 123456.75"><button class="action" id="numberConvert">Convert to words</button><div id="numberResult" class="status"></div></div>
-</section>
+<section class="panel" id="calc">
+<div class="card"><h2>Calculators</h2><div class="grid">
+<div class="card"><h3>Age Calculator</h3><label>Date of Birth</label><input type="date" id="dob"><label>Calculate As On</label><input type="date" id="asOn"><button class="btn primary" id="ageCalc">Calculate Age</button><div id="ageResult" class="status"></div></div>
+<div class="card"><h3>Percentage Calculator</h3><label>Obtained Marks</label><input type="number" id="obtained" min="0"><label>Total Marks</label><input type="number" id="totalMarks" min="0"><button class="btn primary" id="percentCalc">Calculate</button><div id="percentResult" class="status"></div></div>
+<div class="card"><h3>GST Calculator</h3><label>Amount</label><input type="number" id="gstAmount" min="0"><label>GST Rate</label><select id="gstRate"><option>0</option><option>5</option><option>12</option><option selected>18</option><option>28</option></select><label>Tax Type</label><select id="gstType"><option value="intra">Intra-state (CGST + SGST)</option><option value="inter">Inter-state (IGST)</option></select><label>Amount Type</label><select id="gstMode"><option value="exclusive">Before GST</option><option value="inclusive">GST Included</option></select><button class="btn primary" id="gstCalc">Calculate GST</button><div id="gstResult" class="status"></div></div>
+<div class="card"><h3>TDS Calculator</h3><label>Payment Amount</label><input type="number" id="tdsAmount" min="0"><label>TDS Rate (%)</label><input type="number" id="tdsRate" min="0" step=".01" value="2"><label>Section (reference only)</label><select id="tdsSection"><option value="user">Rate entered manually</option><option value="194C">194C - Contractor</option><option value="194J">194J - Professional/Technical</option><option value="194I">194I - Rent</option><option value="194H">194H - Commission</option></select><button class="btn primary" id="tdsCalc">Calculate TDS</button><div id="tdsResult" class="status"></div><p class="hint">TDS rate, threshold, PAN status and applicability depend on the financial year and facts. Verify the applicable law before deduction.</p></div>
+</div></div></section>
+
+<section class="panel" id="words">
+<div class="card"><h2>Number to Words</h2><div class="grid"><div><label>Amount / Number</label><input id="numberInput" type="number" step="0.01" placeholder="उदा. 125430.50"></div><div><label>Language</label><select id="numberLang"><option value="en">English</option><option value="hi">हिंदी</option></select></div><div><label>Format</label><select id="numberFormat"><option value="currency">Rupees / रुपये</option><option value="number">Number only</option></select></div></div><div class="row" style="margin-top:12px"><button class="btn primary" id="numberConvert">Convert</button><button class="btn" id="numberCopy">Copy</button></div><div id="numberResult" class="status"></div></div></section>
+<footer class="small" style="text-align:center;padding:16px">© SHREE VAISHNAVI COMPUTERS · Browser-based processing · Keep a backup of original files</footer>
 </div>
-<footer>© SHREE VAISHNAVI COMPUTERS · Browser-based tools · Your files stay on your device</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-function status(id,msg,type=""){const e=$(id);e.textContent=msg;e.className="status "+type}
-function downloadBlob(blob,name){const a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-function safeName(s){return (s||"document").replace(/[^\w.-]+/g,"_")}
-document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab))}));
+function msg(id,text,type="info"){const e=$(id);e.textContent=text;e.className="status "+type}
+function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+function fileBytes(file){return file.arrayBuffer()}
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab))}));
 
-// PDF tools
-let pdfItems=[],pdfDocPreview=null,currentPage=1,selectedPreviewPage=1;
-const pdfBytes=async item=>new Uint8Array(await item.file.arrayBuffer());
-function parsePages(s,total){if(!s.trim())return [];let set=new Set();for(const part of s.split(",")){const p=part.trim();if(!p)continue;if(p.includes("-")){const [a,b]=p.split("-").map(Number);if(!Number.isInteger(a)||!Number.isInteger(b)||a<1||b<a||b>total)throw Error("Invalid page range: "+p);for(let i=a;i<=b;i++)set.add(i-1)}else{const n=Number(p);if(!Number.isInteger(n)||n<1||n>total)throw Error("Invalid page number: "+p);set.add(n-1)}}return [...set].sort((a,b)=>a-b)}
-function selectedPdf(){const i=Number($("mainPdf").value);if(!Number.isInteger(i)||!pdfItems[i])throw Error("पहले main PDF चुनें।");return pdfItems[i]}
-function secondPdf(){const i=Number($("insertPdf").value);if(!Number.isInteger(i)||!pdfItems[i])throw Error("दूसरी PDF चुनें।");return pdfItems[i]}
-async function loadPdfLib(item){return await PDFLib.PDFDocument.load(await pdfBytes(item))}
-async function savePdf(doc,name){const bytes=await doc.save();downloadBlob(new Blob([bytes],{type:"application/pdf"}),name)}
-$("pdfFiles").addEventListener("change",()=>{pdfItems=[...$("pdfFiles").files].map(file=>({file}));for(const id of ["mainPdf","insertPdf"]){$(id).innerHTML='<option value="">Select PDF</option>';pdfItems.forEach((p,i)=>{const o=document.createElement("option");o.value=i;o.textContent=p.file.name;$(id).appendChild(o)})}if(pdfItems.length){$("mainPdf").value="0";$("insertPdf").value=pdfItems.length>1?"1":""}status("pdfStatus",pdfItems.length+" PDF file(s) loaded.","good")});
-async function renderPreview(){try{if(!window.pdfjsLib)throw Error("PDF preview library load नहीं हुई। Internet connection जाँचें।");const item=selectedPdf();const task=pdfjsLib.getDocument({data:await pdfBytes(item)});pdfDocPreview=await task.promise;currentPage=Math.min(Math.max(1,currentPage),pdfDocPreview.numPages);await drawPage();status("pdfStatus",item.file.name+" · "+pdfDocPreview.numPages+" pages loaded.","good")}catch(e){status("pdfStatus",e.message,"bad")}}
-async function drawPage(){if(!pdfDocPreview)return;const page=await pdfDocPreview.getPage(currentPage),vp=page.getViewport({scale:1.35}),c=$("pdfCanvas"),ctx=c.getContext("2d");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:ctx,viewport:vp}).promise;$("pageCounter").textContent=currentPage+" / "+pdfDocPreview.numPages;$("pageChips").innerHTML="";for(let i=1;i<=pdfDocPreview.numPages;i++){const b=document.createElement("button");b.className="page-chip"+(i===currentPage?" selected":"");b.textContent=i;b.onclick=()=>{currentPage=i;drawPage()};$("pageChips").appendChild(b)}}
-$("previewPdf").onclick=renderPreview;$("prevPage").onclick=()=>{if(pdfDocPreview&&currentPage>1){currentPage--;drawPage()}};$("nextPage").onclick=()=>{if(pdfDocPreview&&currentPage<pdfDocPreview.numPages){currentPage++;drawPage()}};
-$("mergePdf").onclick=async()=>{try{if(pdfItems.length<2)throw Error("Merge के लिए कम से कम 2 PDF चुनें।");const out=await PDFLib.PDFDocument.create();for(const item of pdfItems){const src=await loadPdfLib(item),pages=await out.copyPages(src,src.getPageIndices());pages.forEach(p=>out.addPage(p))}await savePdf(out,"merged.pdf");status("pdfStatus","PDF merge हो गई।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("insertPdfBtn").onclick=async()=>{try{const main=selectedPdf(),other=secondPdf(),doc=await loadPdfLib(main),src=await loadPdfLib(other),insert=await doc.copyPages(src,src.getPageIndices()),total=doc.getPageCount();let pos=$("insertPosition").value,index=total;if(pos!=="end"){const picks=parsePages($("pageRange").value,total);if(!picks.length)throw Error("Insert position के लिए page range में एक page लिखें।");index=picks[0]+(pos==="after"?1:0)}insert.forEach((p,j)=>doc.insertPage(index+j,p));await savePdf(doc,"inserted_"+safeName(main.file.name));status("pdfStatus","PDF insert हो गई।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("extractPdf").onclick=async()=>{try{const item=selectedPdf(),src=await loadPdfLib(item),inds=parsePages($("pageRange").value,src.getPageCount());if(!inds.length)throw Error("Extract करने के लिए page number लिखें।");const out=await PDFLib.PDFDocument.create(),pages=await out.copyPages(src,inds);pages.forEach(p=>out.addPage(p));await savePdf(out,"extracted.pdf");status("pdfStatus","Selected pages extract हो गए।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("deletePdf").onclick=async()=>{try{const item=selectedPdf(),doc=await loadPdfLib(item),inds=parsePages($("pageRange").value,doc.getPageCount());if(!inds.length)throw Error("Delete करने के लिए page number लिखें।");if(inds.length===doc.getPageCount())throw Error("सभी pages delete नहीं कर सकते।");inds.sort((a,b)=>b-a).forEach(i=>doc.removePage(i));await savePdf(doc,"pages_deleted.pdf");status("pdfStatus","Selected pages delete हो गए।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("rotatePdf").onclick=async()=>{try{const item=selectedPdf(),doc=await loadPdfLib(item),inds=parsePages($("pageRange").value,doc.getPageCount());if(!inds.length)throw Error("Rotate करने के लिए page number लिखें।");inds.forEach(i=>{const p=doc.getPage(i),r=p.getRotation().angle;p.setRotation(PDFLib.degrees((r+90)%360))});await savePdf(doc,"rotated.pdf");status("pdfStatus","Selected pages rotate हो गए।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("reorderPdf").onclick=async()=>{try{const item=selectedPdf(),src=await loadPdfLib(item),n=src.getPageCount(),order=parsePages($("pageRange").value,n);if(!order.length)throw Error("नया page order लिखें, जैसे 3,1,2,4");if(order.length!==n||new Set(order).size!==n)throw Error("Reorder में सभी pages को एक-एक बार लिखना जरूरी है।");const out=await PDFLib.PDFDocument.create(),pages=await out.copyPages(src,order);pages.forEach(p=>out.addPage(p));await savePdf(out,"reordered.pdf");status("pdfStatus","Pages reorder हो गए।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("numberPdf").onclick=async()=>{try{const doc=await loadPdfLib(selectedPdf()),font=await doc.embedFont(PDFLib.StandardFonts.Helvetica),pos=$("numPosition").value;doc.getPages().forEach((p,i)=>{const {width,height}=p.getSize(),y=pos.startsWith("top")?height-22:18,x=pos.endsWith("right")?width-45:width/2-10;p.drawText(String(i+1),{x,y,size:10,font,color:PDFLib.rgb(.25,.25,.25)})});await savePdf(doc,"page_numbered.pdf");status("pdfStatus","Page numbers add हो गए।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("watermarkPdf").onclick=async()=>{try{const doc=await loadPdfLib(selectedPdf()),font=await doc.embedFont(PDFLib.StandardFonts.Helvetica),txt=$("watermarkText").value||"WATERMARK";doc.getPages().forEach(p=>{const {width,height}=p.getSize();p.drawText(txt,{x:width*.15,y:height*.5,size:24,font,color:PDFLib.rgb(.75,.75,.75),opacity:.35,rotate:PDFLib.degrees(-25)})});await savePdf(doc,"watermarked.pdf");status("pdfStatus","Watermark add हो गया।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("resizePdf").onclick=async()=>{try{const doc=await loadPdfLib(selectedPdf()),s=$("pageSize").value;if(s==="keep")throw Error("पहले A4/A3/A5/Letter/Legal चुनें।");const sizes={A4:[595.28,841.89],A3:[841.89,1190.55],A5:[419.53,595.28],Letter:[612,792],Legal:[612,1008]},[w,h]=sizes[s];doc.getPages().forEach(p=>p.setSize(w,h));await savePdf(doc,"resized_"+s+".pdf");status("pdfStatus","Page canvas size "+s+" कर दिया। Content scaling नहीं की गई है; कुछ pages पर content पुराने स्थान/आकार में रह सकता है।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("compressPdf").onclick=async()=>{try{if(!window.pdfjsLib)throw Error("PDF.js library load नहीं हुई।");const item=selectedPdf(),pdf=await pdfjsLib.getDocument({data:await pdfBytes(item)}).promise,out=await PDFLib.PDFDocument.create(),q=Math.max(.2,Math.min(.9,Number($("compressQuality").value)||.6));for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i),vp=page.getViewport({scale:1.25}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",q)),bytes=new Uint8Array(await blob.arrayBuffer()),img=await out.embedJpg(bytes),p=out.addPage([vp.width,vp.height]);p.drawImage(img,{x:0,y:0,width:vp.width,height:vp.height})}await savePdf(out,"compressed_raster.pdf");status("pdfStatus","Image-based compressed PDF तैयार। ध्यान दें: text selectable/searchable नहीं रहेगा और quality कम हो सकती है।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
-$("imagesToPdf").onclick=async()=>{try{const picker=document.createElement("input");picker.type="file";picker.accept="image/jpeg,image/png";picker.multiple=true;picker.onchange=async()=>{try{const out=await PDFLib.PDFDocument.create();for(const f of picker.files){const b=new Uint8Array(await f.arrayBuffer()),img=f.type==="image/png"?await out.embedPng(b):await out.embedJpg(b),p=out.addPage([img.width,img.height]);p.drawImage(img,{x:0,y:0,width:img.width,height:img.height})}await savePdf(out,"images.pdf");status("pdfStatus","Images से PDF बन गई।","good")}catch(e){status("pdfStatus",e.message,"bad")}};picker.click()}catch(e){status("pdfStatus",e.message,"bad")}};
-$("pdfToImages").onclick=async()=>{try{if(!window.pdfjsLib)throw Error("PDF.js library load नहीं हुई।");const pdf=await pdfjsLib.getDocument({data:await pdfBytes(selectedPdf())}).promise;for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i),vp=page.getViewport({scale:1.5}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",Math.max(.3,Math.min(1,Number($("jpgQuality").value)||.85))));downloadBlob(blob,"page_"+i+".jpg")}status("pdfStatus","हर page की JPG अलग-अलग download होगी।","good")}catch(e){status("pdfStatus",e.message,"bad")}};
+// QPDF-powered browser toolkit: AES-256 encryption/decryption and lossless optimization.
+let pdfToolkitPromise=null;
+async function getPdfToolkit(){
+ if(!window.crypto||!crypto.subtle)throw Error("इस browser में सुरक्षित Web Crypto उपलब्ध नहीं है। आधुनिक Chrome/Edge में खोलें।");
+ if(!pdfToolkitPromise)pdfToolkitPromise=(async()=>{const mod=await import("https://esm.sh/pdfstudio@0.4.0");return await mod.createPdfToolkit()})();
+ return await pdfToolkitPromise;
+}
+function activePdfFile(){return $("pdfFile").files[0]||null}
+function replaceMainPdf(bytes,name){const f=new File([bytes],name,{type:"application/pdf"}),dt=new DataTransfer();dt.items.add(f);$("pdfFile").files=dt.files;return f}
+// PDF manager
+let pdfDoc=null,pdfBytes=null,selectedPages=new Set(),pdfResultBlob=null,pdfResultUrl=null,pdfHistory=[];
+function prettyBytes(n){if(n<1024)return n+" B";if(n<1024*1024)return (n/1024).toFixed(1)+" KB";return (n/1024/1024).toFixed(2)+" MB"}
+function resetPdfResult(){pdfResultBlob=null;$ ("pdfResult").classList.add("hidden");if(pdfResultUrl){URL.revokeObjectURL(pdfResultUrl);pdfResultUrl=null}}
+let pdfTaskActive=false;
+function showPdfTask(title,detail="कृपया प्रतीक्षा करें…",indeterminate=false){pdfTaskActive=true;const o=$("pdfTaskOverlay");o.classList.add("active");o.classList.toggle("indeterminate",!!indeterminate);$("pdfTaskTitle").textContent=title;$("pdfTaskDetail").textContent=detail;$("pdfTaskPct").textContent="0%";$("pdfTaskRing").style.setProperty("--pct","0deg");$("pdfTaskBar").style.width="0%"}
+function updatePdfTask(done,total,label){if(!pdfTaskActive)return;const pct=total?Math.max(0,Math.min(100,Math.round(done/total*100))):0;$("pdfTaskOverlay").classList.remove("indeterminate");$("pdfTaskTitle").textContent="कार्य प्रगति पर है";$("pdfTaskDetail").textContent=label||"PDF प्रोसेस हो रही है…";$("pdfTaskPct").textContent=pct+"%";$("pdfTaskRing").style.setProperty("--pct",(pct*3.6)+"deg");$("pdfTaskBar").style.width=pct+"%"}
+async function hidePdfTask(){if(!pdfTaskActive)return;$("pdfTaskTitle").textContent="कार्य पूरा हुआ";$("pdfTaskDetail").textContent="तैयार";$("pdfTaskPct").textContent="100%";$("pdfTaskRing").style.setProperty("--pct","360deg");$("pdfTaskBar").style.width="100%";await new Promise(r=>setTimeout(r,450));$("pdfTaskOverlay").classList.remove("active","indeterminate");pdfTaskActive=false}
+function setPdfProgress(done,total,label){const pct=total?Math.round(done/total*100):0;$("pdfProgressWrap").classList.remove("hidden");$("pdfProgressText").textContent=label;$("pdfProgressPct").textContent=pct+"%";$("pdfProgressBar").style.width=pct+"%";updatePdfTask(done,total,label)}
+function clearPdf(which){const id=which===1?"pdfFile":"pdfFile2";$(id).value="";if(which===1){pdfDoc=null;pdfBytes=null;selectedPages.clear();$("pdfFileInfo").textContent="कोई PDF चयनित नहीं";$("pdfRemove1").disabled=true;$("pdfPages").innerHTML="";$("pdfPreview").innerHTML="";resetPdfResult();$("pdfProgressWrap").classList.add("hidden");$("pdfStatus").className="status";$("pdfStatus").textContent="";}else{$("pdfFileInfo2").textContent="कोई दूसरी PDF चयनित नहीं";$("pdfRemove2").disabled=true;} }
+async function loadPdf(){const f=$("pdfFile").files[0];if(!f)throw Error("पहले PDF चुनें।");resetPdfResult();pdfBytes=await fileBytes(f);pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);selectedPages=new Set(Array.from({length:pdfDoc.getPageCount()},(_,i)=>i));$("pdfFileInfo").textContent=`${f.name} · ${prettyBytes(f.size)} · ${pdfDoc.getPageCount()} pages`;$ ("pdfRemove1").disabled=false;await renderPdfPages();msg("pdfStatus",`${pdfDoc.getPageCount()} पेज लोड हो गए।`, "good")} 
+$("pdfFile").addEventListener("change",()=>pdfAction(loadPdf,"PDF Preview"));
+$("pdfFile2").addEventListener("change",()=>{const f=$("pdfFile2").files[0];$("pdfRemove2").disabled=!f;$("pdfFileInfo2").textContent=f?`${f.name} · ${prettyBytes(f.size)}`:"कोई दूसरी PDF चयनित नहीं";});
+$("pdfRemove1").onclick=()=>clearPdf(1);$("pdfRemove2").onclick=()=>clearPdf(2);
+async function renderPdfPages(){
+ const box=$("pdfPages");box.innerHTML="";if(!pdfDoc)return;
+ let src;try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise}catch(e){box.textContent="Thumbnail preview unavailable";return}
+ for(let i=0;i<pdfDoc.getPageCount();i++){
+  updatePdfTask(i,pdfDoc.getPageCount(),`PDF Preview · पेज ${i+1}/${pdfDoc.getPageCount()}`);
+  const wrap=document.createElement("div");wrap.className="pdf-thumb"+(selectedPages.has(i)?" selected":"");wrap.draggable=false;wrap.dataset.index=i;
+  const c=document.createElement("canvas"),cap=document.createElement("div");cap.className="small";cap.textContent=`Page ${i+1}${selectedPages.has(i)?" ✓":""}`;wrap.append(c,cap);
+  const pg=await src.getPage(i+1),vp=pg.getViewport({scale:.24});c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+  // Thumbnail click only toggles selection; it must never rebuild/reorder the page list.
+  wrap.addEventListener("click",ev=>{
+   ev.preventDefault();ev.stopPropagation();
+   if(selectedPages.has(i))selectedPages.delete(i);else selectedPages.add(i);
+   wrap.classList.toggle("selected",selectedPages.has(i));
+   cap.textContent=`Page ${i+1}${selectedPages.has(i)?" ✓":""}`;
+  });
+  box.appendChild(wrap);
+ }
+}
+function addPdfHistory(label,detail){pdfHistory.unshift({label,detail,time:new Date().toLocaleTimeString()});pdfHistory=pdfHistory.slice(0,12);$("pdfHistory").innerHTML="<b>Recent session activity</b><br>"+pdfHistory.map(x=>`${x.time} · ${x.label} — ${x.detail}`).join("<br>")}
+async function refreshPdfPreview(doc){
+ pdfDoc=doc;pdfBytes=await doc.save();
+ selectedPages=new Set(Array.from({length:doc.getPageCount()},(_,i)=>i));
+ const f=activePdfFile();$("pdfFileInfo").textContent=`${f?f.name:"PDF"} · ${prettyBytes(pdfBytes.byteLength)} · ${doc.getPageCount()} pages (updated)`;
+ await renderPdfPages();
+}
+async function drawPdfFirstPage(bytes,canvasId){try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const d=await pdfjsLib.getDocument({data:bytes.slice(0)}).promise,p=await d.getPage(1),vp=p.getViewport({scale:.7}),c=$(canvasId);c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise}catch(e){}}
+async function compressPdfFile(file,profile,onProgress){
+ onProgress(0,1,`${file.name}: सुरक्षित lossless optimization शुरू…`);
+ const toolkit=await getPdfToolkit();
+ let lossless;
+ try{lossless=await toolkit.compress(file)}catch(e){throw Error("Lossless PDF optimization नहीं हो सकी। PDF password-protected या damaged हो सकती है; पहले सही password से unlock करें। विवरण: "+(e.message||e))}
+ const losslessBytes=lossless instanceof Uint8Array?lossless:new Uint8Array(lossless);
+ if(profile==="quality" || losslessBytes.length<file.size*0.985){
+  const chosen=losslessBytes.length<file.size?losslessBytes:new Uint8Array(await file.arrayBuffer());
+  const d=await pdfjsLib.getDocument({data:chosen.slice()}).promise;
+  const method=chosen===losslessBytes?"Lossless structural optimization":"PDF पहले से optimized · Original सुरक्षित रखा";
+  onProgress(1,1,"Lossless optimization पूरी · Text और vector सुरक्षित");
+  return {bytes:chosen,pages:d.numPages,method,preserved:true};
+ }
+ if(profile==="balanced"||profile==="small"){
+  onProgress(0,1,"Lossless से पर्याप्त बचत नहीं हुई · वैकल्पिक image compression जाँची जा रही है…");
+  const cfg=profile==="small"?{scale:.9,q:.42}:{scale:1.2,q:.68};
+  const raw=await file.arrayBuffer(),src=await pdfjsLib.getDocument({data:raw.slice(0)}).promise,out=await PDFLib.PDFDocument.create();
+  for(let i=1;i<=src.numPages;i++){
+   onProgress(i,src.numPages,`${file.name}: वैकल्पिक image pass · पेज ${i}/${src.numPages}`);await new Promise(r=>requestAnimationFrame(r));
+   const pg=await src.getPage(i),vp=pg.getViewport({scale:cfg.scale}),c=document.createElement("canvas");c.width=Math.ceil(vp.width);c.height=Math.ceil(vp.height);
+   await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+   const blob=await new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error("Image compression failed")),"image/jpeg",cfg.q));
+   const img=await out.embedJpg(await blob.arrayBuffer()),page=out.addPage([vp.width,vp.height]);page.drawImage(img,{x:0,y:0,width:vp.width,height:vp.height});c.width=1;c.height=1;
+  }
+  const rasterBytes=await out.save();
+  if(rasterBytes.length<Math.min(losslessBytes.length,file.size))return {bytes:rasterBytes,pages:src.numPages,method:"Lossless + adaptive raster fallback",preserved:false};
+  if(losslessBytes.length<file.size)return {bytes:losslessBytes,pages:src.numPages,method:"Lossless structural optimization",preserved:true};
+  return {bytes:new Uint8Array(raw),pages:src.numPages,method:"PDF पहले से optimized · Original सुरक्षित रखा",preserved:true};
+ }
+ return {bytes:losslessBytes,pages:0,method:"Lossless structural optimization",preserved:true};
+}
+async function getPdf(){if(!pdfDoc)await loadPdf();return pdfDoc}
+function parseRange(v,count){
+ if(!v.trim())return [...Array(count).keys()];
+ const s=new Set();
+ v.split(",").forEach(part=>{
+  const token=part.trim(),a=token.split("-").map(x=>x.trim());
+  if(a.length===1&&/^\d+$/.test(a[0])){const n=Number(a[0]);if(n<1||n>count)throw Error(`Page ${n} उपलब्ध सीमा 1-${count} से बाहर है।`);s.add(n-1);return}
+  if(a.length===2&&a.every(x=>/^\d+$/.test(x))){const first=Number(a[0]),last=Number(a[1]);if(first<1||last>count||first>last)throw Error(`Page range '${token}' सही नहीं है। सीमा 1-${count} है।`);for(let n=first;n<=last;n++)s.add(n-1);return}
+  throw Error(`Page range '${token}' गलत है। उदाहरण: 1,3,5-7`)
+ });
+ return [...s].sort((a,b)=>a-b)
+}
+async function savePdf(doc,name="document.pdf"){downloadBlob(new Blob([await doc.save()],{type:"application/pdf"}),name)}
+async function pdfAction(fn,label="PDF कार्य"){showPdfTask(label,"फाइल प्रोसेस हो रही है…",true);try{await fn()}catch(e){msg("pdfStatus",e.message||String(e),"bad")}finally{await hidePdfTask()}}
+$("pdfLoad").onclick=()=>pdfAction(loadPdf,"PDF Preview");
+$("pdfMerge").onclick=()=>pdfAction(async()=>{const a=await getPdf(),f=$("pdfFile2").files[0];if(!f)throw Error("दूसरी PDF चुनें।");const b=await PDFLib.PDFDocument.load(await fileBytes(f)),out=await PDFLib.PDFDocument.create();for(let si=0;si<2;si++){const src=[a,b][si];updatePdfTask(si,2,`PDF Merge · दस्तावेज़ ${si+1}/2`);const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(p=>out.addPage(p))}await savePdf(out,"merged.pdf");msg("pdfStatus","PDF merge हो गई।","good")},"PDF Merge");
+$("pdfInsert").onclick=()=>pdfAction(async()=>{const a=await getPdf(),f=$("pdfFile2").files[0];if(!f)throw Error("दूसरी PDF चुनें।");const b=await PDFLib.PDFDocument.load(await fileBytes(f)),pages=await a.copyPages(b,b.getPageIndices());let at=Math.min(...selectedPages)+1;if(!Number.isFinite(at))at=a.getPageCount();pages.forEach((p,i)=>{updatePdfTask(i,pages.length,`PDF Insert · पेज ${i+1}/${pages.length}`);a.insertPage(at+i,p)});await savePdf(a,"inserted.pdf");await refreshPdfPreview(a);msg("pdfStatus","दूसरी PDF चयनित पेज के बाद insert की गई।","good")},"PDF Insert");
+$("pdfExtract").onclick=()=>pdfAction(async()=>{const a=await getPdf(),idx=parseRange($("pdfRange").value,a.getPageCount()),o=await PDFLib.PDFDocument.create();(await o.copyPages(a,idx)).forEach((p,i)=>{updatePdfTask(i,idx.length,`Pages Extract · ${i+1}/${idx.length}`);o.addPage(p)});await savePdf(o,"extracted-pages.pdf");msg("pdfStatus","Selected pages extract हो गए।","good")},"PDF Pages Extract");
+$("pdfDelete").onclick=()=>pdfAction(async()=>{const a=await getPdf(),idx=parseRange($("pdfRange").value,a.getPageCount()).sort((x,y)=>y-x);if(idx.length===a.getPageCount())throw Error("सभी pages delete नहीं कर सकते।");idx.forEach((i,n)=>{updatePdfTask(n,idx.length,`Pages Delete · ${n+1}/${idx.length}`);a.removePage(i)});await savePdf(a,"pages-deleted.pdf");await refreshPdfPreview(a);msg("pdfStatus","Pages delete कर दिए गए।","good")},"PDF Pages Delete");
+$("pdfRotateBtn").onclick=()=>pdfAction(async()=>{const a=await getPdf(),deg=Number($("pdfRotate").value);Array.from(selectedPages).forEach((i,n)=>{updatePdfTask(n,selectedPages.size,`PDF Rotate · ${n+1}/${selectedPages.size}`);const p=a.getPage(i);p.setRotation(PDFLib.degrees((p.getRotation().angle+deg)%360))});await savePdf(a,"rotated.pdf");await refreshPdfPreview(a);msg("pdfStatus","Selected pages rotate हो गए।","good")},"PDF Rotate");
+$("pdfReorder").onclick=()=>pdfAction(async()=>{const a=await getPdf(),order=$("pdfOrder").value.split(",").map(x=>Number(x.trim())-1);if(order.length!==a.getPageCount()||new Set(order).size!==order.length||order.some(i=>!Number.isInteger(i)||i<0||i>=a.getPageCount()))throw Error("सभी page numbers का सही पूर्णांक क्रम दें; हर page number एक बार होना चाहिए।");const o=await PDFLib.PDFDocument.create();(await o.copyPages(a,order)).forEach((p,i)=>{updatePdfTask(i,order.length,`PDF Reorder · ${i+1}/${order.length}`);o.addPage(p)});await savePdf(o,"reordered.pdf");await refreshPdfPreview(o);msg("pdfStatus","Pages reorder हो गए।","good")},"PDF Reorder Pages");
+$("pdfResize").onclick=()=>pdfAction(async()=>{const a=await getPdf(),size=$("pdfSize").value;let w=595.28,h=841.89;if(size==="letter"){w=612;h=792}a.getPages().forEach((p,i)=>{updatePdfTask(i,a.getPageCount(),`Page Size · ${i+1}/${a.getPageCount()}`);if(size!=="fit")p.setSize(w,h)});await savePdf(a,"resized-canvas.pdf");await refreshPdfPreview(a);msg("pdfStatus","Page canvas बदला गया। ध्यान दें: मौजूदा content को scale/center नहीं किया गया है।","info")},"PDF Page Size");
+$("pdfWatermarkBtn").onclick=()=>pdfAction(async()=>{const a=await getPdf(),t=$("pdfWatermark").value.trim();if(!t)throw Error("Watermark text लिखें।");a.getPages().forEach((p,i)=>{updatePdfTask(i,a.getPageCount(),`Watermark · ${i+1}/${a.getPageCount()}`);const {width,height}=p.getSize();p.drawText(t,{x:width*.2,y:height*.5,size:34,opacity:.25,rotate:PDFLib.degrees(-35),color:PDFLib.rgb(.5,.5,.5)})});await savePdf(a,"watermarked.pdf");await refreshPdfPreview(a);msg("pdfStatus","Watermark add हो गया। Standard font में Devanagari glyph support सीमित है।","good")},"PDF Watermark");
+$("pdfNumbers").onclick=()=>pdfAction(async()=>{const a=await getPdf();a.getPages().forEach((p,i)=>{updatePdfTask(i,a.getPageCount(),`Page Numbers · ${i+1}/${a.getPageCount()}`);const {width,height}=p.getSize();p.drawText(String(i+1),{x:width/2,y:$("pdfNumPos").value==="top"?height-24:18,size:10})});await savePdf(a,"page-numbered.pdf");await refreshPdfPreview(a);msg("pdfStatus","Page numbers add हो गए।","good")},"PDF Page Numbers");
+$("pdfCompress").onclick=()=>pdfAction(async()=>{
+ const f=$("pdfFile").files[0];if(!f)throw Error("पहले PDF चुनें।");if(!window.pdfjsLib)throw Error("PDF.js load नहीं हुआ।");
+ resetPdfResult();$("pdfCompress").disabled=true;showPdfTask("PDF Compression","तैयारी हो रही है…",false);setPdfProgress(0,1,"Compression शुरू हो रही है…");
+ try{const originalBytes=await f.arrayBuffer();await drawPdfFirstPage(originalBytes,"pdfBeforePreview");const result=await compressPdfFile(f,$("pdfSmartProfile").value,setPdfProgress);pdfResultBlob=new Blob([result.bytes],{type:"application/pdf"});await drawPdfFirstPage(result.bytes,"pdfAfterPreview");
+ const original=f.size,compressed=pdfResultBlob.size,saved=original-compressed,pct=saved/original*100;
+ $("pdfOriginalSize").textContent=prettyBytes(original);$("pdfCompressedSize").textContent=prettyBytes(compressed);$("pdfSavedSize").textContent=(saved>=0?prettyBytes(saved):"+"+prettyBytes(-saved));$("pdfSavedPct").textContent=(saved>=0?pct.toFixed(1)+"% बचत":Math.abs(pct).toFixed(1)+"% आकार बढ़ा");
+ $("pdfCompareNote").textContent=`${result.pages||"PDF"} pages processed · ${result.method}. ${result.preserved?"Text selection, search और vector content सुरक्षित रखा गया है।":"इस बार छोटा आकार पाने के लिए pages को images में बदला गया; text selection/search उपलब्ध नहीं रहेगा।"} Original और compressed preview ऊपर देखें।`;
+ $("pdfResult").classList.remove("hidden");if(pdfResultUrl)URL.revokeObjectURL(pdfResultUrl);pdfResultUrl=URL.createObjectURL(pdfResultBlob);$("pdfDownloadResult").onclick=()=>downloadBlob(pdfResultBlob,"compressed-raster.pdf");setPdfProgress(1,1,"Compression पूरी हुई");msg("pdfStatus",`Compression पूरी हुई · Original ${prettyBytes(original)} · Output ${prettyBytes(compressed)} · ${saved>=0?pct.toFixed(1)+"% बचत":"आकार बढ़ा"}`,saved>0?"good":"info");addPdfHistory("Single PDF compression",`${f.name}: ${prettyBytes(original)} → ${prettyBytes(compressed)}`);
+ }finally{$("pdfCompress").disabled=false;await hidePdfTask();}
+});
+// PDF password operations use qpdf WASM (PDFStudio wrapper); AES-128 is the compatibility default, AES-256 is optional.
+$("pdfLockBtn").onclick=async()=>{
+ const f=activePdfFile(),user=$("pdfUserPassword").value,owner=$("pdfOwnerPassword").value,btn=$("pdfLockBtn");
+ if(!f){msg("pdfPasswordStatus","पहले मुख्य PDF चुनें।","bad");return}
+ if(user.length<8||owner.length<8){msg("pdfPasswordStatus","दोनों पासवर्ड कम से कम 8 अक्षरों के रखें।","bad");return}
+ if(user===owner){msg("pdfPasswordStatus","Open और Owner पासवर्ड अलग रखें।","bad");return}
+ btn.disabled=true;showPdfTask("PDF Password Protection","सुरक्षा लागू की जा रही है…",true);msg("pdfPasswordStatus","PDF पर चुनी गई AES encryption लागू हो रही है…","info");
+ try{const toolkit=await getPdfToolkit(),permission=$("pdfPermission").value,keyLength=Number($("pdfEncryption").value||128),locked=await toolkit.lock(f,{userPassword:user,ownerPassword:owner,keyLength,permissions:permission==="full"?{print:"full",modify:"all",extract:true}:permission==="strict"?{print:"none",modify:"none",extract:false}:{print:"full",modify:"none",extract:false}});const bytes=locked instanceof Uint8Array?locked:new Uint8Array(locked);downloadBlob(new Blob([bytes],{type:"application/pdf"}),f.name.replace(/\.pdf$/i,"")+"-protected.pdf");const encLabel=keyLength===128?"AES-128 (Adobe Reader 7+)":"AES-256 (modern Reader)";msg("pdfPasswordStatus",`PDF पर ${encLabel} password protection लगा दी गई। Adobe Reader में compatibility के लिए AES-128 default रखा गया है। डाउनलोड की गई फाइल खोलकर पासवर्ड जाँचें।`,"good");addPdfHistory("PDF protected",encLabel+" · "+f.name);$("pdfUserPassword").value="";$("pdfOwnerPassword").value=""}
+ catch(e){msg("pdfPasswordStatus","Password protection पूरी नहीं हुई: "+(e.message||String(e)),"bad")}finally{btn.disabled=false;await hidePdfTask()}
+};
+$("pdfUnlockBtn").onclick=async()=>{
+ const f=activePdfFile(),password=$("pdfUnlockPassword").value,btn=$("pdfUnlockBtn");
+ if(!f){msg("pdfPasswordStatus","पहले password वाली PDF चुनें।","bad");return}
+ if(!password){msg("pdfPasswordStatus","PDF का मौजूदा पासवर्ड भरें।","bad");return}
+ btn.disabled=true;showPdfTask("PDF Unlock","पासवर्ड जाँचा जा रहा है…",true);msg("pdfPasswordStatus","पासवर्ड जाँचा जा रहा है और PDF unlock हो रही है…","info");
+ try{const toolkit=await getPdfToolkit(),plain=await toolkit.unlock(f,{password}),bytes=plain instanceof Uint8Array?plain:new Uint8Array(plain);const unlocked=replaceMainPdf(bytes,f.name.replace(/\.pdf$/i,"")+"-unlocked.pdf");$("pdfUnlockPassword").value="";await loadPdf();msg("pdfPasswordStatus","सही पासवर्ड। PDF unlock हो गई है और अब बाकी PDF tools में इस्तेमाल कर सकते हैं।","good");addPdfHistory("PDF unlocked",unlocked.name)}
+ catch(e){msg("pdfPasswordStatus","PDF unlock नहीं हुई। पासवर्ड गलत हो सकता है या फाइल इस encryption format में समर्थित नहीं है। विवरण: "+(e.message||String(e)),"bad")}finally{btn.disabled=false;await hidePdfTask()}
+};
+$("pdfBatchCompress").onclick=async()=>{const files=[...$("pdfBatchFiles").files];if(!files.length){msg("pdfStatus","Batch के लिए एक या अधिक PDF चुनें।","bad");return}if(!window.JSZip){msg("pdfStatus","ZIP library load नहीं हुई। Internet connection जाँचें।","bad");return}const btn=$("pdfBatchCompress");btn.disabled=true;const zip=new JSZip();showPdfTask("Batch PDF Compression",`${files.length} PDF फाइलें प्रोसेस होंगी…`,false);try{for(let i=0;i<files.length;i++){setPdfProgress(i,files.length,`Batch ${i+1}/${files.length}: ${files[i].name}`);const r=await compressPdfFile(files[i],$("pdfSmartProfile").value,(d,t,l)=>setPdfProgress(i+d/t,files.length,l));zip.file(files[i].name.replace(/\.pdf$/i,"")+"-compressed.pdf",r.bytes);addPdfHistory("Batch compression",`${files[i].name} · ${prettyBytes(files[i].size)} source`)}setPdfProgress(files.length,files.length,"ZIP तैयार हो रही है…");const blob=await zip.generateAsync({type:"blob",compression:"DEFLATE"});downloadBlob(blob,"SVC-compressed-PDFs.zip");msg("pdfStatus",`${files.length} PDF compress होकर ZIP में डाउनलोड हो गईं।`,"good");}catch(e){msg("pdfStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
+$("pdfOcrBtn").onclick=async()=>{const f=$("pdfFile").files[0];if(!f){msg("pdfOcrStatus","पहले मुख्य PDF चुनें।","bad");return}if(!window.Tesseract){msg("pdfOcrStatus","OCR library load नहीं हुई। Internet connection जाँचें।","bad");return}const btn=$("pdfOcrBtn");btn.disabled=true;showPdfTask("PDF OCR","पेज पढ़े जा रहे हैं…",false);try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,lang=$("pdfOcrLang").value;let textOut="";const worker=await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status)$("pdfOcrStatus").textContent=`OCR: ${m.status} ${m.progress?Math.round(m.progress*100)+"%":""}`}});for(let i=1;i<=doc.numPages;i++){updatePdfTask(i-1,doc.numPages,`OCR पेज ${i}/${doc.numPages}`);const page=await doc.getPage(i),vp=page.getViewport({scale:1.6}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const r=await worker.recognize(c);textOut+=`\n\n--- Page ${i} ---\n`+r.data.text;c.width=1;c.height=1;$("pdfOcrStatus").textContent=`OCR page ${i}/${doc.numPages} complete`}await worker.terminate();downloadBlob(new Blob([textOut],{type:"text/plain;charset=utf-8"}),f.name.replace(/\.pdf$/i,"")+"-OCR.txt");msg("pdfOcrStatus","OCR पूरा हुआ। निकाला गया टेक्स्ट TXT फाइल में डाउनलोड हुआ; पहचान की शुद्धता स्कैन गुणवत्ता पर निर्भर है।","good");addPdfHistory("OCR extraction",`${f.name} · ${doc.numPages} pages`)}catch(e){msg("pdfOcrStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
+$("pdfHistoryClear").onclick=()=>{pdfHistory=[];$("pdfHistory").textContent="Session history cleared."};
+$("pdfJpg").onclick=()=>pdfAction(async()=>{const a=await getPdf();pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;for(let i=1;i<=src.numPages;i++){updatePdfTask(i-1,src.numPages,`PDF to JPG · पेज ${i}/${src.numPages}`);const p=await src.getPage(i),vp=p.getViewport({scale:1.5}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.92));downloadBlob(blob,`page-${i}.jpg`)}msg("pdfStatus","हर पेज अलग JPG में डाउनलोड किया गया।","good")},"PDF to JPG");
+$("imagesToPdf").onclick=()=>pdfAction(async()=>{const fs=[...$("imagesPdf").files];if(!fs.length)throw Error("Images चुनें।");const d=await PDFLib.PDFDocument.create();for(let i=0;i<fs.length;i++){updatePdfTask(i,fs.length,`Images to PDF · ${i+1}/${fs.length}`);const f=fs[i],b=await fileBytes(f),im=f.type==="image/png"?await d.embedPng(b):await d.embedJpg(b),p=d.addPage([im.width,im.height]);p.drawImage(im,{x:0,y:0,width:im.width,height:im.height})}await savePdf(d,"images.pdf");msg("pdfStatus","Images से PDF बन गई।","good")},"Images to PDF");
 
-// Photo / signature
-let photoImage=null,photoCropper=null,photoOutput=null;
-$("photoPreset").onchange=()=>{const v=$("photoPreset").value,vals={photo:[413,531,50],small:[200,230,30],sign:[140,60,20],sign2:[200,100,30]};if(vals[v]){$("photoW").value=vals[v][0];$("photoH").value=vals[v][1];$("photoKB").value=vals[v][2]}};
-$("photoFile").onchange=()=>{const f=$("photoFile").files[0];if(!f)return;const url=URL.createObjectURL(f),img=$("photoPreview");img.src=url;img.style.display="block";img.onload=()=>{if(photoCropper)photoCropper.destroy();if(window.Cropper)photoCropper=new Cropper(img,{viewMode:1,autoCropArea:1,background:false})};status("photoStatus","Image loaded. Crop area adjust कर सकते हैं।","good")};
-$("makePhoto").onclick=async()=>{try{if(!photoCropper)throw Error("पहले image चुनें और cropper load होने दें।");const w=Number($("photoW").value),h=Number($("photoH").value),kb=Number($("photoKB").value),type=$("photoFormat").value;if(w<1||h<1||kb<1)throw Error("Width, height और KB सही भरें।");const canvas=photoCropper.getCroppedCanvas({width:w,height:h,fillColor:"#fff",imageSmoothingQuality:"high"});let quality=.92,blob=await new Promise(r=>canvas.toBlob(r,type,quality));if(type==="image/jpeg"){while(blob.size>kb*1024&&quality>.25){quality-=.07;blob=await new Promise(r=>canvas.toBlob(r,type,quality))}}if(blob.size>kb*1024)throw Error("इस dimensions पर file target KB से बड़ी है। Dimensions कम करें या target KB बढ़ाएँ।");photoOutput=blob;$("downloadPhoto").disabled=false;status("photoStatus",`Ready: ${w}×${h}px · ${(blob.size/1024).toFixed(1)} KB · quality ${quality.toFixed(2)}`,"good")}catch(e){status("photoStatus",e.message,"bad")}};
-$("downloadPhoto").onclick=()=>{if(photoOutput)downloadBlob(photoOutput,"resized_photo."+$("photoFormat").value.split("/")[1])};
+// Photo cropper
+let cropper=null,photoFile=null,photoBlob=null,photoRotation=0;
+$("photoPreset").onchange=()=>{if($("photoPreset").value!=="custom"){const [w,h]=$("photoPreset").value.split("x");$("photoW").value=w;$("photoH").value=h;if(cropper)cropper.setAspectRatio(+w/+h)}};
+$("photoFile").onchange=()=>{const f=$("photoFile").files[0];if(!f)return;photoFile=f;const im=$("photoImage");im.src=URL.createObjectURL(f);im.classList.remove("hidden");im.onload=()=>{if(cropper)cropper.destroy();cropper=new Cropper(im,{viewMode:1,autoCropArea:.95,aspectRatio:+$("photoW").value/+ $("photoH").value,background:false})};msg("photoStatus","Image loaded. Crop area adjust करें।","good")};
+$("photoRotate").onclick=()=>cropper&&cropper.rotate(90);$("photoReset").onclick=()=>cropper&&cropper.reset();
+$("photoApply").onclick=async()=>{try{if(!cropper)throw Error("पहले image चुनें।");const w=+$("photoW").value,h=+$("photoH").value,kb=+$("photoKB").value;if(!(w>0&&h>0&&kb>0))throw Error("Width, height और KB सही भरें।");const c=cropper.getCroppedCanvas({width:w,height:h,fillColor:$("photoBg").value}),type=$("photoFormat").value;let quality=.92;const make=()=>new Promise(r=>c.toBlob(r,type,quality));photoBlob=await make();if(type==="image/jpeg"){while(photoBlob.size>kb*1024&&quality>.25){quality-=.05;photoBlob=await make()}}$("photoCanvas").width=w;$("photoCanvas").height=h;$("photoCanvas").getContext("2d").drawImage(c,0,0);$("photoInfo").textContent=`${w}×${h}px · ${(photoBlob.size/1024).toFixed(1)} KB · ${$("photoDpi").value} DPI पर ${(w/+$("photoDpi").value).toFixed(2)}×${(h/+$("photoDpi").value).toFixed(2)} inch`; $("photoDownload").disabled=false;if(photoBlob.size>kb*1024)msg("photoStatus","PNG में target KB guarantee नहीं होती; JPG में भी minimum quality तक पहुँचने पर size अधिक रह सकता है।","info");else msg("photoStatus","Image तैयार है।","good")}catch(e){msg("photoStatus",e.message,"bad")}};
+$("photoDownload").onclick=()=>photoBlob&&downloadBlob(photoBlob,`SVC-${$("photoW").value}x${$("photoH").value}.${$("photoFormat").value==="image/png"?"png":"jpg"}`);
 
-// Typing test
-const passages={en:["Success comes from regular practice, patience and discipline. A good typist focuses on accuracy first and gradually improves speed. Keep your fingers relaxed and maintain a steady rhythm.","Time management is an important skill for every student and professional. Plan your work carefully, avoid distractions and complete each task with attention and confidence."],hi:["नियमित अभ्यास, धैर्य और अनुशासन से सफलता प्राप्त होती है। किसी भी कार्य को बेहतर बनाने के लिए निरंतर प्रयास करना आवश्यक है। समय का सही उपयोग हमें अपने लक्ष्य तक पहुँचने में सहायता करता है।","शिक्षा व्यक्ति के जीवन में महत्वपूर्ण भूमिका निभाती है। हमें प्रतिदिन कुछ नया सीखना चाहिए और अपने ज्ञान तथा कौशल को बेहतर बनाने का प्रयास करना चाहिए।"]};
-let typingTimer=null,typingLeft=300,typingStarted=false,typingStartTime=0,typingPassageText="";
-function fmtTime(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
-function updateTyping(){const val=$("typingInput").value,expected=typingPassageText.slice(0,val.length);let err=0;for(let i=0;i<val.length;i++)if(val[i]!==typingPassageText[i])err++;const elapsed=Math.max(1,(Date.now()-typingStartTime)/60000),words=val.trim()?val.trim().split(/\s+/).length:0;$("wpm").textContent=Math.round(words/elapsed);$("accuracy").textContent=(val.length?Math.max(0,100-err/val.length*100):100).toFixed(1)+"%";$("errors").textContent=err;$("typedChars").textContent=val.length}
-function choosePassage(){const lang=$("typingLang").value,a=passages[lang];typingPassageText=a[Math.floor(Math.random()*a.length)];$("typingPassage").textContent=typingPassageText;$("typingInput").value="";$("typingInput").disabled=true;typingStarted=false;clearInterval(typingTimer);typingLeft=Number($("typingDuration").value)*60;$("typingClock").textContent=fmtTime(typingLeft);updateTyping()}
-$("newPassage").onclick=choosePassage;$("typingLang").onchange=choosePassage;$("typingDuration").onchange=()=>{typingLeft=Number($("typingDuration").value)*60;$("typingClock").textContent=fmtTime(typingLeft)};
-$("typingFont").onchange=()=>{const f=$("typingFont").value,el=$("typingPassage");el.style.fontFamily=f==="devlys"?"DevLys010":f==="krutidev"?"KrutiDev010":"inherit"};
-$("startTyping").onclick=()=>{if(typingStarted)return;typingStarted=true;typingStartTime=Date.now();$("typingInput").disabled=false;$("typingInput").focus();typingTimer=setInterval(()=>{typingLeft--;$("typingClock").textContent=fmtTime(typingLeft);updateTyping();if(typingLeft<=0){clearInterval(typingTimer);typingStarted=false;$("typingInput").disabled=true;status("typingStatus","समय पूरा। आपका test समाप्त हुआ।","good")}},1000);status("typingStatus","Test शुरू हो गया। Passage को देखकर type करें।","good")};
-$("typingInput").addEventListener("keydown",e=>{if($("backspaceMode").value==="lock"&&e.key==="Backspace")e.preventDefault()});$("typingInput").addEventListener("input",()=>{if(typingStarted)updateTyping()});
-$("resetTyping").onclick=choosePassage;choosePassage();
+// Typing Test Engine — Unicode and legacy-font input use separate, correctly scored text layers.
+const passages={
+ en:[
+ "The purpose of education is to develop knowledge, discipline and confidence. Every citizen should perform duties honestly and contribute to the progress of society. Regular practice improves speed, accuracy and concentration. A candidate should read every instruction carefully and maintain a steady rhythm throughout the examination.",
+ "Time management is an important skill in every examination. Read the instructions carefully, remain calm and maintain a steady typing rhythm. Accuracy should always be given priority over unnecessary speed. Regular practice helps candidates improve their performance.",
+ "A well-organized office saves time and improves public service. Records should be maintained carefully, applications should be processed promptly and every person should be treated with respect. Good administration depends on accuracy, responsibility and timely action."
+ ],
+ hi:[
+ "शिक्षा का उद्देश्य ज्ञान, अनुशासन और आत्मविश्वास का विकास करना है। प्रत्येक नागरिक को अपने कर्तव्यों का ईमानदारी से पालन करना चाहिए तथा समाज की प्रगति में योगदान देना चाहिए। नियमित अभ्यास से गति, शुद्धता और एकाग्रता में सुधार होता है।",
+ "समय का सही उपयोग प्रत्येक परीक्षा में सफलता के लिए आवश्यक है। निर्देशों को ध्यानपूर्वक पढ़ें, शांत रहें और नियमित अभ्यास करें। गति के साथ शुद्धता बनाए रखना भी बहुत महत्वपूर्ण है।",
+ "एक सुव्यवस्थित कार्यालय से समय की बचत होती है और नागरिकों को बेहतर सेवाएँ मिलती हैं। अभिलेखों का सही रखरखाव तथा कार्यों का समय पर निस्तारण आवश्यक है। प्रत्येक कार्य में सावधानी और जिम्मेदारी जरूरी है।"
+ ]
+};
+function unicodeToLegacyTyping(sourceText) {
+            if (!sourceText) return "";
+
+            let text = sourceText;
+
+            // 1. Parentheses to Devlys Alt+0188 (¼) & Alt+0189 (½)
+            text = text.replace(/\(/g, "¼");
+            text = text.replace(/\)/g, "½");
+
+            // 2. Currency & Basic Punctuation
+            text = text.replace(/\/\-/g, "@&");
+            text = text.replace(/\//g, "@");
+            text = text.replace(/रू\.\s*/g, ":- ");
+            text = text.replace(/रू/g, ":");
+            text = text.replace(/।/g, "A");
+
+            // 3. CRITICAL: Replace Unicode comma with Devlys ']' BEFORE replacing 'ए' with ','
+            text = text.replace(/,\s*/g, "] ");
+            text = text.replace(/,/g, "]");
+
+            // 4. High-Priority Words (MUST be before general character/vowel replacements)
+            text = text.replace(/विरूद्ध/g, "fo:)");
+            text = text.replace(/विरुद्ध/g, "fo:)");
+            text = text.replace(/मैंनें/g, "eSuas");
+            text = text.replace(/मैंने/g, "eSuas");
+            text = text.replace(/प्रियदर्शिनी/g, "fiz;nf'kZuh");
+            text = text.replace(/ऑनलाइन/g, "vkWuykbZu");
+            text = text.replace(/ऑनलाईन/g, "vkWuykbZu");
+            text = text.replace(/लॉटरी/g, "ykWVjh");
+            text = text.replace(/लाटरी/g, "ykWVjh");
+            text = text.replace(/क्रमांक/g, "Øekad");
+            text = text.replace(/कार्मिकों/g, "dkfeZdksa");
+            text = text.replace(/कार्मिक/g, "dkfeZd");
+            text = text.replace(/कार्यवाही/g, "dk;Zokgh");
+            text = text.replace(/उपरोक्त/g, "mijksDr");
+            text = text.replace(/विशिष्ट/g, "fof'k\"V");
+            text = text.replace(/आपत्ति/g, "vkifRr");
+            text = text.replace(/श्री/g, "Jh");
+            text = text.replace(/श्रा/g, "Jk");
+            text = text.replace(/श्रे/g, "Js");
+            text = text.replace(/श्र/g, "J");
+            text = text.replace(/द्वारा/g, "}kjk");
+            text = text.replace(/द्व/g, "}");
+            text = text.replace(/एवं/g, ",oa");
+            text = text.replace(/ऐसी/g, ",slh");
+            text = text.replace(/ऐ/g, ",s");
+            text = text.replace(/ए/g, ",");
+            text = text.replace(/करूंगा/g, "d:axk");
+            text = text.replace(/करूंगी/g, "d:axh");
+            text = text.replace(/इच्छुक/g, "bPNqd");
+
+            // 5. Hyphen in Unicode (dash, like वर्ष-2022) -> Devlys '&' (Shift+7)
+            text = text.replace(/([0-9a-zA-Z\u0900-\u097F])\-([0-9a-zA-Z\u0900-\u097F])/g, "$1&$2");
+            text = text.replace(/ - /g, " & ");
+
+            // 6. Dot '.' in Unicode -> Devlys '-' (displays as dot in Devlys 010!)
+            text = text.replace(/\./g, "-");
+
+            // 7. Handle Nukta letters (ड़ -> M+, ढ़ -> <+)
+            text = text.replace(/[\u095C]|(?:\u0921\u093C)/g, "M+");
+            text = text.replace(/[\u095D]|(?:\u0922\u093C)/g, "<+");
+
+            // 8. Generic Conjuncts
+            text = text.replace(/द्ध/g, ")");
+            text = text.replace(/द्ग/g, "(");
+            text = text.replace(/द्य/g, "»");
+            text = text.replace(/द्ब/g, "Á");
+            text = text.replace(/द्म/g, "Ò");
+            text = text.replace(/दृ/g, "¾");
+            text = text.replace(/त्त/g, "Rr");
+            text = text.replace(/क्त/g, "Dr");
+            text = text.replace(/ष्ट/g, "\"V");
+            text = text.replace(/ष्ठ/g, "\"B");
+            text = text.replace(/श्च/g, "'p");
+
+            // 9. Shift Reph 'र्' before consonant cluster to 'Z' after cluster and matras
+            text = text.replace(/र्([\u0915-\u0939])ि/g, "ि$1Z");
+            text = text.replace(/र्((?:[\u0915-\u0939]्)*[\u0915-\u0939])([ाीुूृेैोौंँः]*)/g, "$1$2Z");
+
+            // 10. Shift Chhoti 'i' ('ि') to preceding position as 'f' in Devlys
+            text = text.replace(/((?:[\u0915-\u0939]्)*[\u0915-\u0939](?:[z]|्र)?)ि/g, "f$1");
+
+            // 11. Subjoined Ra-Prakar (e.g. प्र -> iz, द्र -> nz, क्र -> Ø, त्र -> =)
+            const raPrakarMap = [
+                ["प्र", "iz"], ["क्र", "Ø"], ["ग्र", "xz"], ["ज्र", "tz"],
+                ["द्र", "nz"], ["ब्र", "cz"], ["भ्र", "Hz"], ["म्र", "ez"],
+                ["व्र", "oz"], ["ह्र", "gz"], ["स्र", "lz"], ["त्र", "="]
+            ];
+            for (let i = 0; i < raPrakarMap.length; i++) {
+                text = text.replace(new RegExp(raPrakarMap[i][0], 'g'), raPrakarMap[i][1]);
+            }
+
+            // 12. Compound letters and half consonants (Halant mappings)
+            // Notice: ण् -> .
+            const revTable = [
+                ["क्ष्", "{" ], ["क्ष", "{k"],
+                ["त्र्", "="], ["त्रा", "=k"], ["त्र", "="],
+                ["ज्ञ", "K"],
+
+                ["क्", "D"], ["ख्", "["], ["ग्", "X"], ["घ्", "?"],
+                ["च्", "P"], ["ज्", "T"], ["त्", "R"], ["थ्", "F"],
+                ["ध्", "/"], ["न्", "U"], ["प्", "I"], ["ब्", "C"],
+                ["भ्", "H"], ["म्", "E"], ["य्", ";~"], ["ल्", "Y"],
+                ["व्", "O"], ["श्", "'"], ["ष्", "\""], ["स्", "L"],
+                ["ण्", "."], ["ह्", "g~"],
+
+                ["ख", "[k"], ["घ", "?k"], ["थ", "Fk"], ["ध", "/k"],
+                ["भ", "Hk"], ["श", "'k"], ["ष", "\"k"], ["ण", ".k"],
+                ["क", "d"], ["ग", "x"], ["च", "p"], ["छ", "N"],
+                ["ज", "t"], ["झ", ">"], ["ट", "V"], ["ठ", "B"],
+                ["ड", "M"], ["ढ", "<"], ["त", "r"], ["द", "n"],
+                ["न", "u"], ["प", "i"], ["फ", "Q"], ["ब", "c"],
+                ["म", "e"], ["य", ";"], ["र", "j"], ["ल", "y"],
+                ["व", "o"], ["स", "l"], ["ह", "g"],
+
+                ["ओ", "vks"], ["औ", "vkS"], ["आ", "vk"], ["अ", "v"],
+                ["ई", "bZ"], ["इ", "b"], ["ऊ", "Å"], ["उ", "m"],
+                ["ऋ", "¿"],
+
+                ["ो", "ks"], ["ौ", "kS"],
+                ["ा", "k"], ["ी", "h"], ["ु", "q"], ["ू", "w"], ["ृ", "`"],
+                ["े", "s"], ["ै", "S"],
+                ["ं", "a"], ["ँ", "¡"], ["ः", "%"], ["्", "~"],
+                ["ि", "f"]
+            ];
+
+            for (let i = 0; i < revTable.length; i++) {
+                text = text.replace(new RegExp(revTable[i][0], 'g'), revTable[i][1]);
+            }
+
+            // Subjoined ra
+            text = text.replace(/्र/g, "z");
+
+            return text;
+        }
+let typeTimer=null,typeStartAt=0,typeDuration=300,typeRunning=false,typeExpected="",typeCompareExpected="",typeElapsed=0,typeProfileTarget=0,rssbLockedIndex=0,lastTypedValue="";
+const loadedTypingFonts={devlys:null,kruti:null};
+const examProfiles={
+ general:{minutes:5,target:0,backspace:"yes",label:"General Practice"},
+ rssb:{minutes:15,target:20,backspace:"rssb",label:"RSSB / Rajasthan IA-style"},
+ ssc:{minutes:10,target:0,backspace:"yes",label:"SSC-style Practice"},
+ custom:{minutes:5,target:0,backspace:"yes",label:"Custom Practice"}
+};
+function isLegacyTyping(){return $("typeLang").value==="hi" && $("typeLayout").value==="remington" && ["devlys","kruti"].includes($("typeFont").value)}
+function syncTypingModes(){
+ const en=$("typeLang").value==="en",legacyLayout=$("typeLayout").value==="remington";
+ $("typeLayout").disabled=en;$("typeFont").disabled=en;
+ Array.from($("typeFont").options).forEach(o=>{if(o.value!=="unicode")o.disabled=!legacyLayout});
+ if(!legacyLayout&&$("typeFont").value!=="unicode")$("typeFont").value="unicode";
+ if(en)$("typeFont").value="unicode";
+}
+function selectedTypingFont(){
+ const f=$("typeFont").value;
+ if(f==="devlys")return loadedTypingFonts.devlys||'"DevLys 010",DevLys010,"Devlys 010","Kruti Dev 010",serif';
+ if(f==="kruti")return loadedTypingFonts.kruti||'"Kruti Dev 010",KrutiDev010,"Kruti Dev",serif';
+ return '"Noto Sans Devanagari","Mangal","Nirmala UI",sans-serif';
+}
+function updateTypingFont(){
+ const family=$("typeLang").value==="en"?'"Courier New",monospace':selectedTypingFont();
+ $("typingPassage").style.fontFamily=family;
+ $("typingInput").style.fontFamily=family;
+}
+function applyExamProfile(){
+ const p=examProfiles[$("typeProfile").value]||examProfiles.general;
+ $("typeDuration").value=String(p.minutes);
+ if(p.backspace==="rssb")$("typeBackspace").value="rssb";
+ else if($("typeBackspace").value==="rssb")$("typeBackspace").value="yes";
+ typeProfileTarget=$("typeProfile").value==="ssc"?($("typeLang").value==="en"?35:30):p.target;
+ resetTyping();
+}
+function showPassage(){
+ const bank=passages[$("typeLang").value],start=+$ ("typePassage").value;
+ typeExpected=Array.from({length:12},(_,i)=>bank[(start+i)%bank.length]).join(" ");
+ typeCompareExpected=isLegacyTyping()?unicodeToLegacyTyping(typeExpected):typeExpected;
+ $("typingPassage").textContent=typeCompareExpected;
+ updateTypingFont();
+}
+function resetTyping(){
+ clearInterval(typeTimer);typeRunning=false;typeElapsed=0;rssbLockedIndex=0;lastTypedValue="";
+ $("typingInput").value="";$("typingInput").disabled=true;$("typeStart").disabled=false;
+ $("typeProgress").style.width="0%";
+ $("typeTime").textContent=String(+$ ("typeDuration").value).padStart(2,"0")+":00";
+ ["typeGross","typeNet","typeErrors","typeChars"].forEach(id=>$(id).textContent="0");
+ $("typeAccuracy").textContent="100%";$("typingResult").className="status";$("typingResult").textContent="";
+ showPassage();
+}
+function wordTokens(s){return s.trim().split(/\s+/u).filter(Boolean)}
+function scoreTyping(){
+ const raw=$("typingInput").value,expected=typeCompareExpected;
+ const a=Array.from(raw),b=Array.from(expected);let charCorrect=0,charErrors=0;
+ for(let i=0;i<a.length;i++){if(i<b.length&&a[i]===b[i])charCorrect++;else charErrors++}
+ const typedWords=wordTokens(raw),expectedWords=wordTokens(expected);let correctWords=0;
+ for(let i=0;i<typedWords.length;i++){if(typedWords[i]===expectedWords[i])correctWords++}
+ const wordErrors=Math.max(0,typedWords.length-correctWords);
+ const mins=Math.max(typeElapsed/60,1/60),gross=(a.length/5)/mins;
+ const netChars=Math.max(0,a.length-charErrors),netWords=netChars/5/mins;
+ const accuracy=a.length?charCorrect/a.length*100:100;
+ $("typeGross").textContent=gross.toFixed(1);$("typeNet").textContent=netWords.toFixed(1);
+ $("typeAccuracy").textContent=accuracy.toFixed(1)+"%";
+ $("typeErrors").textContent=String(charErrors);
+ $("typeChars").textContent=String(a.length);
+ $("typeProgress").style.width=Math.min(100,a.length/Math.max(1,b.length)*100)+"%";
+ return {gross,netWords,netChars,accuracy,correctWords,wordErrors,charErrors,typedWords:typedWords.length,expectedWords:expectedWords.length};
+}
+function insertAtCursor(el,text){
+ const s=el.selectionStart,e=el.selectionEnd,v=el.value;
+ el.value=v.slice(0,s)+text+v.slice(e);const p=s+text.length;el.setSelectionRange(p,p);lastTypedValue=el.value;if($("typeBackspace").value==="rssb"&&/\s$/u.test(el.value))rssbLockedIndex=p;
+}
+function legacyKeyToUnicode(e){
+ const normal={q:"फ",w:"ू",e:"म",r:"त",t:"ज",y:"ल",u:"न",i:"प",o:"व",p:"च","[":"ख्","]":"द्व","\\":"द्य",a:"ं",s:"े",d:"क",f:"ि",g:"ह",h:"ी",j:"र",k:"ा",l:"स",";":"य","'":"श्",z:"्र",x:"ग",c:"ब",v:"अ",b:"इ",n:"द",m:"उ",",":"ए",".":"ण्","/":"ध्"," ":" "};
+ const shifted={Q:"फ्",W:"ॅ",E:"म्",R:"त्",T:"ज्",Y:"ल्",U:"न्",I:"प्",O:"व्",P:"च्","{":"क्ष्","}":"द्व","|":"द्य",A:"।",S:"ै",D:"क्",F:"थ्",G:"श्",H:"भ्",J:"श्र",K:"ज्ञ",L:"स्",Z:"र्",X:"ग्",C:"ब्",V:"ट",B:"ठ",N:"छ",M:"ड","<":"ढ",">":"झ","?":"घ्"};
+ if(e.key===" ")return " ";if(e.key.length!==1)return null;return e.shiftKey?(shifted[e.key]??null):(normal[e.key]??null);
+}
+function physicalUSKey(e){
+ const code=e.code,shift=e.shiftKey;
+ if(/^Key[A-Z]$/.test(code))return shift?code.slice(3):code.slice(3).toLowerCase();
+ if(/^Digit[0-9]$/.test(code)){const n=code.slice(5);return shift?{0:")",1:"!",2:"@",3:"#",4:"$",5:"%",6:"^",7:"&",8:"*",9:"("}[n]:n}
+ const map={Space:shift?" ":" ",Backquote:shift?"~":"`",Minus:shift?"_":"-",Equal:shift?"+":"=",BracketLeft:shift?"{":"[",BracketRight:shift?"}":"]",Backslash:shift?"|":"\\",Semicolon:shift?":":";",Quote:shift?'"':"'",Comma:shift?"<":",",Period:shift?">":".",Slash:shift?"?":"/",Numpad0:"0",Numpad1:"1",Numpad2:"2",Numpad3:"3",Numpad4:"4",Numpad5:"5",Numpad6:"6",Numpad7:"7",Numpad8:"8",Numpad9:"9",NumpadDecimal:"."};
+ return Object.prototype.hasOwnProperty.call(map,code)?map[code]:null;
+}
+$("typingInput").addEventListener("keydown",e=>{
+ if(!typeRunning)return;
+ if($("typeBackspace").value==="no"&&e.key==="Backspace"){e.preventDefault();return}
+ if($("typeBackspace").value==="rssb"&&e.key==="Backspace"){
+  if($("typingInput").selectionStart<=$("typingInput").selectionEnd&&$("typingInput").selectionStart<=rssbLockedIndex){e.preventDefault();return}
+ }
+ if($("typeLang").value==="hi"&&$("typeLayout").value==="remington"){
+  if(e.ctrlKey||e.altKey||e.metaKey)return;
+  if(isLegacyTyping()){
+   const legacyChar=physicalUSKey(e);
+   if(legacyChar!==null){e.preventDefault();insertAtCursor($("typingInput"),legacyChar);scoreTyping()}
+  }else{
+   const mapped=legacyKeyToUnicode(e);
+   if(mapped!==null){e.preventDefault();insertAtCursor($("typingInput"),mapped);scoreTyping()}
+  }
+ }
+});
+$("typingInput").addEventListener("input",()=>{
+ if(!typeRunning)return;const current=$("typingInput").value;
+ if($("typeBackspace").value==="rssb"&&current.length>lastTypedValue.length&&/\s$/u.test(current))rssbLockedIndex=$("typingInput").selectionStart;
+ lastTypedValue=current;scoreTyping();
+});
+$("typeStart").onclick=()=>{
+ if(typeRunning)return;resetTyping();typeDuration=+$ ("typeDuration").value*60;typeRunning=true;typeStartAt=Date.now();
+ $("typingInput").disabled=false;$("typingInput").focus();$("typeStart").disabled=true;
+ typeTimer=setInterval(()=>{typeElapsed=(Date.now()-typeStartAt)/1000;const left=Math.max(0,typeDuration-Math.floor(typeElapsed));
+  $("typeTime").textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");scoreTyping();if(left<=0)finishTyping();},250);
+};
+function finishTyping(){
+ clearInterval(typeTimer);typeRunning=false;$("typingInput").disabled=true;$("typeStart").disabled=false;
+ const r=scoreTyping(),passed=typeProfileTarget>0?(r.netWords>=typeProfileTarget):true,p=examProfiles[$("typeProfile").value]||examProfiles.general;
+ msg("typingResult",`${p.label} पूरा। Gross: ${r.gross.toFixed(1)} WPM · सही शब्द: ${r.correctWords} · Net correct WPM: ${r.netWords.toFixed(1)} · Accuracy: ${r.accuracy.toFixed(1)}% · Character errors: ${r.charErrors} · Word mismatches: ${r.wordErrors} · ${typeProfileTarget?`${typeProfileTarget} WPM benchmark: ${passed?"Achieved":"Not achieved"}`:"अभ्यास स्कोर"}`,passed?"good":"bad");
+}
+$("typeProfile").onchange=applyExamProfile;
+$("typeLang").onchange=()=>{syncTypingModes();applyExamProfile()};
+$("typeLayout").onchange=()=>{syncTypingModes();resetTyping()};
+$("typeFont").onchange=resetTyping;
+$("typePassage").onchange=resetTyping;
+$("typeDuration").onchange=()=>{if($("typeProfile").value==="custom")resetTyping()};
+$("typeBackspace").onchange=()=>{rssbLockedIndex=0;lastTypedValue=$("typingInput").value};
+$("typeReset").onclick=resetTyping;$("typePrint").onclick=()=>window.print();
+function loadTypingFont(file,kind){
+ if(!file)return;const url=URL.createObjectURL(file),family=kind==="devlys"?"SVCDevLys010":"SVCKrutiDev010";
+ const style=document.createElement("style");style.textContent=`@font-face{font-family:"${family}";src:url("${url}") format("truetype");font-display:swap}`;document.head.appendChild(style);
+ loadedTypingFonts[kind]=`"${family}"`;document.fonts.load(`22px "${family}"`).then(()=>{updateTypingFont();$("fontStatus").textContent=kind==="devlys"?"DevLys 010 font ready.":"Kruti Dev 010 font ready.";});
+}
+$("loadDevlysFont").onclick=()=>$("devlysFont").click();$("loadKrutiFont").onclick=()=>$("krutiFont").click();
+$("devlysFont").onchange=()=>loadTypingFont($("devlysFont").files[0],"devlys");
+$("krutiFont").onchange=()=>loadTypingFont($("krutiFont").files[0],"kruti");
+// Quiet internal mapping checks: never displayed to the user.
+function typingMappingSelfTest(){
+ const tests=[["भारत एक विशाल देश है।","Hkkjr ,d fo'kky ns'k gSA"],["हिन्दी","fgUnh"],["शिक्षा","f'k{kk"],["कार्य","dk;Z"],["स्","L"],["कि","fd"],["क्ष","{k"],["त्र","="],["श्री","Jh"],["द्वारा","}kjk"]];
+ return tests.every(([u,l])=>unicodeToLegacyTyping(u)===l);
+}
+$("typeStart").disabled=!typingMappingSelfTest();
+syncTypingModes();
+applyExamProfile();
 
 // Excel
-let workbook=null,currentSheetData=[];
-$("loadExcel").onclick=async()=>{try{const f=$("excelFile").files[0];if(!f)throw Error("Excel/CSV file चुनें।");if(!window.XLSX)throw Error("Excel library load नहीं हुई।");workbook=XLSX.read(await f.arrayBuffer(),{type:"array"});$("sheetSelect").innerHTML="";workbook.SheetNames.forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;$("sheetSelect").appendChild(o)});renderSheet();status("excelStatus",`Loaded ${f.name} · ${workbook.SheetNames.length} sheet(s)`,"good")}catch(e){status("excelStatus",e.message,"bad")}};
-function renderSheet(){if(!workbook)return;const name=$("sheetSelect").value||workbook.SheetNames[0],ws=workbook.Sheets[name];currentSheetData=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});const table=document.createElement("table");currentSheetData.slice(0,500).forEach((r,i)=>{const tr=document.createElement("tr");r.slice(0,30).forEach(v=>{const c=document.createElement(i===0?"th":"td");c.textContent=String(v);tr.appendChild(c)});table.appendChild(tr)});$("excelTable").replaceChildren(table);status("excelStatus",`Showing ${Math.min(currentSheetData.length,500)} rows (max 500 shown) · ${name}`,"good")}
-$("sheetSelect").onchange=renderSheet;$("downloadCsv").onclick=()=>{if(!workbook)return status("excelStatus","पहले Excel file read करें।","bad");const ws=workbook.Sheets[$("sheetSelect").value],csv=XLSX.utils.sheet_to_csv(ws);downloadBlob(new Blob([csv],{type:"text/csv;charset=utf-8"}),"sheet.csv")};
-$("copyBulk").onclick=async()=>{try{await navigator.clipboard.writeText($("bulkText").value);status("excelStatus","Text copied.","good")}catch(e){status("excelStatus","Copy permission नहीं मिली।","bad")}};$("clearBulk").onclick=()=>$("bulkText").value="";
+let workbook=null,activeSheet=null,sheetRows=[];
+function renderSheet(){const t=$("excelTable");t.innerHTML="";if(!sheetRows.length)return;const maxRows=Math.min(sheetRows.length,501),maxCols=Math.min(Math.max(...sheetRows.slice(0,maxRows).map(r=>r.length),0),30);for(let i=0;i<maxRows;i++){const tr=t.insertRow();for(let j=0;j<maxCols;j++){const cell=tr.insertCell();cell.contentEditable="true";cell.textContent=sheetRows[i][j]??"";cell.addEventListener("blur",()=>sheetRows[i][j]=cell.textContent);if(i===0){cell.style.fontWeight="bold";cell.style.background="#eff6ff"}}}}
+$("excelLoad").onclick=async()=>{try{const f=$("excelFile").files[0];if(!f)throw Error("Excel/CSV file चुनें।");const data=await f.arrayBuffer();workbook=XLSX.read(data,{type:"array",cellDates:true});$("excelSheet").innerHTML="";workbook.SheetNames.forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;$("excelSheet").appendChild(o)});$("excelSheet").disabled=false;activeSheet=workbook.SheetNames[0];loadSheet();msg("excelStatus",`${workbook.SheetNames.length} worksheet(s) loaded. Visible preview up to 500 rows × 30 columns.`,"good")}catch(e){msg("excelStatus",e.message,"bad")}};
+function loadSheet(){activeSheet=$("excelSheet").value||activeSheet;sheetRows=XLSX.utils.sheet_to_json(workbook.Sheets[activeSheet],{header:1,raw:false,defval:""});renderSheet()}
+$("excelSheet").onchange=()=>workbook&&loadSheet();
+$("excelSearchBtn").onclick=()=>{const q=$("excelSearch").value.toLowerCase();if(!q)return;const rows=[...$("excelTable").rows];let count=0;rows.forEach(r=>[...r.cells].forEach(c=>{if(c.textContent.toLowerCase().includes(q)){c.style.background="#fef3c7";count++}else c.style.background=""}));msg("excelStatus",`${count} matching cell(s) found in visible preview.`,"info")};
+$("excelReplaceBtn").onclick=()=>{const f=$("excelFind").value;if(!f)return;const r=$("excelReplace").value;sheetRows=sheetRows.map(row=>row.map(v=>String(v??"").split(f).join(r)));renderSheet();msg("excelStatus","Replace all complete.","good")};
+$("excelRemoveBlank").onclick=()=>{sheetRows=sheetRows.filter(r=>r.some(v=>String(v??"").trim()!==""));renderSheet();msg("excelStatus","Blank rows removed.","good")};
+$("excelRemoveDup").onclick=()=>{const seen=new Set();sheetRows=sheetRows.filter(r=>{const k=JSON.stringify(r);if(seen.has(k))return false;seen.add(k);return true});renderSheet();msg("excelStatus","Duplicate rows removed.","good")};
+$("excelSortBtn").onclick=()=>{const c=+$("excelSortCol").value-1;if(c<0) return;const head=sheetRows[0],body=sheetRows.slice(1).sort((a,b)=>String(a[c]??"").localeCompare(String(b[c]??""),undefined,{numeric:true})*($("excelSortOrder").value==="asc"?1:-1));sheetRows=[...(head?[head]:[]),...body];renderSheet();msg("excelStatus","Rows sorted.","good")};
+function exportSheet(){const ws=XLSX.utils.aoa_to_sheet(sheetRows);workbook=workbook||XLSX.utils.book_new();workbook.Sheets[activeSheet||"Sheet1"]=ws;if(!workbook.SheetNames.includes(activeSheet||"Sheet1"))workbook.SheetNames.push(activeSheet||"Sheet1");return ws}
+$("excelCsv").onclick=()=>{if(!sheetRows.length)return msg("excelStatus","पहले file load करें।","bad");downloadBlob(new Blob([XLSX.utils.sheet_to_csv(exportSheet())],{type:"text/csv;charset=utf-8"}),"sheet.csv")};
+$("excelXlsx").onclick=()=>{if(!sheetRows.length)return msg("excelStatus","पहले file load करें।","bad");exportSheet();XLSX.writeFile(workbook,"edited-workbook.xlsx")};
 
 // Calculators
-$("ageCalc").onclick=()=>{try{const d=new Date($("dob").value+"T00:00:00"),a=new Date($("asOn").value+"T00:00:00");if(!$("dob").value||!$("asOn").value||d>a)throw Error("दोनों तारीखें सही भरें; DOB भविष्य की नहीं हो सकती।");let y=a.getFullYear()-d.getFullYear(),m=a.getMonth()-d.getMonth(),day=a.getDate()-d.getDate();if(day<0){m--;day+=new Date(a.getFullYear(),a.getMonth(),0).getDate()}if(m<0){y--;m+=12}status("ageResult",`${y} वर्ष, ${m} महीने, ${day} दिन`,"good")}catch(e){status("ageResult",e.message,"bad")}};
-$("asOn").value=new Date().toISOString().slice(0,10);
-$("percentCalc").onclick=()=>{const a=Number($("obtained").value),b=Number($("total").value);if(!b||b<0)return status("percentResult","Total शून्य से अधिक होना चाहिए।","bad");status("percentResult",`${(a/b*100).toFixed(2)}%`,"good")};
-$("gstCalc").onclick=()=>{const a=Number($("gstAmount").value),r=Number($("gstRate").value)/100;if(a<0)return status("gstResult","Amount सही भरें।","bad");if($("gstType").value==="add"){const tax=a*r;status("gstResult",`Base: ₹${a.toFixed(2)} · GST: ₹${tax.toFixed(2)} · Total: ₹${(a+tax).toFixed(2)}`,"good")}else{const base=a/(1+r),tax=a-base;status("gstResult",`Taxable value: ₹${base.toFixed(2)} · Included GST: ₹${tax.toFixed(2)} · Total: ₹${a.toFixed(2)}`,"good")}};
-$("tdsCalc").onclick=()=>{const a=Number($("tdsAmount").value),r=Number($("tdsRate").value);if(a<0||r<0)return status("tdsResult","Amount और rate सही भरें।","bad");const t=a*r/100;status("tdsResult",`TDS: ₹${t.toFixed(2)} · Net payable: ₹${(a-t).toFixed(2)}`,"good")};
+function localDate(d){const x=new Date();return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`}
+$("asOn").value=localDate();$("ageCalc").onclick=()=>{try{const a=new Date($("dob").value+"T00:00:00"),b=new Date($("asOn").value+"T00:00:00");if(isNaN(a)||isNaN(b)||a>b)throw Error("Valid dates दें; DOB भविष्य की नहीं हो सकती।");let y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate()}if(m<0){y--;m+=12}msg("ageResult",`${y} वर्ष, ${m} माह, ${d} दिन`,"good")}catch(e){msg("ageResult",e.message,"bad")}};
+$("percentCalc").onclick=()=>{const a=+$("obtained").value,b=+$("totalMarks").value;if(!Number.isFinite(a)||!Number.isFinite(b)||b<=0||a<0){msg("percentResult","Valid marks और total marks > 0 दें।","bad");return}msg("percentResult",`${(a/b*100).toFixed(2)}%${a>b?" · Warning: obtained marks total से अधिक हैं":""}`,"good")};
+$("gstCalc").onclick=()=>{const a=+$("gstAmount").value,r=+$("gstRate").value/100;if(!Number.isFinite(a)||a<0){msg("gstResult","Valid amount दें।","bad");return}let base,tax;if($("gstMode").value==="exclusive"){base=a;tax=a*r}else{base=a/(1+r);tax=a-base}const t=$("gstType").value==="intra"?`CGST: ₹${(tax/2).toFixed(2)} · SGST: ₹${(tax/2).toFixed(2)}`:`IGST: ₹${tax.toFixed(2)}`;msg("gstResult",`Taxable value: ₹${base.toFixed(2)} · GST: ₹${tax.toFixed(2)} · ${t} · Total: ₹${(base+tax).toFixed(2)}`,"good")};
+$("tdsCalc").onclick=()=>{const a=+$("tdsAmount").value,r=+$("tdsRate").value;if(!Number.isFinite(a)||a<0||!Number.isFinite(r)||r<0){msg("tdsResult","Valid amount और rate दें।","bad");return}msg("tdsResult",`TDS (${r}%): ₹${(a*r/100).toFixed(2)} · Net payable: ₹${(a-a*r/100).toFixed(2)} · Section: ${$("tdsSection").value}`,"good")};
 
-// Indian number words
-function underThousand(n){const o=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"],t=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];if(n<20)return o[n];if(n<100)return t[Math.floor(n/10)]+(n%10?" "+o[n%10]:"");return o[Math.floor(n/100)]+" Hundred"+(n%100?" "+underThousand(n%100):"")}
-function indianWords(n){if(n===0)return "Zero";if(n<0)return "Minus "+indianWords(-n);const units=["","Thousand","Lakh","Crore","Arab","Kharab"];let parts=[],i=0;while(n>0&&i<units.length){let chunk;if(i===0){chunk=n%1000;n=Math.floor(n/1000)}else{chunk=n%100;n=Math.floor(n/100)}if(chunk)parts.unshift(underThousand(chunk)+(units[i]?" "+units[i]:""));i++}if(n>0)throw Error("बहुत बड़ी संख्या है।");return parts.join(" ")}
-$("numberConvert").onclick=()=>{try{const v=Number($("numberInput").value);if(!Number.isFinite(v))throw Error("Valid number लिखें।");if(Math.abs(v)>99999999999999)throw Error("Number supported limit से बड़ा है।");const whole=Math.floor(Math.abs(v)),paise=Math.round((Math.abs(v)-whole)*100);let s=indianWords(whole);if(paise)s+=" and "+indianWords(paise)+" Paise";if(v<0)s="Minus "+s;status("numberResult",s+" Only","good")}catch(e){status("numberResult",e.message,"bad")}};
+// Number to words
+const enSmall=["Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"],enTens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+function enUnder(n){if(n<20)return enSmall[n];if(n<100)return enTens[Math.floor(n/10)]+(n%10?" "+enSmall[n%10]:"");return enSmall[Math.floor(n/100)]+" Hundred"+(n%100?" "+enUnder(n%100):"")}
+function enIndian(n){if(!n)return"Zero";const u=["","Thousand","Lakh","Crore","Arab","Kharab"];let out=[],i=0;while(n&&i<u.length){let c=i===0?n%1000:n%100;n=Math.floor(n/(i===0?1000:100));if(c)out.unshift(enUnder(c)+(u[i]?" "+u[i]:""));i++}if(n)throw Error("Number limit exceeded");return out.join(" ")}
+const hiNumbers=["शून्य","एक","दो","तीन","चार","पाँच","छह","सात","आठ","नौ","दस","ग्यारह","बारह","तेरह","चौदह","पंद्रह","सोलह","सत्रह","अठारह","उन्नीस","बीस","इक्कीस","बाईस","तेईस","चौबीस","पच्चीस","छब्बीस","सत्ताईस","अट्ठाईस","उनतीस","तीस","इकतीस","बत्तीस","तैंतीस","चौंतीस","पैंतीस","छत्तीस","सैंतीस","अड़तीस","उनतालीस","चालीस","इकतालीस","बयालीस","तैंतालीस","चवालीस","पैंतालीस","छियालीस","सैंतालीस","अड़तालीस","उनचास","पचास","इक्यावन","बावन","तिरपन","चौवन","पचपन","छप्पन","सत्तावन","अट्ठावन","उनसठ","साठ","इकसठ","बासठ","तिरसठ","चौंसठ","पैंसठ","छियासठ","सड़सठ","अड़सठ","उनहत्तर","सत्तर","इकहत्तर","बहत्तर","तिहत्तर","चौहत्तर","पचहत्तर","छिहत्तर","सतहत्तर","अठहत्तर","उनासी","अस्सी","इक्यासी","बयासी","तिरासी","चौरासी","पचासी","छियासी","सत्तासी","अट्ठासी","नवासी","नब्बे","इक्यानवे","बानवे","तिरानवे","चौरानवे","पचानवे","छियानवे","सत्तानवे","अट्ठानवे","निन्यानवे"];
+function hiUnder(n){
+ if(n<100)return hiNumbers[n];
+ if(n<1000)return hiNumbers[Math.floor(n/100)]+" सौ"+(n%100?" "+hiUnder(n%100):"");
+ return "";
+}
+function hiIndian(n){if(!n)return"शून्य";const u=["","हज़ार","लाख","करोड़","अरब","खरब"];let out=[],i=0;while(n&&i<u.length){let c=i===0?n%1000:n%100;n=Math.floor(n/(i===0?1000:100));if(c)out.unshift(hiUnder(c)+(u[i]?" "+u[i]:""));i++}if(n)throw Error("संख्या सीमा से अधिक है");return out.join(" ")}
+let numberResultText="";
+$("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
+$("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
 </script>
-</body>
-</html>
+</body></html>
