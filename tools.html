@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#12366b">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data:; connect-src 'self' blob: data:; img-src 'self' blob: data:; font-src 'self' blob: data:; worker-src 'self' blob:;">
 <title>SHREE VAISHNAVI COMPUTERS | Professional Tools Suite</title>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<link rel="stylesheet" href="libs/cropper.min.css">
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--ink:#182235;--muted:#64748b;--primary:#155eef;--line:#dce4ef;--good:#087443;--bad:#b42318;--shadow:0 8px 24px #102a5610}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,"Noto Sans Devanagari",sans-serif}
@@ -93,7 +93,6 @@ button:focus-visible{outline:3px solid #86b3ff;outline-offset:2px}
 @media(max-width:700px){header{padding:24px 16px;text-align:center}.wrap{padding:10px}.card{padding:15px 13px 14px}.tabs{margin-left:-2px;margin-right:-2px}.tabs button{padding:10px 13px;font-size:13px}.btn{padding:10px 12px;font-size:13px}h2{font-size:19px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
-
 /* Centered PDF task progress overlay */
 #pdfTaskOverlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,25,49,.48);backdrop-filter:blur(5px)}
 #pdfTaskOverlay.active{display:flex}
@@ -109,7 +108,6 @@ button:focus-visible{outline:3px solid #86b3ff;outline-offset:2px}
 .pdf-task-track{height:7px;border-radius:99px;background:#e8eef7;overflow:hidden;margin-top:17px}
 .pdf-task-track span{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#2457d6,#16a69a);transition:width .2s}
 @media(prefers-reduced-motion:reduce){#pdfTaskOverlay.indeterminate .pdf-task-ring{animation:none}}
-
 </style>
 </head>
 <body>
@@ -217,12 +215,14 @@ button:focus-visible{outline:3px solid #86b3ff;outline-offset:2px}
 <footer class="small" style="text-align:center;padding:16px">© SHREE VAISHNAVI COMPUTERS · Browser-based processing · Keep a backup of original files</footer>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="libs/pdf-lib.min.js"></script>
+<script src="libs/pdf.min.js"></script>
+<script src="libs/jszip.min.js"></script>
+<script src="libs/tesseract.min.js"></script>
+<script src="libs/xlsx.full.min.js"></script>
+<script src="libs/cropper.min.js"></script>
+<script>window._qpdfErr='';window.addEventListener('error',function(e){if(e.filename&&e.filename.indexOf('qpdf.local')!==-1)window._qpdfErr=e.message+' (L'+e.lineno+')';});</script>
+<script src="libs/qpdf.local.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -231,38 +231,120 @@ function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.cr
 function fileBytes(file){return file.arrayBuffer()}
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab))}));
 
-// QPDF-powered browser toolkit: AES-256 encryption/decryption and lossless optimization.
+// QPDF-powered local browser toolkit: AES-128/AES-256 encryption/decryption and lossless optimization.
 let pdfToolkitPromise=null;
 async function getPdfToolkit(){
- if(!window.crypto||!crypto.subtle)throw Error("इस browser में सुरक्षित Web Crypto उपलब्ध नहीं है। आधुनिक Chrome/Edge में खोलें।");
- if(!pdfToolkitPromise)pdfToolkitPromise=(async()=>{const mod=await import("https://esm.sh/pdfstudio@0.4.0");return await mod.createPdfToolkit()})();
+ if(!window.crypto||!crypto.subtle)throw Error("Web Crypto unavailable");
+ if(!pdfToolkitPromise)pdfToolkitPromise=(async()=>{
+  if(typeof window.createModule!=="function"||!window._QPDF_WASM_B64)throw Error("QPDF load error: "+(window._qpdfErr||"libs/qpdf.local.js not initialized"));
+  var b=atob(window._QPDF_WASM_B64),w=new Uint8Array(b.length);
+  for(var i=0;i<b.length;i++)w[i]=b.charCodeAt(i);
+
+  // Intercept ONLY QPDF wasm (ignores Tesseract OCR wasm so OCR works 100%)
+  if(!window._qpdfFetchPatched){
+   window._qpdfFetchPatched=true;
+   var isQpdfReq=function(u){
+    var s=(typeof u==="string")?u:((u&&u.url)?u.url:String(u||""));
+    if(s.indexOf("tesseract")!==-1)return false;
+    return (s.indexOf("qpdf")!==-1||s.indexOf("application/wasm")!==-1||s.indexOf("octet-stream")!==-1||(s.indexOf(".wasm")!==-1&&s.indexOf("lstm")===-1));
+   };
+   var origFetch=window.fetch;
+   window.fetch=async function(u,o){
+    if(isQpdfReq(u)){
+     return new Response(w.buffer.slice(0),{status:200,headers:{"Content-Type":"application/wasm"}});
+    }
+    return origFetch.apply(this,arguments);
+   };
+   var origOpen=XMLHttpRequest.prototype.open,origSend=XMLHttpRequest.prototype.send;
+   XMLHttpRequest.prototype.open=function(m,u){
+    this._isQpdfWasm=isQpdfReq(u);
+    return origOpen.apply(this,arguments);
+   };
+   XMLHttpRequest.prototype.send=function(){
+    if(this._isQpdfWasm){
+     var self=this,buf=w.buffer.slice(0);
+     try{Object.defineProperty(self,"status",{value:200,configurable:true});}catch(e){}
+     try{Object.defineProperty(self,"readyState",{value:4,configurable:true});}catch(e){}
+     try{Object.defineProperty(self,"response",{value:buf,configurable:true});}catch(e){}
+     setTimeout(function(){
+      if(typeof self.onreadystatechange==="function")self.onreadystatechange();
+      if(typeof self.onload==="function")self.onload();
+     },0);
+     return;
+    }
+    return origSend.apply(this,arguments);
+   };
+  }
+
+  var compiledMod=await WebAssembly.compile(w.buffer.slice(0));
+  async function runQ(buf,args){
+   var errs=[];
+   var qpdf=await window.createModule({
+    wasmBinary:w.buffer.slice(0),
+    locateFile:function(){return "data:application/octet-stream;base64,"+window._QPDF_WASM_B64;},
+    instantiateWasm:function(imports,successCallback){
+     WebAssembly.instantiate(compiledMod,imports).then(function(inst){
+      successCallback(inst,compiledMod);
+     });
+     return {};
+    },
+    noInitialRun:true,
+    print:function(){},
+    printErr:function(m){if(m)errs.push(String(m));}
+   });
+   var ip="/in.pdf",op="/out.pdf",rc=0;
+   qpdf.FS.writeFile(ip,new Uint8Array(buf));
+   try{
+    var r=qpdf.callMain(args.concat([ip,op]));
+    if(typeof r==="number")rc=r;
+   }catch(e){
+    if(e&&typeof e.status==="number")rc=e.status;
+    else throw Error(errs.join(" ")||(e.message||String(e)));
+   }
+   if(rc!==0&&rc!==3)throw Error(errs.join(" ")||("QPDF error code "+rc));
+   return qpdf.FS.readFile(op);
+  }
+  return{
+   compress:async function(f){return runQ(await f.arrayBuffer(),["--object-streams=generate","--compress-streams=y","--"]);},
+   lock:async function(f,o){
+    var is256=(Number(o.keyLength)===256),p=o.permissions||{},pr=(p.print==="none")?"none":"full",mo=(p.modify==="all")?"all":"none",ex=(p.extract===true)?"y":"n";
+    var a=["--encrypt",String(o.userPassword),String(o.ownerPassword),is256?"256":"128"];
+    if(!is256){a.push("--use-aes=y");}
+    a.push("--print="+pr,"--modify="+mo,"--extract="+ex);
+    if(!is256&&pr==="none"){a.push("--cleartext-metadata");}
+    a.push("--");
+    return runQ(await f.arrayBuffer(),a);
+   },
+   unlock:async function(f,o){return runQ(await f.arrayBuffer(),["--password="+String(o.password),"--decrypt","--"]);}
+  };
+ })();
  return await pdfToolkitPromise;
 }
 function activePdfFile(){return $("pdfFile").files[0]||null}
 function replaceMainPdf(bytes,name){const f=new File([bytes],name,{type:"application/pdf"}),dt=new DataTransfer();dt.items.add(f);$("pdfFile").files=dt.files;return f}
+
 // PDF manager
 let pdfDoc=null,pdfBytes=null,selectedPages=new Set(),pdfResultBlob=null,pdfResultUrl=null,pdfHistory=[];
 function prettyBytes(n){if(n<1024)return n+" B";if(n<1024*1024)return (n/1024).toFixed(1)+" KB";return (n/1024/1024).toFixed(2)+" MB"}
-function resetPdfResult(){pdfResultBlob=null;$ ("pdfResult").classList.add("hidden");if(pdfResultUrl){URL.revokeObjectURL(pdfResultUrl);pdfResultUrl=null}}
+function resetPdfResult(){pdfResultBlob=null;$("pdfResult").classList.add("hidden");if(pdfResultUrl){URL.revokeObjectURL(pdfResultUrl);pdfResultUrl=null}}
 let pdfTaskActive=false;
 function showPdfTask(title,detail="कृपया प्रतीक्षा करें…",indeterminate=false){pdfTaskActive=true;const o=$("pdfTaskOverlay");o.classList.add("active");o.classList.toggle("indeterminate",!!indeterminate);$("pdfTaskTitle").textContent=title;$("pdfTaskDetail").textContent=detail;$("pdfTaskPct").textContent="0%";$("pdfTaskRing").style.setProperty("--pct","0deg");$("pdfTaskBar").style.width="0%"}
 function updatePdfTask(done,total,label){if(!pdfTaskActive)return;const pct=total?Math.max(0,Math.min(100,Math.round(done/total*100))):0;$("pdfTaskOverlay").classList.remove("indeterminate");$("pdfTaskTitle").textContent="कार्य प्रगति पर है";$("pdfTaskDetail").textContent=label||"PDF प्रोसेस हो रही है…";$("pdfTaskPct").textContent=pct+"%";$("pdfTaskRing").style.setProperty("--pct",(pct*3.6)+"deg");$("pdfTaskBar").style.width=pct+"%"}
 async function hidePdfTask(){if(!pdfTaskActive)return;$("pdfTaskTitle").textContent="कार्य पूरा हुआ";$("pdfTaskDetail").textContent="तैयार";$("pdfTaskPct").textContent="100%";$("pdfTaskRing").style.setProperty("--pct","360deg");$("pdfTaskBar").style.width="100%";await new Promise(r=>setTimeout(r,450));$("pdfTaskOverlay").classList.remove("active","indeterminate");pdfTaskActive=false}
 function setPdfProgress(done,total,label){const pct=total?Math.round(done/total*100):0;$("pdfProgressWrap").classList.remove("hidden");$("pdfProgressText").textContent=label;$("pdfProgressPct").textContent=pct+"%";$("pdfProgressBar").style.width=pct+"%";updatePdfTask(done,total,label)}
-function clearPdf(which){const id=which===1?"pdfFile":"pdfFile2";$(id).value="";if(which===1){pdfDoc=null;pdfBytes=null;selectedPages.clear();$("pdfFileInfo").textContent="कोई PDF चयनित नहीं";$("pdfRemove1").disabled=true;$("pdfPages").innerHTML="";$("pdfPreview").innerHTML="";resetPdfResult();$("pdfProgressWrap").classList.add("hidden");$("pdfStatus").className="status";$("pdfStatus").textContent="";}else{$("pdfFileInfo2").textContent="कोई दूसरी PDF चयनित नहीं";$("pdfRemove2").disabled=true;} }
-async function loadPdf(){const f=$("pdfFile").files[0];if(!f)throw Error("पहले PDF चुनें।");resetPdfResult();pdfBytes=await fileBytes(f);pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);selectedPages=new Set(Array.from({length:pdfDoc.getPageCount()},(_,i)=>i));$("pdfFileInfo").textContent=`${f.name} · ${prettyBytes(f.size)} · ${pdfDoc.getPageCount()} pages`;$ ("pdfRemove1").disabled=false;await renderPdfPages();msg("pdfStatus",`${pdfDoc.getPageCount()} पेज लोड हो गए।`, "good")} 
+function clearPdf(which){const id=which===1?"pdfFile":"pdfFile2";$(id).value="";if(which===1){pdfDoc=null;pdfBytes=null;selectedPages.clear();$("pdfFileInfo").textContent="कोई PDF चयनित नहीं";$("pdfRemove1").disabled=true;$("pdfPages").innerHTML="";$("pdfPreview").innerHTML="";resetPdfResult();$("pdfProgressWrap").classList.add("hidden");$("pdfStatus").className="status";$("pdfStatus").textContent="";}else{$("pdfFileInfo2").textContent="कोई दूसरी PDF चयनित नहीं";$("pdfRemove2").disabled=true;}}
+async function loadPdf(){const f=$("pdfFile").files[0];if(!f)throw Error("पहले PDF चुनें।");resetPdfResult();pdfBytes=await fileBytes(f);pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);selectedPages=new Set(Array.from({length:pdfDoc.getPageCount()},(_,i)=>i));$("pdfFileInfo").textContent=`${f.name} · ${prettyBytes(f.size)} · ${pdfDoc.getPageCount()} pages`;$("pdfRemove1").disabled=false;await renderPdfPages();msg("pdfStatus",`${pdfDoc.getPageCount()} पेज लोड हो गए।`,"good")}
 $("pdfFile").addEventListener("change",()=>pdfAction(loadPdf,"PDF Preview"));
 $("pdfFile2").addEventListener("change",()=>{const f=$("pdfFile2").files[0];$("pdfRemove2").disabled=!f;$("pdfFileInfo2").textContent=f?`${f.name} · ${prettyBytes(f.size)}`:"कोई दूसरी PDF चयनित नहीं";});
 $("pdfRemove1").onclick=()=>clearPdf(1);$("pdfRemove2").onclick=()=>clearPdf(2);
 async function renderPdfPages(){
  const box=$("pdfPages");box.innerHTML="";if(!pdfDoc)return;
- let src;try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise}catch(e){box.textContent="Thumbnail preview unavailable";return}
+ let src;try{pdfjsLib.GlobalWorkerOptions.workerSrc="libs/pdf.worker.min.js";src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise}catch(e){box.textContent="Thumbnail preview unavailable";return}
  for(let i=0;i<pdfDoc.getPageCount();i++){
   updatePdfTask(i,pdfDoc.getPageCount(),`PDF Preview · पेज ${i+1}/${pdfDoc.getPageCount()}`);
   const wrap=document.createElement("div");wrap.className="pdf-thumb"+(selectedPages.has(i)?" selected":"");wrap.draggable=false;wrap.dataset.index=i;
   const c=document.createElement("canvas"),cap=document.createElement("div");cap.className="small";cap.textContent=`Page ${i+1}${selectedPages.has(i)?" ✓":""}`;wrap.append(c,cap);
   const pg=await src.getPage(i+1),vp=pg.getViewport({scale:.24});c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
-  // Thumbnail click only toggles selection; it must never rebuild/reorder the page list.
   wrap.addEventListener("click",ev=>{
    ev.preventDefault();ev.stopPropagation();
    if(selectedPages.has(i))selectedPages.delete(i);else selectedPages.add(i);
@@ -279,16 +361,27 @@ async function refreshPdfPreview(doc){
  const f=activePdfFile();$("pdfFileInfo").textContent=`${f?f.name:"PDF"} · ${prettyBytes(pdfBytes.byteLength)} · ${doc.getPageCount()} pages (updated)`;
  await renderPdfPages();
 }
-async function drawPdfFirstPage(bytes,canvasId){try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const d=await pdfjsLib.getDocument({data:bytes.slice(0)}).promise,p=await d.getPage(1),vp=p.getViewport({scale:.7}),c=$(canvasId);c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise}catch(e){}}
+async function drawPdfFirstPage(bytes,canvasId){try{pdfjsLib.GlobalWorkerOptions.workerSrc="libs/pdf.worker.min.js";const d=await pdfjsLib.getDocument({data:bytes.slice(0)}).promise,p=await d.getPage(1),vp=p.getViewport({scale:.7}),c=$(canvasId);c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise}catch(e){}}
 async function compressPdfFile(file,profile,onProgress){
  onProgress(0,1,`${file.name}: सुरक्षित lossless optimization शुरू…`);
- const toolkit=await getPdfToolkit();
- let lossless;
- try{lossless=await toolkit.compress(file)}catch(e){throw Error("Lossless PDF optimization नहीं हो सकी। PDF password-protected या damaged हो सकती है; पहले सही password से unlock करें। विवरण: "+(e.message||e))}
- const losslessBytes=lossless instanceof Uint8Array?lossless:new Uint8Array(lossless);
+ const raw=await file.arrayBuffer();
+ let losslessBytes;
+ try{
+  const toolkit=await getPdfToolkit();
+  const lossless=await toolkit.compress(file);
+  losslessBytes=lossless instanceof Uint8Array?lossless:new Uint8Array(lossless);
+ }catch(e){
+  try{
+   const docTmp=await PDFLib.PDFDocument.load(raw);
+   losslessBytes=await docTmp.save({useObjectStreams:true});
+  }catch(err){
+   throw Error("PDF optimization नहीं हो सकी। PDF password-protected या damaged हो सकती है। विवरण: "+(err.message||err));
+  }
+ }
+ pdfjsLib.GlobalWorkerOptions.workerSrc="libs/pdf.worker.min.js";
  if(profile==="quality" || losslessBytes.length<file.size*0.985){
-  const chosen=losslessBytes.length<file.size?losslessBytes:new Uint8Array(await file.arrayBuffer());
-  const d=await pdfjsLib.getDocument({data:chosen.slice()}).promise;
+  const chosen=losslessBytes.length<file.size?losslessBytes:new Uint8Array(raw);
+  const d=await pdfjsLib.getDocument({data:chosen.slice(0)}).promise;
   const method=chosen===losslessBytes?"Lossless structural optimization":"PDF पहले से optimized · Original सुरक्षित रखा";
   onProgress(1,1,"Lossless optimization पूरी · Text और vector सुरक्षित");
   return {bytes:chosen,pages:d.numPages,method,preserved:true};
@@ -296,7 +389,7 @@ async function compressPdfFile(file,profile,onProgress){
  if(profile==="balanced"||profile==="small"){
   onProgress(0,1,"Lossless से पर्याप्त बचत नहीं हुई · वैकल्पिक image compression जाँची जा रही है…");
   const cfg=profile==="small"?{scale:.9,q:.42}:{scale:1.2,q:.68};
-  const raw=await file.arrayBuffer(),src=await pdfjsLib.getDocument({data:raw.slice(0)}).promise,out=await PDFLib.PDFDocument.create();
+  const src=await pdfjsLib.getDocument({data:raw.slice(0)}).promise,out=await PDFLib.PDFDocument.create();
   for(let i=1;i<=src.numPages;i++){
    onProgress(i,src.numPages,`${file.name}: वैकल्पिक image pass · पेज ${i}/${src.numPages}`);await new Promise(r=>requestAnimationFrame(r));
    const pg=await src.getPage(i),vp=pg.getViewport({scale:cfg.scale}),c=document.createElement("canvas");c.width=Math.ceil(vp.width);c.height=Math.ceil(vp.height);
@@ -304,7 +397,7 @@ async function compressPdfFile(file,profile,onProgress){
    const blob=await new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error("Image compression failed")),"image/jpeg",cfg.q));
    const img=await out.embedJpg(await blob.arrayBuffer()),page=out.addPage([vp.width,vp.height]);page.drawImage(img,{x:0,y:0,width:vp.width,height:vp.height});c.width=1;c.height=1;
   }
-  const rasterBytes=await out.save();
+  const rasterBytes=await out.save({useObjectStreams:true});
   if(rasterBytes.length<Math.min(losslessBytes.length,file.size))return {bytes:rasterBytes,pages:src.numPages,method:"Lossless + adaptive raster fallback",preserved:false};
   if(losslessBytes.length<file.size)return {bytes:losslessBytes,pages:src.numPages,method:"Lossless structural optimization",preserved:true};
   return {bytes:new Uint8Array(raw),pages:src.numPages,method:"PDF पहले से optimized · Original सुरक्षित रखा",preserved:true};
@@ -345,7 +438,6 @@ $("pdfCompress").onclick=()=>pdfAction(async()=>{
  $("pdfResult").classList.remove("hidden");if(pdfResultUrl)URL.revokeObjectURL(pdfResultUrl);pdfResultUrl=URL.createObjectURL(pdfResultBlob);$("pdfDownloadResult").onclick=()=>downloadBlob(pdfResultBlob,"compressed-raster.pdf");setPdfProgress(1,1,"Compression पूरी हुई");msg("pdfStatus",`Compression पूरी हुई · Original ${prettyBytes(original)} · Output ${prettyBytes(compressed)} · ${saved>=0?pct.toFixed(1)+"% बचत":"आकार बढ़ा"}`,saved>0?"good":"info");addPdfHistory("Single PDF compression",`${f.name}: ${prettyBytes(original)} → ${prettyBytes(compressed)}`);
  }finally{$("pdfCompress").disabled=false;await hidePdfTask();}
 });
-// PDF password operations use qpdf WASM (PDFStudio wrapper); AES-128 is the compatibility default, AES-256 is optional.
 $("pdfLockBtn").onclick=async()=>{
  const f=activePdfFile(),user=$("pdfUserPassword").value,owner=$("pdfOwnerPassword").value,btn=$("pdfLockBtn");
  if(!f){msg("pdfPasswordStatus","पहले मुख्य PDF चुनें।","bad");return}
@@ -363,10 +455,10 @@ $("pdfUnlockBtn").onclick=async()=>{
  try{const toolkit=await getPdfToolkit(),plain=await toolkit.unlock(f,{password}),bytes=plain instanceof Uint8Array?plain:new Uint8Array(plain);const unlocked=replaceMainPdf(bytes,f.name.replace(/\.pdf$/i,"")+"-unlocked.pdf");$("pdfUnlockPassword").value="";await loadPdf();msg("pdfPasswordStatus","सही पासवर्ड। PDF unlock हो गई है और अब बाकी PDF tools में इस्तेमाल कर सकते हैं।","good");addPdfHistory("PDF unlocked",unlocked.name)}
  catch(e){msg("pdfPasswordStatus","PDF unlock नहीं हुई। पासवर्ड गलत हो सकता है या फाइल इस encryption format में समर्थित नहीं है। विवरण: "+(e.message||String(e)),"bad")}finally{btn.disabled=false;await hidePdfTask()}
 };
-$("pdfBatchCompress").onclick=async()=>{const files=[...$("pdfBatchFiles").files];if(!files.length){msg("pdfStatus","Batch के लिए एक या अधिक PDF चुनें।","bad");return}if(!window.JSZip){msg("pdfStatus","ZIP library load नहीं हुई। Internet connection जाँचें।","bad");return}const btn=$("pdfBatchCompress");btn.disabled=true;const zip=new JSZip();showPdfTask("Batch PDF Compression",`${files.length} PDF फाइलें प्रोसेस होंगी…`,false);try{for(let i=0;i<files.length;i++){setPdfProgress(i,files.length,`Batch ${i+1}/${files.length}: ${files[i].name}`);const r=await compressPdfFile(files[i],$("pdfSmartProfile").value,(d,t,l)=>setPdfProgress(i+d/t,files.length,l));zip.file(files[i].name.replace(/\.pdf$/i,"")+"-compressed.pdf",r.bytes);addPdfHistory("Batch compression",`${files[i].name} · ${prettyBytes(files[i].size)} source`)}setPdfProgress(files.length,files.length,"ZIP तैयार हो रही है…");const blob=await zip.generateAsync({type:"blob",compression:"DEFLATE"});downloadBlob(blob,"SVC-compressed-PDFs.zip");msg("pdfStatus",`${files.length} PDF compress होकर ZIP में डाउनलोड हो गईं।`,"good");}catch(e){msg("pdfStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
-$("pdfOcrBtn").onclick=async()=>{const f=$("pdfFile").files[0];if(!f){msg("pdfOcrStatus","पहले मुख्य PDF चुनें।","bad");return}if(!window.Tesseract){msg("pdfOcrStatus","OCR library load नहीं हुई। Internet connection जाँचें।","bad");return}const btn=$("pdfOcrBtn");btn.disabled=true;showPdfTask("PDF OCR","पेज पढ़े जा रहे हैं…",false);try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,lang=$("pdfOcrLang").value;let textOut="";const worker=await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status)$("pdfOcrStatus").textContent=`OCR: ${m.status} ${m.progress?Math.round(m.progress*100)+"%":""}`}});for(let i=1;i<=doc.numPages;i++){updatePdfTask(i-1,doc.numPages,`OCR पेज ${i}/${doc.numPages}`);const page=await doc.getPage(i),vp=page.getViewport({scale:1.6}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const r=await worker.recognize(c);textOut+=`\n\n--- Page ${i} ---\n`+r.data.text;c.width=1;c.height=1;$("pdfOcrStatus").textContent=`OCR page ${i}/${doc.numPages} complete`}await worker.terminate();downloadBlob(new Blob([textOut],{type:"text/plain;charset=utf-8"}),f.name.replace(/\.pdf$/i,"")+"-OCR.txt");msg("pdfOcrStatus","OCR पूरा हुआ। निकाला गया टेक्स्ट TXT फाइल में डाउनलोड हुआ; पहचान की शुद्धता स्कैन गुणवत्ता पर निर्भर है।","good");addPdfHistory("OCR extraction",`${f.name} · ${doc.numPages} pages`)}catch(e){msg("pdfOcrStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
+$("pdfBatchCompress").onclick=async()=>{const files=[...$("pdfBatchFiles").files];if(!files.length){msg("pdfStatus","Batch के लिए एक या अधिक PDF चुनें।","bad");return}if(!window.JSZip){msg("pdfStatus","ZIP library load नहीं हुई।","bad");return}const btn=$("pdfBatchCompress");btn.disabled=true;const zip=new JSZip();showPdfTask("Batch PDF Compression",`${files.length} PDF फाइलें प्रोसेस होंगी…`,false);try{for(let i=0;i<files.length;i++){setPdfProgress(i,files.length,`Batch ${i+1}/${files.length}: ${files[i].name}`);const r=await compressPdfFile(files[i],$("pdfSmartProfile").value,(d,t,l)=>setPdfProgress(i+d/t,files.length,l));zip.file(files[i].name.replace(/\.pdf$/i,"")+"-compressed.pdf",r.bytes);addPdfHistory("Batch compression",`${files[i].name} · ${prettyBytes(files[i].size)} source`)}setPdfProgress(files.length,files.length,"ZIP तैयार हो रही है…");const blob=await zip.generateAsync({type:"blob",compression:"DEFLATE"});downloadBlob(blob,"SVC-compressed-PDFs.zip");msg("pdfStatus",`${files.length} PDF compress होकर ZIP में डाउनलोड हो गईं।`,"good");}catch(e){msg("pdfStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
+$("pdfOcrBtn").onclick=async()=>{const f=$("pdfFile").files[0];if(!f){msg("pdfOcrStatus","पहले मुख्य PDF चुनें।","bad");return}if(!window.Tesseract){msg("pdfOcrStatus","OCR library load नहीं हुई।","bad");return}const btn=$("pdfOcrBtn");btn.disabled=true;showPdfTask("PDF OCR","पेज पढ़े जा रहे हैं…",false);try{pdfjsLib.GlobalWorkerOptions.workerSrc="libs/pdf.worker.min.js";const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,lang=$("pdfOcrLang").value;let textOut="";const worker=await Tesseract.createWorker(lang,1,{workerPath:new URL("libs/worker.min.js",location.href).href,corePath:new URL("libs/",location.href).href,langPath:new URL("libs",location.href).href,workerBlobURL:false,logger:m=>{if(m.status)$("pdfOcrStatus").textContent=`OCR: ${m.status} ${m.progress?Math.round(m.progress*100)+"%":""}`}});for(let i=1;i<=doc.numPages;i++){updatePdfTask(i-1,doc.numPages,`OCR पेज ${i}/${doc.numPages}`);const page=await doc.getPage(i),vp=page.getViewport({scale:1.6}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const r=await worker.recognize(c);textOut+=`\n\n--- Page ${i} ---\n`+r.data.text;c.width=1;c.height=1;$("pdfOcrStatus").textContent=`OCR page ${i}/${doc.numPages} complete`}await worker.terminate();downloadBlob(new Blob([textOut],{type:"text/plain;charset=utf-8"}),f.name.replace(/\.pdf$/i,"")+"-OCR.txt");msg("pdfOcrStatus","OCR पूरा हुआ। निकाला गया टेक्स्ट TXT फाइल में डाउनलोड हुआ; पहचान की शुद्धता स्कैन गुणवत्ता पर निर्भर है।","good");addPdfHistory("OCR extraction",`${f.name} · ${doc.numPages} pages`)}catch(e){msg("pdfOcrStatus",e.message||String(e),"bad")}finally{btn.disabled=false;await hidePdfTask()}};
 $("pdfHistoryClear").onclick=()=>{pdfHistory=[];$("pdfHistory").textContent="Session history cleared."};
-$("pdfJpg").onclick=()=>pdfAction(async()=>{const a=await getPdf();pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;for(let i=1;i<=src.numPages;i++){updatePdfTask(i-1,src.numPages,`PDF to JPG · पेज ${i}/${src.numPages}`);const p=await src.getPage(i),vp=p.getViewport({scale:1.5}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.92));downloadBlob(blob,`page-${i}.jpg`)}msg("pdfStatus","हर पेज अलग JPG में डाउनलोड किया गया।","good")},"PDF to JPG");
+$("pdfJpg").onclick=()=>pdfAction(async()=>{const a=await getPdf();pdfjsLib.GlobalWorkerOptions.workerSrc="libs/pdf.worker.min.js";const src=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;for(let i=1;i<=src.numPages;i++){updatePdfTask(i-1,src.numPages,`PDF to JPG · पेज ${i}/${src.numPages}`);const p=await src.getPage(i),vp=p.getViewport({scale:1.5}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.92));downloadBlob(blob,`page-${i}.jpg`)}msg("pdfStatus","हर पेज अलग JPG में डाउनलोड किया गया।","good")},"PDF to JPG");
 $("imagesToPdf").onclick=()=>pdfAction(async()=>{const fs=[...$("imagesPdf").files];if(!fs.length)throw Error("Images चुनें।");const d=await PDFLib.PDFDocument.create();for(let i=0;i<fs.length;i++){updatePdfTask(i,fs.length,`Images to PDF · ${i+1}/${fs.length}`);const f=fs[i],b=await fileBytes(f),im=f.type==="image/png"?await d.embedPng(b):await d.embedJpg(b),p=d.addPage([im.width,im.height]);p.drawImage(im,{x:0,y:0,width:im.width,height:im.height})}await savePdf(d,"images.pdf");msg("pdfStatus","Images से PDF बन गई।","good")},"Images to PDF");
 
 // Photo cropper
@@ -391,140 +483,106 @@ const passages={
  ]
 };
 function unicodeToLegacyTyping(sourceText) {
-            if (!sourceText) return "";
-
-            let text = sourceText;
-
-            // 1. Parentheses to Devlys Alt+0188 (¼) & Alt+0189 (½)
-            text = text.replace(/\(/g, "¼");
-            text = text.replace(/\)/g, "½");
-
-            // 2. Currency & Basic Punctuation
-            text = text.replace(/\/\-/g, "@&");
-            text = text.replace(/\//g, "@");
-            text = text.replace(/रू\.\s*/g, ":- ");
-            text = text.replace(/रू/g, ":");
-            text = text.replace(/।/g, "A");
-
-            // 3. CRITICAL: Replace Unicode comma with Devlys ']' BEFORE replacing 'ए' with ','
-            text = text.replace(/,\s*/g, "] ");
-            text = text.replace(/,/g, "]");
-
-            // 4. High-Priority Words (MUST be before general character/vowel replacements)
-            text = text.replace(/विरूद्ध/g, "fo:)");
-            text = text.replace(/विरुद्ध/g, "fo:)");
-            text = text.replace(/मैंनें/g, "eSuas");
-            text = text.replace(/मैंने/g, "eSuas");
-            text = text.replace(/प्रियदर्शिनी/g, "fiz;nf'kZuh");
-            text = text.replace(/ऑनलाइन/g, "vkWuykbZu");
-            text = text.replace(/ऑनलाईन/g, "vkWuykbZu");
-            text = text.replace(/लॉटरी/g, "ykWVjh");
-            text = text.replace(/लाटरी/g, "ykWVjh");
-            text = text.replace(/क्रमांक/g, "Øekad");
-            text = text.replace(/कार्मिकों/g, "dkfeZdksa");
-            text = text.replace(/कार्मिक/g, "dkfeZd");
-            text = text.replace(/कार्यवाही/g, "dk;Zokgh");
-            text = text.replace(/उपरोक्त/g, "mijksDr");
-            text = text.replace(/विशिष्ट/g, "fof'k\"V");
-            text = text.replace(/आपत्ति/g, "vkifRr");
-            text = text.replace(/श्री/g, "Jh");
-            text = text.replace(/श्रा/g, "Jk");
-            text = text.replace(/श्रे/g, "Js");
-            text = text.replace(/श्र/g, "J");
-            text = text.replace(/द्वारा/g, "}kjk");
-            text = text.replace(/द्व/g, "}");
-            text = text.replace(/एवं/g, ",oa");
-            text = text.replace(/ऐसी/g, ",slh");
-            text = text.replace(/ऐ/g, ",s");
-            text = text.replace(/ए/g, ",");
-            text = text.replace(/करूंगा/g, "d:axk");
-            text = text.replace(/करूंगी/g, "d:axh");
-            text = text.replace(/इच्छुक/g, "bPNqd");
-
-            // 5. Hyphen in Unicode (dash, like वर्ष-2022) -> Devlys '&' (Shift+7)
-            text = text.replace(/([0-9a-zA-Z\u0900-\u097F])\-([0-9a-zA-Z\u0900-\u097F])/g, "$1&$2");
-            text = text.replace(/ - /g, " & ");
-
-            // 6. Dot '.' in Unicode -> Devlys '-' (displays as dot in Devlys 010!)
-            text = text.replace(/\./g, "-");
-
-            // 7. Handle Nukta letters (ड़ -> M+, ढ़ -> <+)
-            text = text.replace(/[\u095C]|(?:\u0921\u093C)/g, "M+");
-            text = text.replace(/[\u095D]|(?:\u0922\u093C)/g, "<+");
-
-            // 8. Generic Conjuncts
-            text = text.replace(/द्ध/g, ")");
-            text = text.replace(/द्ग/g, "(");
-            text = text.replace(/द्य/g, "»");
-            text = text.replace(/द्ब/g, "Á");
-            text = text.replace(/द्म/g, "Ò");
-            text = text.replace(/दृ/g, "¾");
-            text = text.replace(/त्त/g, "Rr");
-            text = text.replace(/क्त/g, "Dr");
-            text = text.replace(/ष्ट/g, "\"V");
-            text = text.replace(/ष्ठ/g, "\"B");
-            text = text.replace(/श्च/g, "'p");
-
-            // 9. Shift Reph 'र्' before consonant cluster to 'Z' after cluster and matras
-            text = text.replace(/र्([\u0915-\u0939])ि/g, "ि$1Z");
-            text = text.replace(/र्((?:[\u0915-\u0939]्)*[\u0915-\u0939])([ाीुूृेैोौंँः]*)/g, "$1$2Z");
-
-            // 10. Shift Chhoti 'i' ('ि') to preceding position as 'f' in Devlys
-            text = text.replace(/((?:[\u0915-\u0939]्)*[\u0915-\u0939](?:[z]|्र)?)ि/g, "f$1");
-
-            // 11. Subjoined Ra-Prakar (e.g. प्र -> iz, द्र -> nz, क्र -> Ø, त्र -> =)
-            const raPrakarMap = [
-                ["प्र", "iz"], ["क्र", "Ø"], ["ग्र", "xz"], ["ज्र", "tz"],
-                ["द्र", "nz"], ["ब्र", "cz"], ["भ्र", "Hz"], ["म्र", "ez"],
-                ["व्र", "oz"], ["ह्र", "gz"], ["स्र", "lz"], ["त्र", "="]
-            ];
-            for (let i = 0; i < raPrakarMap.length; i++) {
-                text = text.replace(new RegExp(raPrakarMap[i][0], 'g'), raPrakarMap[i][1]);
-            }
-
-            // 12. Compound letters and half consonants (Halant mappings)
-            // Notice: ण् -> .
-            const revTable = [
-                ["क्ष्", "{" ], ["क्ष", "{k"],
-                ["त्र्", "="], ["त्रा", "=k"], ["त्र", "="],
-                ["ज्ञ", "K"],
-
-                ["क्", "D"], ["ख्", "["], ["ग्", "X"], ["घ्", "?"],
-                ["च्", "P"], ["ज्", "T"], ["त्", "R"], ["थ्", "F"],
-                ["ध्", "/"], ["न्", "U"], ["प्", "I"], ["ब्", "C"],
-                ["भ्", "H"], ["म्", "E"], ["य्", ";~"], ["ल्", "Y"],
-                ["व्", "O"], ["श्", "'"], ["ष्", "\""], ["स्", "L"],
-                ["ण्", "."], ["ह्", "g~"],
-
-                ["ख", "[k"], ["घ", "?k"], ["थ", "Fk"], ["ध", "/k"],
-                ["भ", "Hk"], ["श", "'k"], ["ष", "\"k"], ["ण", ".k"],
-                ["क", "d"], ["ग", "x"], ["च", "p"], ["छ", "N"],
-                ["ज", "t"], ["झ", ">"], ["ट", "V"], ["ठ", "B"],
-                ["ड", "M"], ["ढ", "<"], ["त", "r"], ["द", "n"],
-                ["न", "u"], ["प", "i"], ["फ", "Q"], ["ब", "c"],
-                ["म", "e"], ["य", ";"], ["र", "j"], ["ल", "y"],
-                ["व", "o"], ["स", "l"], ["ह", "g"],
-
-                ["ओ", "vks"], ["औ", "vkS"], ["आ", "vk"], ["अ", "v"],
-                ["ई", "bZ"], ["इ", "b"], ["ऊ", "Å"], ["उ", "m"],
-                ["ऋ", "¿"],
-
-                ["ो", "ks"], ["ौ", "kS"],
-                ["ा", "k"], ["ी", "h"], ["ु", "q"], ["ू", "w"], ["ृ", "`"],
-                ["े", "s"], ["ै", "S"],
-                ["ं", "a"], ["ँ", "¡"], ["ः", "%"], ["्", "~"],
-                ["ि", "f"]
-            ];
-
-            for (let i = 0; i < revTable.length; i++) {
-                text = text.replace(new RegExp(revTable[i][0], 'g'), revTable[i][1]);
-            }
-
-            // Subjoined ra
-            text = text.replace(/्र/g, "z");
-
-            return text;
-        }
+ if (!sourceText) return "";
+ let text = sourceText;
+ text = text.replace(/\(/g, "¼");
+ text = text.replace(/\)/g, "½");
+ text = text.replace(/\/\-/g, "@&");
+ text = text.replace(/\//g, "@");
+ text = text.replace(/रू\.\s*/g, ":- ");
+ text = text.replace(/रू/g, ":");
+ text = text.replace(/।/g, "A");
+ text = text.replace(/,\s*/g, "] ");
+ text = text.replace(/,/g, "]");
+ text = text.replace(/विरूद्ध/g, "fo:)");
+ text = text.replace(/विरुद्ध/g, "fo:)");
+ text = text.replace(/मैंनें/g, "eSuas");
+ text = text.replace(/मैंने/g, "eSuas");
+ text = text.replace(/प्रियदर्शिनी/g, "fiz;nf'kZuh");
+ text = text.replace(/ऑनलाइन/g, "vkWuykbZu");
+ text = text.replace(/ऑनलाईन/g, "vkWuykbZu");
+ text = text.replace(/लॉटरी/g, "ykWVjh");
+ text = text.replace(/लाटरी/g, "ykWVjh");
+ text = text.replace(/क्रमांक/g, "Øekad");
+ text = text.replace(/कार्मिकों/g, "dkfeZdksa");
+ text = text.replace(/कार्मिक/g, "dkfeZd");
+ text = text.replace(/कार्यवाही/g, "dk;Zokgh");
+ text = text.replace(/उपरोक्त/g, "mijksDr");
+ text = text.replace(/विशिष्ट/g, "fof'k\"V");
+ text = text.replace(/आपत्ति/g, "vkifRr");
+ text = text.replace(/श्री/g, "Jh");
+ text = text.replace(/श्रा/g, "Jk");
+ text = text.replace(/श्रे/g, "Js");
+ text = text.replace(/श्र/g, "J");
+ text = text.replace(/द्वारा/g, "}kjk");
+ text = text.replace(/द्व/g, "}");
+ text = text.replace(/एवं/g, ",oa");
+ text = text.replace(/ऐसी/g, ",slh");
+ text = text.replace(/ऐ/g, ",s");
+ text = text.replace(/ए/g, ",");
+ text = text.replace(/करूंगा/g, "d:axk");
+ text = text.replace(/करूंगी/g, "d:axh");
+ text = text.replace(/इच्छुक/g, "bPNqd");
+ text = text.replace(/([0-9a-zA-Z\u0900-\u097F])\-([0-9a-zA-Z\u0900-\u097F])/g, "$1&$2");
+ text = text.replace(/ - /g, " & ");
+ text = text.replace(/\./g, "-");
+ text = text.replace(/[\u095C]|(?:\u0921\u093C)/g, "M+");
+ text = text.replace(/[\u095D]|(?:\u0922\u093C)/g, "<+");
+ text = text.replace(/द्ध/g, ")");
+ text = text.replace(/द्ग/g, "(");
+ text = text.replace(/द्य/g, "»");
+ text = text.replace(/द्ब/g, "Á");
+ text = text.replace(/द्म/g, "Ò");
+ text = text.replace(/दृ/g, "¾");
+ text = text.replace(/त्त/g, "Rr");
+ text = text.replace(/क्त/g, "Dr");
+ text = text.replace(/ष्ट/g, "\"V");
+ text = text.replace(/ष्ठ/g, "\"B");
+ text = text.replace(/श्च/g, "'p");
+ text = text.replace(/र्([\u0915-\u0939])ि/g, "ि$1Z");
+ text = text.replace(/र्((?:[\u0915-\u0939]्)*[\u0915-\u0939])([ाीुूृेैोौंँः]*)/g, "$1$2Z");
+ text = text.replace(/((?:[\u0915-\u0939]्)*[\u0915-\u0939](?:[z]|्र)?)ि/g, "f$1");
+ const raPrakarMap = [
+  ["प्र", "iz"], ["क्र", "Ø"], ["ग्र", "xz"], ["ज्र", "tz"],
+  ["द्र", "nz"], ["ब्र", "cz"], ["भ्र", "Hz"], ["म्र", "ez"],
+  ["व्र", "oz"], ["ह्र", "gz"], ["स्र", "lz"], ["त्र", "="]
+ ];
+ for (let i = 0; i < raPrakarMap.length; i++) {
+  text = text.replace(new RegExp(raPrakarMap[i][0], 'g'), raPrakarMap[i][1]);
+ }
+ const revTable = [
+  ["क्ष्", "{" ], ["क्ष", "{k"],
+  ["त्र्", "="], ["त्रा", "=k"], ["त्र", "="],
+  ["ज्ञ", "K"],
+  ["क्", "D"], ["ख्", "["], ["ग्", "X"], ["घ्", "?"],
+  ["च्", "P"], ["ज्", "T"], ["त्", "R"], ["थ्", "F"],
+  ["ध्", "/"], ["न्", "U"], ["प्", "I"], ["ब्", "C"],
+  ["भ्", "H"], ["म्", "E"], ["य्", ";~"], ["ल्", "Y"],
+  ["व्", "O"], ["श्", "'"], ["ष्", "\""], ["स्", "L"],
+  ["ण्", "."], ["ह्", "g~"],
+  ["ख", "[k"], ["घ", "?k"], ["थ", "Fk"], ["ध", "/k"],
+  ["भ", "Hk"], ["श", "'k"], ["ष", "\"k"], ["ण", ".k"],
+  ["क", "d"], ["ग", "x"], ["च", "p"], ["छ", "N"],
+  ["ज", "t"], ["झ", ">"], ["ट", "V"], ["ठ", "B"],
+  ["ड", "M"], ["ढ", "<"], ["त", "r"], ["द", "n"],
+  ["न", "u"], ["प", "i"], ["फ", "Q"], ["ब", "c"],
+  ["म", "e"], ["य", ";"], ["र", "j"], ["ल", "y"],
+  ["व", "o"], ["स", "l"], ["ह", "g"],
+  ["ओ", "vks"], ["औ", "vkS"], ["आ", "vk"], ["अ", "v"],
+  ["ई", "bZ"], ["इ", "b"], ["ऊ", "Å"], ["उ", "m"],
+  ["ऋ", "¿"],
+  ["ो", "ks"], ["ौ", "kS"],
+  ["ा", "k"], ["ी", "h"], ["ु", "q"], ["ू", "w"], ["ृ", "`"],
+  ["े", "s"], ["ै", "S"],
+  ["ं", "a"], ["ँ", "¡"], ["ः", "%"], ["्", "~"],
+  ["ि", "f"]
+ ];
+ for (let i = 0; i < revTable.length; i++) {
+  text = text.replace(new RegExp(revTable[i][0], 'g'), revTable[i][1]);
+ }
+ text = text.replace(/्र/g, "z");
+ return text;
+}
 let typeTimer=null,typeStartAt=0,typeDuration=300,typeRunning=false,typeExpected="",typeCompareExpected="",typeElapsed=0,typeProfileTarget=0,rssbLockedIndex=0,lastTypedValue="";
 const loadedTypingFonts={devlys:null,kruti:null};
 const examProfiles={
@@ -561,7 +619,7 @@ function applyExamProfile(){
  resetTyping();
 }
 function showPassage(){
- const bank=passages[$("typeLang").value],start=+$ ("typePassage").value;
+ const bank=passages[$("typeLang").value],start=+$("typePassage").value;
  typeExpected=Array.from({length:12},(_,i)=>bank[(start+i)%bank.length]).join(" ");
  typeCompareExpected=isLegacyTyping()?unicodeToLegacyTyping(typeExpected):typeExpected;
  $("typingPassage").textContent=typeCompareExpected;
@@ -571,7 +629,7 @@ function resetTyping(){
  clearInterval(typeTimer);typeRunning=false;typeElapsed=0;rssbLockedIndex=0;lastTypedValue="";
  $("typingInput").value="";$("typingInput").disabled=true;$("typeStart").disabled=false;
  $("typeProgress").style.width="0%";
- $("typeTime").textContent=String(+$ ("typeDuration").value).padStart(2,"0")+":00";
+ $("typeTime").textContent=String(+$("typeDuration").value).padStart(2,"0")+":00";
  ["typeGross","typeNet","typeErrors","typeChars"].forEach(id=>$(id).textContent="0");
  $("typeAccuracy").textContent="100%";$("typingResult").className="status";$("typingResult").textContent="";
  showPassage();
@@ -633,7 +691,7 @@ $("typingInput").addEventListener("input",()=>{
  lastTypedValue=current;scoreTyping();
 });
 $("typeStart").onclick=()=>{
- if(typeRunning)return;resetTyping();typeDuration=+$ ("typeDuration").value*60;typeRunning=true;typeStartAt=Date.now();
+ if(typeRunning)return;resetTyping();typeDuration=+$("typeDuration").value*60;typeRunning=true;typeStartAt=Date.now();
  $("typingInput").disabled=false;$("typingInput").focus();$("typeStart").disabled=true;
  typeTimer=setInterval(()=>{typeElapsed=(Date.now()-typeStartAt)/1000;const left=Math.max(0,typeDuration-Math.floor(typeElapsed));
   $("typeTime").textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");scoreTyping();if(left<=0)finishTyping();},250);
@@ -659,7 +717,6 @@ function loadTypingFont(file,kind){
 $("loadDevlysFont").onclick=()=>$("devlysFont").click();$("loadKrutiFont").onclick=()=>$("krutiFont").click();
 $("devlysFont").onchange=()=>loadTypingFont($("devlysFont").files[0],"devlys");
 $("krutiFont").onchange=()=>loadTypingFont($("krutiFont").files[0],"kruti");
-// Quiet internal mapping checks: never displayed to the user.
 function typingMappingSelfTest(){
  const tests=[["भारत एक विशाल देश है।","Hkkjr ,d fo'kky ns'k gSA"],["हिन्दी","fgUnh"],["शिक्षा","f'k{kk"],["कार्य","dk;Z"],["स्","L"],["कि","fd"],["क्ष","{k"],["त्र","="],["श्री","Jh"],["द्वारा","}kjk"]];
  return tests.every(([u,l])=>unicodeToLegacyTyping(u)===l);
@@ -705,4 +762,5 @@ let numberResultText="";
 $("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
 $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
 </script>
+<script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
 </body></html>

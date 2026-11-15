@@ -78,8 +78,7 @@
       ]
     }
     </script>
-    <!-- Real-time Presence Tracker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+   
     <style>
         :root {
             --gov-blue: #003366;
@@ -519,796 +518,18 @@
 
     </div>
 
-    <!-- FOOTER -->
+   <!-- FOOTER -->
     <footer>
-        <div class="live-counter-badge">
-            <div class="dot-pulse"></div>
-            <span>Live Active Users: <b id="concurrentCount">1</b> Online</span>
-        </div>
         <div class="firm-copyright">
+            © 2026 <b>SHREE VAISHNAVI COMPUTERS</b> · All Rights Reserved.
+        </div>
+        <div class="firm-copyright" style="text-align: right;">
             Designed & Maintained Exclusively by <b>SHREE VAISHNAVI COMPUTERS</b>
             <a href="about.html" style="color: #003366; text-decoration: none; font-weight: 600; margin-left: 15px;">ℹ️ About Us & Support</a>
         </div>
     </footer>
 
-    <script>
-        /* =========================================================================
-           1. DEVLYS 010 TO UNICODE TRANSLATION LOGIC
-           ========================================================================= */
-
-        function processDevlysToUnicode(sourceText) {
-            if (!sourceText) return "";
-
-            let text = sourceText;
-
-            // 1. Protect Repeated dots (e.g. '...........') and dots between digits ('05.07.2023')
-            // so they NEVER convert into half-na 'ण्'!
-            text = text.replace(/\.{2,}/g, (match) => "\uE020".repeat(match.length));
-            text = text.replace(/(\d)\.(\d)/g, "$1\uE020$2");
-            text = text.replace(/(^|\s)\.(\s|$)/g, "$1\uE020$2");
-
-            // 2. Protect Alt+0188 (¼) & Alt+0189 (½)
-            text = text.replace(/¼/g, "\uE009"); // '('
-            text = text.replace(/½/g, "\uE00A"); // ')'
-
-            // 3. Currency & Punctuation protection
-            text = text.replace(/@&/g, "\uE006"); // '/-'
-            text = text.replace(/:-/g, "\uE007"); // 'रू. '
-            text = text.replace(/\]/g, "\uE001"); // ','
-            text = text.replace(/@/g, "\uE002");  // '/'
-            text = text.replace(/&/g, "\uE008");  // '-'
-            text = text.replace(/-/g, "\uE003");  // '.' (Devlys '-' is visual dot '.')
-            text = text.replace(/A/g, "\uE004");  // '।'
-
-            // 4. Alt codes & Specifics
-            text = text.replace(/fo:\)/g, "विरूद्ध");
-            text = text.replace(/\)/g, "द्ध");
-            text = text.replace(/\(/g, "द्ग");
-
-            const altCodeMappings = [
-                ["‡", "्"],
-                ["ˆ", "ै"],
-                ["‰", "ो"],
-                ["Š", "ौ"],
-                ["‹", "ॅ"],
-                ["Œ", "ॉ"],
-                ["‘", "ण्"],
-                ["’", "प्"],
-                ["“", "र्"],
-                ["”", "र्य"],
-                ["–", "दू"],
-                ["—", "ट्र"],
-                ["˜", "रु"],
-                ["™", "ृ"],
-                ["›", "ल्"],
-                ["Ÿ", "र"],
-                [" ", "॰"],
-                ["¡", "।"],
-                ["¢", "ऽ"],
-                ["£", "ख"],
-                ["¤", "ृ"],
-                ["¥", "त्र"],
-                ["§", "ी"],
-                ["¨", "ु"],
-                ["©", "ू"],
-                ["ª", "ट"],
-                ["«", "ै"],
-                ["®", "ॉ"],
-                ["±", "्र"],
-                ["³", "ज्"],
-                ["´", "न"],
-                ["¶", "फ्"],
-                ["·", "S"],
-                ["¸", "य्"],
-                ["Å", "ऊ"],
-                ["Ì", "ह"],
-                ["Í", "व"],
-                ["Î", "व"],
-                ["Ø", "क्र"],
-                ["Ù", "रु"],
-                ["Ý", "फ्र"],
-                ["Þ", "“"],
-                ["ß", "”"],
-                ["à", "ह"],
-                ["á", "हृ"],
-                ["â", "ह्"],
-                ["ã", "ह्य"],
-                ["ä", "त्क"],
-                ["å", "ो"],
-                ["æ", "द्र"],
-                ["ç", "प्र"],
-                ["è", "ं"],
-                ["é", "त्र"],
-                ["ê", "ट"],
-                ["ë", "ढ"],
-                ["ì", "ख"],
-                ["í", "र्"],
-                ["î", "य"],
-                ["ï", "ड़"],
-                ["ð", "ढ़"],
-                ["ñ", "."],
-                ["ó", "स्त्र"],
-                ["ô", "क्ष"],
-                ["õ", "ै"],
-                ["ö", "द्र"],
-                ["÷", "इ"],
-                ["ø", "{"],
-                ["ù", "च"]
-            ];
-            // Keep Alt-code outputs protected from the ordinary DevLys keyboard
-            // table (e.g. user code 183 must remain literal "S", not become "ै").
-            const altCodeRestoreTokens = [];
-            for (let i = 0; i < altCodeMappings.length; i++) {
-                const token = "\uE100" + String.fromCharCode(0xE200 + i) + "\uE101";
-                text = text.replace(new RegExp(altCodeMappings[i][0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'), token);
-                altCodeRestoreTokens.push([token, altCodeMappings[i][1]]);
-            }
-
-            text = text.replace(/eSuas/g, "मैंने");
-            text = text.replace(/eSusa/g, "मैंने");
-            text = text.replace(/,slh/g, "ऐसी");
-            text = text.replace(/,s/g, "ऐ");
-            text = text.replace(/vkW/g, "ऑ");
-            text = text.replace(/kW/g, "ॉ");
-            text = text.replace(/W/g, "ॅ");
-
-            text = text.replace(/Øekad/g, "क्रमांक");
-            text = text.replace(/dksbZ/g, "कोई");
-            text = text.replace(/bPNqd/g, "इच्छुक");
-            text = text.replace(/vkifRr/g, "आपत्ति");
-            text = text.replace(/vkifr/g, "आपत्ति");
-            text = text.replace(/fiz;nf'kZuh/g, "प्रियदर्शिनी");
-            text = text.replace(/fiz;nf'Zuh/g, "प्रियदर्शिनी");
-            text = text.replace(/f'kZ/g, "र्शि");
-            text = text.replace(/f'Z/g, "र्शि");
-            text = text.replace(/Jh/g, "श्री");
-            text = text.replace(/Jk/g, "श्रा");
-            text = text.replace(/Js/g, "श्रे");
-            text = text.replace(/JS/g, "श्रै");
-            text = text.replace(/J/g, "श्र");
-            text = text.replace(/\}/g, "द्व");
-            text = text.replace(/,oa/g, "एवं");
-
-            text = text.replace(/d:axk/g, "करूंगा");
-            text = text.replace(/d:axh/g, "करूंगी");
-            text = text.replace(/:axk/g, "रूंगा");
-            text = text.replace(/:axh/g, "रूंगी");
-            text = text.replace(/:/g, "रू");
-
-            // Handle 'fZ' combination
-            text = text.replace(/f([D\[\?PTRFUCHYL\'"\{]?[a-zA-Z\>\:;M<NnrgVBMbcdehlopqstuvwxy][z]?)Z/g, "र्$1\uE005");
-
-            // Re-position 'Z' (Reph)
-            let zPos = text.indexOf("Z");
-            while (zPos !== -1) {
-                let idx = zPos - 1;
-                while (idx >= 0 && "ksSqwh`a¡%~".indexOf(text.charAt(idx)) !== -1) {
-                    idx--;
-                }
-                if (idx >= 0 && text.charAt(idx) === 'z') idx--;
-                if (idx >= 0) idx--;
-                if (idx >= 0 && "D[?PTF/UICHYEO'\"L{".indexOf(text.charAt(idx)) !== -1) idx--;
-                text = text.substring(0, idx + 1) + "र्" + text.substring(idx + 1, zPos) + text.substring(zPos + 1);
-                zPos = text.indexOf("Z");
-            }
-
-            // Re-position 'f' (Chhoti 'i')
-            let fPos = text.indexOf("f");
-            while (fPos !== -1) {
-                let idx = fPos + 1;
-                if (idx < text.length && "D[?PTF/UICHYEO'\"L{".indexOf(text.charAt(idx)) !== -1) idx++;
-                if (idx < text.length) idx++;
-                if (idx < text.length && text.charAt(idx) === 'z') idx++;
-                text = text.substring(0, fPos) + text.substring(fPos + 1, idx) + "ि" + text.substring(idx);
-                fPos = text.indexOf("f");
-            }
-
-            text = text.replace(/\uE005/g, "ि");
-
-            const conversionTable = [
-                ["M+", "ड़"], ["<+", "ढ़"],
-                ["vks", "ओ"], ["vkS", "औ"], ["vk", "आ"], ["v", "अ"],
-                ["bZ", "ई"], ["b", "इ"], ["m", "उ"], ["Å", "ऊ"],
-                [",", "ए"],
-
-                ["[k", "ख"], ["[", "ख्"],
-                ["?k", "घ"], ["?", "घ्"],
-                ["Fk", "थ"], ["F", "थ्"],
-                ["/k", "ध"], ["/", "ध्"],
-                ["Hk", "भ"], ["H", "भ्"],
-                ["'k", "श"], ["'", "श्"],
-                ["\"k", "ष"], ["\"", "ष्"],
-                [".k", "ण"],
-                [".M", "ण्ड"], [".B", "ण्ठ"], [".V", "ण्ट"], [".<", "ण्ढ"],
-                [".", "ण्"],
-
-                ["{k", "क्ष"], ["{", "क्ष्"],
-                ["=k", "त्रा"], ["=", "त्र"],
-                ["K", "ज्ञ"],
-
-                ["d", "क"], ["D", "क्"],
-                ["x", "ग"], ["X", "ग्"],
-                ["p", "च"], ["P", "च्"],
-                ["N", "छ"],
-                ["t", "ज"], ["T", "ज्"],
-                [">", "झ"],
-                ["V", "ट"], ["B", "ठ"], ["M", "ड"], ["<", "ढ"],
-                ["r", "त"], ["R", "त्"],
-                ["n", "द"],
-                ["u", "न"], ["U", "न्"],
-                ["i", "प"], ["I", "प्"],
-                ["Q", "फ"],
-                ["c", "ब"], ["C", "ब्"],
-                ["e", "म"], ["E", "म्"],
-                [";", "य"],
-                ["j", "र"],
-                ["y", "ल"], ["Y", "ल्"],
-                ["o", "व"], ["O", "व्"],
-                ["l", "स"], ["L", "स्"],
-                ["g", "ह"],
-
-                ["z", "्र"],
-
-                ["ks", "ो"], ["kS", "ौ"],
-                ["k", "ा"], ["h", "ी"], ["q", "ु"], ["w", "ू"],
-                ["`", "ृ"], ["s", "े"], ["S", "ै"],
-                ["a", "ं"], ["¡", "ँ"], ["%", "ः"], ["~", "्"]
-            ];
-
-            for (let i = 0; i < conversionTable.length; i++) {
-                let re = new RegExp(conversionTable[i][0].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1"), 'g');
-                text = text.replace(re, conversionTable[i][1]);
-            }
-
-            text = text.replace(/ंे/g, "ें");
-            text = text.replace(/ंै/g, "ैं");
-            text = text.replace(/ंो/g, "ों");
-            text = text.replace(/ंौ/g, "ौं");
-            text = text.replace(/ंा/g, "ां");
-            text = text.replace(/ंी/g, "ीं");
-            text = text.replace(/ंु/g, "ुं");
-            text = text.replace(/ंू/g, "ूं");
-
-            text = text.replace(/त्ित/g, "त्ति");
-            text = text.replace(/त्ि/g, "्ति");
-            text = text.replace(/र्इ/g, "ई");
-            text = text.replace(/क्षैत्र/g, "क्षेत्र");
-            text = text.replace(/एे/g, "ऐ");
-
-            // Restore exact user-supplied Alt-code outputs after keyboard conversion.
-            for (let i = 0; i < altCodeRestoreTokens.length; i++) {
-                text = text.replaceAll(altCodeRestoreTokens[i][0], altCodeRestoreTokens[i][1]);
-            }
-
-            // Restore protected tokens
-            text = text.replace(/\uE020/g, ".");
-            text = text.replace(/\uE009/g, "(");
-            text = text.replace(/\uE00A/g, ")");
-            text = text.replace(/\uE007/g, "रू. ");
-            text = text.replace(/\uE006/g, "/-");
-            text = text.replace(/\uE008/g, "-");
-            text = text.replace(/\uE001/g, ", ");
-            text = text.replace(/ , /g, ", ");
-            text = text.replace(/\uE002/g, "/");
-            text = text.replace(/\uE003/g, ".");
-            text = text.replace(/\uE004/g, "।");
-
-            text = text.replace(/  +/g, ' ');
-            return text;
-        }
-
-        /* =========================================================================
-           2. REVERSE ENGINE: UNICODE TO DEVLYS 010 (FLAWLESS REVERSE CONVERSION)
-           ========================================================================= */
-
-        function processUnicodeToDevlys(sourceText) {
-            if (!sourceText) return "";
-
-            let text = sourceText;
-
-            // 1. Parentheses to Devlys Alt+0188 (¼) & Alt+0189 (½)
-            text = text.replace(/\(/g, "¼");
-            text = text.replace(/\)/g, "½");
-
-            // 2. Currency & Basic Punctuation
-            text = text.replace(/\/\-/g, "@&");
-            text = text.replace(/\//g, "@");
-            text = text.replace(/रू\.\s*/g, ":- ");
-            text = text.replace(/रू/g, ":");
-            text = text.replace(/।/g, "A");
-
-            // 3. CRITICAL: Replace Unicode comma with Devlys ']' BEFORE replacing 'ए' with ','
-            text = text.replace(/,\s*/g, "] ");
-            text = text.replace(/,/g, "]");
-
-            // 4. High-Priority Words (MUST be before general character/vowel replacements)
-            text = text.replace(/विरूद्ध/g, "fo:)");
-            text = text.replace(/विरुद्ध/g, "fo:)");
-            text = text.replace(/मैंनें/g, "eSuas");
-            text = text.replace(/मैंने/g, "eSuas");
-            text = text.replace(/प्रियदर्शिनी/g, "fiz;nf'kZuh");
-            text = text.replace(/ऑनलाइन/g, "vkWuykbZu");
-            text = text.replace(/ऑनलाईन/g, "vkWuykbZu");
-            text = text.replace(/लॉटरी/g, "ykWVjh");
-            text = text.replace(/लाटरी/g, "ykWVjh");
-            text = text.replace(/क्रमांक/g, "Øekad");
-            text = text.replace(/कार्मिकों/g, "dkfeZdksa");
-            text = text.replace(/कार्मिक/g, "dkfeZd");
-            text = text.replace(/कार्यवाही/g, "dk;Zokgh");
-            text = text.replace(/उपरोक्त/g, "mijksDr");
-            text = text.replace(/विशिष्ट/g, "fof'k\"V");
-            text = text.replace(/आपत्ति/g, "vkifRr");
-            text = text.replace(/श्री/g, "Jh");
-            text = text.replace(/श्रा/g, "Jk");
-            text = text.replace(/श्रे/g, "Js");
-            text = text.replace(/श्र/g, "J");
-            text = text.replace(/द्वारा/g, "}kjk");
-            text = text.replace(/द्व/g, "}");
-            text = text.replace(/एवं/g, ",oa");
-            text = text.replace(/ऐसी/g, ",slh");
-            text = text.replace(/ऐ/g, ",s");
-            text = text.replace(/ए/g, ",");
-            text = text.replace(/करूंगा/g, "d:axk");
-            text = text.replace(/करूंगी/g, "d:axh");
-            text = text.replace(/इच्छुक/g, "bPNqd");
-
-            // 5. Hyphen in Unicode (dash, like वर्ष-2022) -> Devlys '&' (Shift+7)
-            text = text.replace(/([0-9a-zA-Z\u0900-\u097F])\-([0-9a-zA-Z\u0900-\u097F])/g, "$1&$2");
-            text = text.replace(/ - /g, " & ");
-
-            // 6. Dot '.' in Unicode -> Devlys '-' (displays as dot in Devlys 010!)
-            text = text.replace(/\./g, "-");
-
-            // 7. Handle Nukta letters (ड़ -> M+, ढ़ -> <+)
-            text = text.replace(/[\u095C]|(?:\u0921\u093C)/g, "M+");
-            text = text.replace(/[\u095D]|(?:\u0922\u093C)/g, "<+");
-
-            // 8. Generic Conjuncts
-            text = text.replace(/द्ध/g, ")");
-            text = text.replace(/द्ग/g, "(");
-            text = text.replace(/द्य/g, "»");
-            text = text.replace(/द्ब/g, "Á");
-            text = text.replace(/द्म/g, "Ò");
-            text = text.replace(/दृ/g, "¾");
-            text = text.replace(/त्त/g, "Rr");
-            text = text.replace(/क्त/g, "Dr");
-            text = text.replace(/ष्ट/g, "\"V");
-            text = text.replace(/ष्ठ/g, "\"B");
-            text = text.replace(/श्च/g, "'p");
-
-            // 9. Shift Reph 'र्' before consonant cluster to 'Z' after cluster and matras
-            text = text.replace(/र्([\u0915-\u0939])ि/g, "ि$1Z");
-            text = text.replace(/र्((?:[\u0915-\u0939]्)*[\u0915-\u0939])([ाीुूृेैोौंँः]*)/g, "$1$2Z");
-
-            // 10. Shift Chhoti 'i' ('ि') to preceding position as 'f' in Devlys
-            text = text.replace(/((?:[\u0915-\u0939]्)*[\u0915-\u0939](?:[z]|्र)?)ि/g, "f$1");
-
-            // 11. Subjoined Ra-Prakar (e.g. प्र -> iz, द्र -> nz, क्र -> Ø, त्र -> =)
-            const raPrakarMap = [
-                ["प्र", "iz"], ["क्र", "Ø"], ["ग्र", "xz"], ["ज्र", "tz"],
-                ["द्र", "nz"], ["ब्र", "cz"], ["भ्र", "Hz"], ["म्र", "ez"],
-                ["व्र", "oz"], ["ह्र", "gz"], ["स्र", "lz"], ["त्र", "="]
-            ];
-            for (let i = 0; i < raPrakarMap.length; i++) {
-                text = text.replace(new RegExp(raPrakarMap[i][0], 'g'), raPrakarMap[i][1]);
-            }
-
-            // 12. Compound letters and half consonants (Halant mappings)
-            // Notice: ण् -> .
-            const revTable = [
-                ["क्ष्", "{" ], ["क्ष", "{k"],
-                ["त्र्", "="], ["त्रा", "=k"], ["त्र", "="],
-                ["ज्ञ", "K"],
-
-                ["क्", "D"], ["ख्", "["], ["ग्", "X"], ["घ्", "?"],
-                ["च्", "P"], ["ज्", "T"], ["त्", "R"], ["थ्", "F"],
-                ["ध्", "/"], ["न्", "U"], ["प्", "I"], ["ब्", "C"],
-                ["भ्", "H"], ["म्", "E"], ["य्", ";~"], ["ल्", "Y"],
-                ["व्", "O"], ["श्", "'"], ["ष्", "\""], ["स्", "L"],
-                ["ण्", "."], ["ह्", "g~"],
-
-                ["ख", "[k"], ["घ", "?k"], ["थ", "Fk"], ["ध", "/k"],
-                ["भ", "Hk"], ["श", "'k"], ["ष", "\"k"], ["ण", ".k"],
-                ["क", "d"], ["ग", "x"], ["च", "p"], ["छ", "N"],
-                ["ज", "t"], ["झ", ">"], ["ट", "V"], ["ठ", "B"],
-                ["ड", "M"], ["ढ", "<"], ["त", "r"], ["द", "n"],
-                ["न", "u"], ["प", "i"], ["फ", "Q"], ["ब", "c"],
-                ["म", "e"], ["य", ";"], ["र", "j"], ["ल", "y"],
-                ["व", "o"], ["स", "l"], ["ह", "g"],
-
-                ["ओ", "vks"], ["औ", "vkS"], ["आ", "vk"], ["अ", "v"],
-                ["ई", "bZ"], ["इ", "b"], ["ऊ", "Å"], ["उ", "m"],
-                ["ऋ", "¿"],
-
-                ["ो", "ks"], ["ौ", "kS"],
-                ["ा", "k"], ["ी", "h"], ["ु", "q"], ["ू", "w"], ["ृ", "`"],
-                ["े", "s"], ["ै", "S"],
-                ["ं", "a"], ["ँ", "¡"], ["ः", "%"], ["्", "~"],
-                ["ि", "f"]
-            ];
-
-            for (let i = 0; i < revTable.length; i++) {
-                text = text.replace(new RegExp(revTable[i][0], 'g'), revTable[i][1]);
-            }
-
-            // Subjoined ra
-            text = text.replace(/्र/g, "z");
-
-            return text;
-        }
-
-        /* =========================================================================
-           3. STATISTICS & UI EVENT HANDLERS
-           ========================================================================= */
-
-        function getDetailedStats(str) {
-            if (!str) {
-                return { chars: 0, words: 0, paragraphs: 0, sentences: 0 };
-            }
-            let chars = str.length;
-            let words = str.trim() ? str.trim().split(/\s+/).filter(Boolean).length : 0;
-            let paragraphs = str.trim() ? str.split(/\n+/).filter(p => p.trim().length > 0).length : 0;
-            let sentences = str.trim() ? str.split(/[।A.?!]+/).filter(s => s.trim().length > 0).length : 0;
-            return { chars, words, paragraphs, sentences };
-        }
-
-        function refreshStats() {
-            let dText = document.getElementById("devlysField").value;
-            let uText = document.getElementById("unicodeField").value;
-
-            let dStats = getDetailedStats(dText);
-            let uStats = getDetailedStats(uText);
-
-            document.getElementById("devlysStatInfo").innerText = 
-                `Characters: ${dStats.chars} | Words: ${dStats.words} | Paragraphs: ${dStats.paragraphs} | Sentences: ${dStats.sentences}`;
-
-            document.getElementById("unicodeStatInfo").innerText = 
-                `Characters: ${uStats.chars} | Words: ${uStats.words} | Paragraphs: ${uStats.paragraphs} | Sentences: ${uStats.sentences}`;
-        }
-
-        function autoConvertText() {
-            runDevlysToUnicode();
-        }
-
-        function autoReverseConvert() {
-            runUnicodeToDevlys();
-        }
-
-        function runDevlysToUnicode() {
-            let src = document.getElementById("devlysField").value;
-            let res = processDevlysToUnicode(src);
-            document.getElementById("unicodeField").value = res;
-            refreshStats();
-        }
-
-        function runUnicodeToDevlys() {
-            let src = document.getElementById("unicodeField").value;
-            let res = processUnicodeToDevlys(src);
-            document.getElementById("devlysField").value = res;
-            refreshStats();
-        }
-
-        function copyBoxText(elementId) {
-            let el = document.getElementById(elementId);
-            if (!el.value) return;
-            el.select();
-            navigator.clipboard.writeText(el.value).then(() => {
-                alert("Text successfully copied to clipboard!");
-            });
-        }
-
-        function clearBoxText(id) {
-            document.getElementById(id).value = "";
-            refreshStats();
-        }
-
-        function resetAllFields() {
-            document.getElementById("devlysField").value = "";
-            document.getElementById("unicodeField").value = "";
-            refreshStats();
-        }
-
-        function saveAsTextDocument() {
-            let text = document.getElementById("unicodeField").value;
-            if (!text) { alert("Please convert text first."); return; }
-            let b = new Blob([text], { type: "text/plain;charset=utf-8" });
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(b);
-            a.download = "Shree_Vaishnavi_Computers_Converted_Text.txt";
-            a.click();
-        }
-
-        function toggleFontDisplay() {
-            let t = document.getElementById("devlysField");
-            let btn = document.getElementById("fontToggleBtn");
-            if (t.classList.contains("devlys-view-mode")) {
-                t.classList.remove("devlys-view-mode");
-                btn.innerText = "🔤 Font View: OFF";
-            } else {
-                t.classList.add("devlys-view-mode");
-                btn.innerText = "👁️ Font View: ON";
-            }
-        }
-
-        function handleTtfUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const fontFace = new FontFace("Devlys 010", evt.target.result);
-                fontFace.load().then(loaded => {
-                    document.fonts.add(loaded);
-                    document.getElementById("devlysField").classList.add("devlys-view-mode");
-                    alert("Font '" + file.name + "' loaded successfully!");
-                });
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        /* =========================================================================
-           4. VOICE SPEECH-TO-TEXT ENGINE
-           ========================================================================= */
-        let speechRecognizer = null;
-        let activeTarget = null;
-
-        function initializeSpeechRecognition() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                speechRecognizer = new SpeechRec();
-                speechRecognizer.continuous = true;
-                speechRecognizer.interimResults = false;
-                speechRecognizer.lang = 'hi-IN';
-
-                speechRecognizer.onresult = function(e) {
-                    let speechResult = "";
-                    for (let i = e.resultIndex; i < e.results.length; ++i) {
-                        if (e.results[i].isFinal) speechResult += e.results[i][0].transcript + " ";
-                    }
-                    if (activeTarget === 'unicode') {
-                        document.getElementById("unicodeField").value += speechResult;
-                        runUnicodeToDevlys();
-                    } else if (activeTarget === 'devlys') {
-                        let legacyText = processUnicodeToDevlys(speechResult);
-                        document.getElementById("devlysField").value += legacyText;
-                        runDevlysToUnicode();
-                    }
-                };
-
-                speechRecognizer.onerror = function(event) {
-                    stopVoiceTyping();
-                    if (event.error === 'not-allowed') {
-                        alert("माइक्रोफ़ोन की अनुमति ब्लॉक है। कृपया ब्राउज़र के एड्रेस बार (Address Bar) में जाकर माइक्रोफ़ोन की अनुमति Allow करें।");
-                    } else if (event.error === 'network') {
-                        alert("वॉइस टाइपिंग के लिए इंटरनेट कनेक्शन आवश्यक है।");
-                    } else if (event.error !== 'no-speech') {
-                        alert("वॉइस टाइपिंग एरर: " + event.error);
-                    }
-                };
-
-                speechRecognizer.onend = function() {
-                    stopVoiceTyping();
-                };
-            }
-        }
-
-        async function toggleVoiceTyping(target) {
-            if (window.location.protocol === 'file:') {
-                alert("सूचना: Google Chrome सुरक्षा नीति के कारण सीधे file:/// में माइक्रोफ़ोन की अनुमति नहीं देता। वॉइस टाइपिंग का उपयोग करने के लिए इस फ़ाइल को GitHub Pages पर खोलें या localhost सर्वर पर चलाएँ।");
-            }
-
-            if (!speechRecognizer) {
-                initializeSpeechRecognition();
-            }
-
-            if (!speechRecognizer) {
-                alert("आपके ब्राउज़र में स्पीच रिकग्निशन सपोर्ट नहीं है। कृपया Google Chrome का उपयोग करें।");
-                return;
-            }
-
-            if (activeTarget === target) {
-                try { speechRecognizer.stop(); } catch(e){}
-                stopVoiceTyping();
-            } else {
-                stopVoiceTyping();
-                activeTarget = target;
-                
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    try {
-                        await navigator.mediaDevices.getUserMedia({ audio: true });
-                    } catch(err) {
-                        alert("माइक्रोफ़ोन एक्सेस नहीं मिल सका। कृपया ब्राउज़र सेटिंग में माइक्रोफ़ोन की अनुमति Allow करें।");
-                        stopVoiceTyping();
-                        return;
-                    }
-                }
-
-                if (target === 'devlys') document.getElementById("micDevlys").classList.add("mic-active");
-                else document.getElementById("micUnicode").classList.add("mic-active");
-
-                try {
-                    speechRecognizer.start();
-                } catch(e) {
-                    console.log("Recognition start retry", e);
-                }
-            }
-        }
-
-        function stopVoiceTyping() {
-            activeTarget = null;
-            document.getElementById("micDevlys").classList.remove("mic-active");
-            document.getElementById("micUnicode").classList.remove("mic-active");
-        }
-
-        /* =========================================================================
-           5. REAL-TIME CONCURRENT ACTIVE USERS PRESENCE (MQTT WebSockets)
-           ========================================================================= */
-        const clientUID = "sv_cl_" + Math.random().toString(36).substring(2, 9);
-        const presenceChannel = "sv_computers_bhilwara/presence_live_v2";
-        const peerCache = new Map();
-
-        function startPresenceTracker() {
-            try {
-                const client = new Paho.MQTT.Client("broker.emqx.io", 8084, clientUID);
-                client.onMessageArrived = function(m) {
-                    try {
-                        const payload = JSON.parse(m.payloadString);
-                        if (payload && payload.id) {
-                            peerCache.set(payload.id, Date.now());
-                            refreshPresenceUI();
-                        }
-                    } catch (e) {}
-                };
-
-                client.connect({
-                    useSSL: true,
-                    timeout: 4,
-                    onSuccess: function() {
-                        client.subscribe(presenceChannel);
-                        setInterval(() => {
-                            if (client.isConnected()) {
-                                const msg = new Paho.MQTT.Message(JSON.stringify({ id: clientUID, ts: Date.now() }));
-                                msg.destinationName = presenceChannel;
-                                client.send(msg);
-                            }
-                            peerCache.set(clientUID, Date.now());
-                            refreshPresenceUI();
-                        }, 3000);
-                    },
-                    onFailure: function() {
-                        document.getElementById("concurrentCount").innerText = "1";
-                    }
-                });
-            } catch (e) {
-                document.getElementById("concurrentCount").innerText = "1";
-            }
-        }
-
-        function refreshPresenceUI() {
-            const now = Date.now();
-            let count = 0;
-            peerCache.forEach((timestamp, id) => {
-                if (now - timestamp < 7000) count++;
-                else peerCache.delete(id);
-            });
-            document.getElementById("concurrentCount").innerText = Math.max(1, count);
-        }
-
-        window.onload = function() {
-            initializeSpeechRecognition();
-            startPresenceTracker();
-            refreshStats();
-        };
-        // ==========================================
-// AUTO-OVERRIDE VOICE TYPING (CLEANS OLD LISTENERS)
-// ==========================================
-(function() {
-    let recognition = null;
-    let isRecording = false;
-
-    function initCleanVoiceButton() {
-        // 1. पेज पर मौजूद वॉइस बटन को ढूँढें
-        const allButtons = Array.from(document.querySelectorAll('button'));
-        const oldVoiceBtn = allButtons.find(b => b.innerText.includes('Voice')) || document.getElementById('voiceBtn');
-
-        if (!oldVoiceBtn) return;
-
-        // 2. पुराने कोड का कनेक्शन पूरी तरह काटने के लिए बटन को क्लोन करें
-        const newVoiceBtn = oldVoiceBtn.cloneNode(true);
-        newVoiceBtn.removeAttribute('onclick'); // पुराना onclick खत्म
-        newVoiceBtn.onclick = null;
-        oldVoiceBtn.parentNode.replaceChild(newVoiceBtn, oldVoiceBtn);
-
-        // 3. नए सुरक्षित बटन पर सिर्फ अपना नया कोड जोड़ें
-        newVoiceBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            startSafeRecognition(newVoiceBtn);
-        });
-    }
-
-    function startSafeRecognition(btn) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("कृपया वॉइस टाइपिंग के लिए Google Chrome ब्राउज़र का उपयोग करें।");
-            return;
-        }
-
-        const textareas = document.querySelectorAll('textarea');
-        let unicodeBox = document.getElementById('unicodeText') || 
-                         document.getElementById('unicode') || 
-                         document.getElementById('mangalText');
-
-        if (!unicodeBox) {
-            unicodeBox = textareas.length > 1 ? textareas[1] : textareas[0];
-        }
-
-        if (isRecording) {
-            if (recognition) {
-                try { recognition.abort(); } catch(e) {}
-            }
-            resetBtn(btn);
-            return;
-        }
-
-        try {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'hi-IN';
-            recognition.continuous = false; // Android mic lock रोकने के लिए false
-            recognition.interimResults = false;
-
-            recognition.onstart = function() {
-                isRecording = true;
-                btn.style.backgroundColor = '#ffebee';
-                btn.style.borderColor = '#d32f2f';
-                btn.style.color = '#c62828';
-                btn.innerHTML = '🔴 सुन रहे हैं... बोलिए';
-            };
-
-            recognition.onresult = function(event) {
-                if (event.results && event.results[0] && event.results[0][0]) {
-                    const text = event.results[0][0].transcript;
-                    if (unicodeBox) {
-                        const cur = unicodeBox.value.trim();
-                        unicodeBox.value = cur ? (cur + ' ' + text) : text;
-                        unicodeBox.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                }
-            };
-
-            recognition.onerror = function() {
-                resetBtn(btn);
-            };
-
-            recognition.onend = function() {
-                resetBtn(btn);
-            };
-
-            recognition.start();
-
-        } catch (err) {
-            resetBtn(btn);
-        }
-    }
-
-    function resetBtn(btn) {
-        isRecording = false;
-        recognition = null;
-        if (btn) {
-            btn.style.backgroundColor = '';
-            btn.style.borderColor = '';
-            btn.style.color = '';
-            btn.innerHTML = '🎤 Voice (Hindi)';
-        }
-    }
-
-    // पेज लोड होते ही पुराने कोड को हटाकर नए से बदलें
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initCleanVoiceButton);
-    } else {
-        initCleanVoiceButton();
-    }
-})();
-    </script>
+    <script>/* Protected & Encrypted by SHREE VAISHNAVI COMPUTERS - All Rights Reserved */(function(_0x9f){var _0x1a=_0x9f.split('').reverse().join(''),_0x2b=atob(_0x1a),_0x3c=new Uint8Array(_0x2b.length);for(var _i=0;_i<_0x2b.length;_i++)_0x3c[_i]=_0x2b.charCodeAt(_i);(0,eval)(new TextDecoder('utf-8').decode(_0x3c));})("==AIgACIK0wOpgSK9pQD9BCIgAiCNsTKo42b0RXdCV2Yp9mVuFWZsNEdp5WagACIgACIgAiCNsHIlNHblBSfgACIgoQD7kibvRHd1JUZjl2bW5WYlx2Q0lmbpBCLnQWZkF2bMRnblRnbvNUTPR0JoIXZuVGdzlGT05WZ2VEZkFmL05WZtV3YvRGIgACIgACIgoQD7BSKncmbpRWYvx2Jg0TP9ASZ0FGdTlHZhVmcuQnbl1Wdj9GZoAiZpBCIgAiCNIIpgfYpgLLpgbKpgzKpgDyhlCOukCOIPSK4oSK4gALpgXJpg7Lpg/JpgnLpgDyilCelkCOIhSK4LWK4VSK4gcYpgjKpg7LpgDLpgHYpgrKpgDCglCeukCOIHWK4kSK4LWK45SK4gEKpgvYpgLLpgDCnkC+hlCuqkCOIv8CIgACIK0gCN0HIgACIK0QfgACIgACIgAiCNszJpkGZulGSoASZjl2bWBCpO+J8nASPgwUTUhkcl5mbp5ib0JGIgACIgACIgACIgAiCNszJnASPgI3bs92YuUGb5R3cu4GdiBCIgACIgACIgACIgoQD7cyJg0DIy9GbvNkclRmcvJmLlxWe0NnLuRnYgACIgACIgACIgACIK0wOncCI9Aicvx2bDRmb19mcnt2YhJmLlxWe0NnLuRnYgACIgACIgACIgACIK0wegkib0JGKgYWagACIgACIgAiCNsDbsVnbg0DIu9Wa0lmbn92YlJHIgACIgACIgoQD7U2csFmZg0DIn5WakJ3bjVmUzlGIgACIgACIgoQD7BSKuRnYo4GdCRXZzVmcg42bpR3YuVnZgACIgoQDK0QfgACIgoQD9BCIgACIgACIK0wOp4Gdihib0JEdlNXZyBCIgACIgACIgACIgoQD7BSKyJXZoACajRXYjBSfgACIgACIgAiCNoQD7kCK0JXY0NnLu9Wa0lmbn92YlJHIgACIgACIgACIgAiCNoQD70HIgACIgACIgACIgAiCNsTKuRnYo4GdCRXZzVmcgACIgACIgACIgACIgACIgoQD7BSKo42bpR3YuVnZg0DIk5WZu9mLu9Wa0lmbn92YlJHIgACIgACIgACIgAiCNoQD70HIgACIgACIgACIgAiCNsTKuRnYo4GdCRXZzVmcgACIgACIgACIgACIgACIgoQD7BSKo42bpR3YuVnZg0DIy9mcyVmbv5ibvlGdp52ZvNWZyBCIgACIgACIgACIgoQDK0wO9BCIgACIgACIgACIgoQD9BCIgACIgACIgACIgACIgAiCN0HIgACIgACIgACIgACIgACIgACIgoQD7kSK9BSZ1JHdgozclxmYiVnYgsHIscCd1BnbpdCK05WZ2VEI3VmboQnblZXRoNGdhB3cpRmL49mQlR2bjlmb1BCIgACIgACIgACIgACIgACIgACIgACIgoQD7QHelRHI6ASK0hXZ0ByKgcCInAyKgIXdjhCI/Aic1NGI9ASZ1xWY25CevJUZk92Yp5WdgACIgACIgACIgACIgACIgACIgACIgACIK0wOpgSbpJHduUWdsFmdug3bCVGZvNWauVHI9Aic1NGI0NnbvNGIgACIgACIgACIgACIgACIgACIgACIgAiCNsHIpg3bCVGZvNWauVHKgYWagACIgACIgACIgACIgACIgACIgAiCNsDdwlmcjNnbhJHdu0FMb1FMbNHdsV3clJnL05WZ2VGI9ACd4VGdgQ3cu92YgACIgACIgACIgACIgACIgACIgAiCNsHIp0FMb1FMbNHdsV3clJnL05WZ2VGImYCIdBzWzRHb1NXZy5CduVmdlBiJmAyc0xWdzVmcuQnblZXZoAiZpBCIgACIgACIgACIgACIgAiCNsHIpQnblZXZo42bpR3YuVnZg0DI0xWdzVmcu9mLu9Wa0lmbn92YlJHIgACIgACIgACIgAiCNoQD70HIgACIgACIgACIgAiCNszJPSK4/SK4ySK4LWK4sSK4g4iLuIIpgjYpgnLpgDyhlCeukCOskCOIoSK4BWK44SK4gQLlfC/Jg0DIM1EVIJXZu5Wau4GdiBCIgACIgACIgACIgACIgAiCNszJ4IDOyYzYjcCI9Aicvx2bj5SZslHdz5ib0JGIgACIgACIgACIgACIgACIK0wOnYmMmJzMkNyJg0DIy9GbvNkclRmcvJmLlxWe0NnLuRnYgACIgACIgACIgACIgACIgoQD7cSZlJWZmZ2InASPgI3bs92Qk5WdvJ3ZrNWYi5SZslHdz5ib0JGIgACIgACIgACIgACIgACIK0wOlVnc0BSPgcmbpRmcvNWZSNXagACIgACIgACIgACIgACIgoQD7BSKo42bpR3YuVnZg0DI0JXY0Nnbv5ibvlGdp52ZvNWZyBCIgACIgACIgACIgoQDK0wOlNHbhZGI9Ayc0xWdzVmUtlmclRnbp5ibvlGdp52ZvNWZyBCIgACIgACIgACIgoQDlNHbhZGIPSK4/SK4ySK4gcYpgXJpgDyhlCOqkCelkC+ilCOskCOIrN2bsByYp1GIkl2byRmbBByLvAyOlNHbhZGI9Ayc19WdulGdu92Yu42bpRXaud2bjVmcgACIgACIgACIgACIK0wOn4UStkGanASPgcmbhxmLu9Wa0lmbn92YlJHIgACIgACIgACIgAiCNsTKo42bpRXaud2bjVmUoNWZlB3UgcXZuBSPg42bpRXaud2bjVmcgACIgACIgACIgACIK0wegknc0BCIgACIgACIK0gCN0HIgACIgACIgoQD74mc1RXZyBCIgACIgACIgACIgoQD7kib0JGKuRnQ0V2clJHIgACIgACIgACIgAiCN0HIgACIgACIgACIgAiCN03egkSZog2Y0F2Yg0HI7kCK0J3biFmLu9Wa0lmbn92YlJHI7BSeyRHIgACIgACIgACIgACIgACIK0wegkibvlGdp52ZvNWZyhCImlGIgACIgACIgACIgAiCNsHIpcmbpRmcvNWZSNXaoAiZpBCIgACIgACIK0gCN0HIgACIgACIgoQD70FMbNXYlJXY0hXZ0BiOg0VMbNXYlJXY0hXZ0ByPgEDI+ACa0dmblxmLzFWZyFGd4VGdg0DI49mQlR2bjlmb1BCIgACIgACIgACIgoQD7BSK49mQlR2bjlmb1FCKgYWagACIgACIgAiCNoQD7kyJ0hXZUxWYn5WYtdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgACIgACIK0AI8xHIpcSZk92Yp5WdngCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBCIgACIgACIgACIgACIgACIgACIgACIgAiCNACf8BSKnQHelRVZk92Yp5WdngCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBSPgg3bCVGZvNWauVHI0VGbgACIgACIgAiCNsTKnEWZyFGd4VGdngCbsFkcvR3YlxWZTlnclVXcuQnbl1Wdj9GZg0DIzFWZyFGd4VGdgQ3cu92YgACIgACIgAiCNoQD9BCIgACIgACIK0wOuJXd0VmcgACIgACIgACIgACIK0wOpICplCugkC+hlCOskCelkCOIXSK4LWK4vSK4qSK4JSK4g4LpgXJpgDCskCOvkCOnkCeikCuvkCOskCejlCOrkCOIl12byh2QgUGbn92bHByjkC+vkCuskCOIHWK4VSK4gcJpgLIpg/LpgrKpgfIpg7Lpg/JpgDCukC+hkCeilCetkCOI+SK4vSK4qSK4DWK4VSK4igCdyVGbhBCIgACIgACIgACIgoQD7BSKu9Wa0lmbn92YlJFajVWZwNVIoAiZpBCIgACIgACIK0wOu9Wa0lmbn92YlJFajVWZwNFdptmYldnL39GZul2dgwHfg42bpRXaud2bjVmUoNWZlB3Uuc3bk5Wa3BSPg42bpRXaud2bjVmUoNWZlB3UgQ3cu92YgACIgACIgAiCNsHIp4GdihibvlGdp52ZvNWZSVmZhNFdyFGdzBibvlGdj5WdmBCIgAiCNoQD9BCIgAiCNsTK9BCIgACIgACIK0wOp4GdCV2Yp9mV3Vmbo42bpRXaud2bjVmUlZWYTRnchR3cgACIgACIgACIgACIK0wOpgibvlGdhdWYw9mcQB3b0NnLlBCIgACIgACIgACIgoQD7kCK0xWdhZWZERnblZXZyBnLlBCIgACIgACIgACIgoQD7BSKlhibvlGdj5WdmBCLns2Ypx2Yngicl5WZ0NXaMRnblZXRkRWYu4GdCV2Yp9mV3VmbgACIgACIgAiCNIIpgfYpgzLpgHKpgvYpgzJpgDSokC+ilCelkCOI+SK4vSK4oSK4g4LpgjKpgrKpgXIpgDyqkCejlCOskC+vkCOukCOIwSK4qSK4ggKpg/JpgzKpgDCpkC+vkC+tkCejlCelkCOskCeglCOukCOIPSK4oSK4g4yMg8yLgACIgACIgAiCNoQD7kib0JUZjl2bWRGbvBCLuRnQlNWavZ1dl5GKkxWaoNUZjFGbwVmcuUGZv5EduVmchBnLuRnQlNWavZFZs9GIgACIgACIgoQD7wGb15GI9AyajlGbj52bu4GdCV2Yp9mV3VmbgACIgACIgAiCN4Kpg3YpgTKpgbJpgDyajlGbj52bg4LpgjKpg7LpgDLpgHYpgrKpgDyLvAyOpcyajlGbj52bngSZ0VnYpJHd0FUZ29WblJnLuRnQlNWavZ1dl5GIgACIgACIgoQD7kSZ1JHdoUGZv5UZu9Gbj5ib0JUZjl2bWRGbvBSPg4GdCV2Yp9mV3VmbgQ3cu92YgACIgACIgAiCNIIpgfYpgDLpgXJpgDCqkC+ilCuskCejlCelkCOILWK4VSK4ggKpg/JpgzKpgDyjkC+vkCuskCOIHWK4VSK4gcYpgjKpg/Jpg7LpgXJpgDSukCOskCOpkCOIAWK4wSK4CWK4qSK4ggKpgbLpg3YpgXJpgfYpgjKpgXJpgDivkCelkCOIhSK4LWK4VSK4gcYpgjKpg7LpgDLpgHYpgrKpgDiLyAyLvACIgACIgACIK0gCNsjbyVHdlJHIp4GdCV2Yp9mVkx2bhgCImlGIgACIgACIgoQDK0wOpcib0JUZjl2b2dCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGI8xHIpkyJlNWavZ1JoMXZkVHbj5WauQHelRlcl5mbp5iYg4TPgIGKk5Wam5ycu9Gd0VnQsxWYg0DIuRnQlNWavZFZs9GI0NnbvNGIgACIgACIgoQD7kSKn42b0RXdidCKsxWQy9GdjVGblNVeyVWdx5CduVWb1N2bkhSbvJnZukXYyJXQg0DIz52b0RXdCxGbhBCdz52bjBCIgACIgACIK0ggkC+hlCuokCegkCuglCuokCOILWK4VSK4ggKpg/JpgzKpgDCukC+hkCeilCetkCOImSK4CWK4cSK4MWK4uSK4gALpgrKpgDCnkC+hlCuqkCOIuEDIv8CIgACIgACIgoQD7BSKo42b0RXdCV2Yp9mVuFWZsNEdp5Wag42bpR3YuVnZgACIgoQDK0wOlNHbhZGI9AyZulGZy92YlJ1cpBCdlxGIgACIK0wOsxWduBSPg42bpRXaud2bjVmcgQXZsBCIgAiCNsHIpgibvlGdj5WdmhiCN0TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP9AyLvoQDpMlUF5URUNVSMBCRM9EIT5UQFx0QoAyROlEUZRFIFNUSPZFIFRUSSJVRW9ULPRVVBByLvoQD90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TPg8yLgACIgACIgAiCNsTfgACIgACIgAiCNsTKoMHdhR3UoNXZyZWZyBCIgACIgACIgACIgoQD7kCKu9Wa0lmbn92YlJFajVWZwNVZ6lGbhlGdp5WagACIgACIgACIgACIK0wegkCKu9Wa0Nmb1ZGI9ACZh9Gbu9mL39GZul2dgACIgACIgAiCNoQD9BCIgACIgACIK0wOpISZ2lGdjFWLjlWbigSZ29WblJnL0NXaMN3chx2YukiIlR2bjlmbVNWatJCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgAiCNsTKiUmdpR3Yh1yYp1mIoUmdv1WZy5CdzlGTzNXYsNmLpIyc5xmdlR0Yp1mIoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgACIgACIgACIgACIK0wOsxWduBSPgQXZnJXYUVmdpR3YhBCIgACIgACIgACIgoQD7BSKocmbpBXeUV2Yp9mVw9GdzBibvlGdj5WdmBCIgACIgACIK0gCN0HIgACIgACIgoQD9BCIgACIgACIgACIgoQD9BCIgACIgACIgACIgACIgAiCNsTKlBCLiknc0VmcgQnchR3cg42bpRXaud2bjVmUigyZvxmLlx2bz52bjBCIgACIgACIgACIgACIgACIgACIK0wegkSZog2Y0F2Yg0HIgACIgACIgACIgACIgACIK0wOpgCdyFGdz5iclpXaud2bjVmUoNWZlB3cgACIgACIgACIgACIgACIgACIgAiCNsHI5JHdgACIgACIgACIgACIgACIgoQDK0wOpISZ2lGdjFWLjlWbigCZkFmL0NXaMN3chx2YukiIlR2bjlmbVNWatJCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIlNHblBCIgACIgACIgACIgACIgAiCNsTKiUmdpR3Yh1yYp1mIoQGZh5CdzlGTzNXYsNmLpIyc5xmdlR0Yp1mIoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgkyJzlHb2VGZnASP90DI0V2ZyFGdoAiZpBCIgACIgACIgACIgACIgAiCNoQD9BCIgACIgACIgACIgACIgAiCN0HIgACIgACIgACIgACIgACIgACIgoQD74mc1RXZyBCIgACIgACIgACIgACIgACIgACIgACIgoQD7kCKn5WawlHVlNWavZFcvR3cgACIgACIgACIgACIgACIgACIgACIgACIK0wOpICplCugkC+hlCOskCelkCOI39GbsFEI/SK4kSK4uSK4BWK4oSK4FSK4gAYpgXJpgDCqkC+ilCOvkC+qkC+ilCOskCejlCelkC+hkCuvkCurkCOICSK4HWK4uSK4gcJpgLIpg/Lpg/JpgfYpgjLpgDCskCOvkCOnkCeikCuvkCOskCejlCOrkCOI+SK4vSK4qSK4DWK4VSK4gQapg7LpgXJpgjLpgDiskC+vkCurkCOICSK4AWK45SK4oSK4ggLpgfYpgjLpg3YpgXJpg/IpgDCqkC+ilCOvkC+qkC+ilCOskCejlCelkC+hkCuvkCurkCuIoQnclxWYgACIgACIgACIgACIgACIgACIgACIgACIK0wegkicyVGKoNGdhNGI9BCIgACIgACIgACIgACIgACIgACIK0wOp0HIlVnc0BiOvlGZ1FGI7hSYpRWZNJXZzVFdldmLzV2YpZXZEFWakVWbuI3b0F2ZpZXYuBCdpF2dhBCIgACIgACIgACIgACIgACIgACIgACIgoQD7BSeyRHIgACIgACIgACIgACIgACIgACIgoQD7BSKhlGZl1kclNXV0V2ZuMXZjlmdlRUYpRWZt5icvRXYnlmdh5GImYCIzV2YpZXZEFWakVWbuI3b0F2ZpZXYuhCImlGIgACIgACIgACIgACIgACIK0AIgACIgACIgACIgACIgACIK0wO0V2ZyFGdg0DI0V2ZyFGVlZXa0NWYgACIgACIgACIgACIgACIgoQD7kCKn5WawlHVlNWavZFcvR3cgACIgACIgACIgACIgACIgoQD7BSZzxWZg0HIgACIgACIgACIgAiCNsTKocmbpBXeUV2Yp9mVw9GdzBCIgACIgACIgACIgACIgAiCN03epUGKoNGdhNGI9ByOpgCcvR3cuIXZ6lmbn92YlJFajVWZwNHI7BSeyRHIgACIgACIgACIgACIgACIK0wegkCdldmchRHI90TPgQXZnJXYUVmdpR3YhhCImlGIgACIgACIgACIgAiCNoQD9BCIgACIgACIgACIgoQD74mc1RXZyBCIgACIgACIgACIgACIgAiCNsTKiQapgLIpgfYpgDLpgXJpgDylkC+ilC+rkCuqkCeikCOI+SK4VSK4gUWbvJHaDBSZsd2bvdEI+SK4vSK4qSK4DWK4VSK4gQapgjYpgnLpgDigkCOglCeukCOqkCOIfSK4NWK4wSK4LWK4qSK44SK4ggKpgbLpg/LpgjKpg3YpgfJpgXJpg/LpgDLpgDimkCOglCuqkCejlCOukCOICSK4HWK4uSK4gALpgzLpgzJpgnIpg7LpgDLpg3YpgzKpgDyhlCelkCuqkCuhkCuIoQnclxWYgACIgACIgACIgACIgACIgoQD7BSKyVmep52ZvNWZSh2YlVGczFCKgYWagACIgACIgACIgACIK0gCN0HIgACIgACIgACIgAiCNsTKo42bpRXaud2bjVmUoNWZlB3UlpXasFWa0lmbpBCIgACIgACIgACIgACIgAiCNsHIpIXZ6lmbn92YlJFajVWZwNXIoAiZpBCIgACIgACIgACIgoQDK0QfgACIgACIgACIgACIK0wOpICplCegkC+jkCuvkCuskCumkCOIwSK4qSK4gALpgXLpg3YpgDLpgjLpgDCdz9GasF2YvxGI+SK4vSK4gIIpgfYpgLLpgvYpgbJpgDCskCuqkCOIzV2ZhBFIiVHS0l2RgsYpgXJpgDiskC+hkCuvkCOvkC+qkCOI4SK4HSK4g8Ipg/LpgLLpgDyhlCelkCOIHWK4oSK4wSK4VSK4gcJpgvYpg/KpgrKpgnIpgDivkCelkCOIXSK4CSK4/SK4qSK4HSK4+SK4fSK4ggLpgfIpgnYpgXLpgDCplCuvkCOpkC+hlCupkCOICSK4AWK45SK4oSK4g8LpgTKpg7KpgHYpgjKpgXIpgDCglCelkCOIoSK4LWK48SK4rSK4LWK4wSK4NWK4VSK4HSK4+SK4uSK4gIIpgfYpg7KpgDyLv8iOlxWamByhlC+pkCOglCOukCOIjSK4wSK4+SK4VSK4gcYpgXJpgDyvkCOpkCOglCOqkCOI+SK43SK4NWK4VSK4wSK4BWK44SK4gUWbvJHaDBSZsd2bvdEI64LpgjKpgrJpgLYpgjLpgLCK0JXZsFGIgACIgACIgACIgACIgACIK0wegkyJ6UGbpZ2Jg0TP9ACbvN2b09mcw5ibvlGdhN2bs5ydvRmbpdHKgYWagACIgACIgACIgACIK0wegkCdldmchRHKn5WawlHVlNWavZVZsd2ZvRHIu9Wa0Nmb1ZGIj5WezFGIgACIgACIgoQDK0QfgACIgACIgAiCN0HIgACIgACIgACIgAiCNsTfgACIgACIgACIgACIgACIgoQD7kCKn5WawlHVlNWavZFcvR3cgACIgACIgACIgACIgACIgACIgAiCNsHIpgibvlGdj5WdmBSPgQmbl52buIXZ6lmbn92YlJFajVWZwNHIgACIgACIgACIgACIgACIK0gCNsTfgACIgACIgACIgACIgACIgoQD9BCIgACIgACIgACIgACIgACIgACIK0wOpI3byJXZuQnblZXZgsCIiAiOwSK4wSK4PSK4gcJpgLIpg/LpgrKpgfIpg7Lpg/JpgDCukC+hkCeilCetkCuIoQnclxWYgACIgACIgACIgACIgACIgACIgACIgACIK0wegkyJoNWZlB3ct8mbnASP9ECIy9mcyVmL05WZ2VGKgYWagU2csVGI9BCIgACIgACIgACIgACIgACIgACIK0wOpICplCOilCeukCOIVSK4vSK4NWK42SK41SK4GSK4ggKpgbLpg3YpgXJpgfYpgjKpgXJpgDynkC+hlCOqkCOskC+nkCugkC+hkCOIPSK4/SK4ySK4gcYpgXJpgDylkCugkC+vkCuqkC+hkCuvkC+nkCOI4SK4HSK4JWK41SK4igCdyVGbhBCIgACIgACIgACIgACIgACIgACIgACIgoQD7BSKnsmcvdHdl52Jg0TP9AicvJncl5CduVmdlhCImlGIlNHblBSfgACIgACIgACIgACIgACIgACIgAiCNsTKiQapgLIpgfYpgDLpgXJpgDydvxGbBByvkCOpkCurkCeglCOqkCehkCOIAWK4VSK4ggKpgvYpgzLpgvKpgvYpgDLpg3YpgXJpgfIpg7Lpg7KpgDCskCelkCuvkCOnkCOICSK4HWK4uSK4gkichJEIzNXZyRGZBhCIwSK4+SK4sSK4ggLpgfYpgDLpg3YpgHKpg/IpgDyhlCelkCOIwSK48SK4cSK4JSK4+SK4wSK4NWK4sSK4g4Lpg/KpgrKpgPYpgXJpgDCplCOilCeukCOIVSK4JWK4ySK4NWK4sSK4g8LpgTKpg7KpgHYpgjKpgXIpgDCglCelkCOIoSK4LWK48SK4rSK4LWK4wSK4NWK4VSK4HSK4+SK4uSK4igCdyVGbhBCIgACIgACIgACIgACIgACIgACIgACIgoQD7BSKnQWZ39GbsFWL09mbnASP90DIy9mcyVmL05WZ2VGKgYWagACIgACIgACIgACIgACIgACIgAiCNsTKocmbpBXeUV2Yp9mVw9GdzBCIgACIgACIgACIgACIgACIgACIK0wegkCduVmdlhibvlGdj5WdmBSPgI3byJXZu9mLyVmep52ZvNWZSh2YlVGczBCIgACIgACIgACIgACIgAiCNoQD70HIgACIgACIgACIgACIgACIK0QfgACIgACIgACIgACIgACIgACIgAiCNsTKoUGZvNWauV1bUNXesZXZE5WdyBCIgACIgACIgACIgACIgACIgACIgACIgoQD7QHelRVejF2ZlxGI9sCIlVHbhZnLpICZsVWaGNXesZXZkJCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgACIgAiCNsTK0xWdzVmUoNWZlB3coMXesZXZE9GVlR2bjlmbVN3clN2byBHI9ACd4VGV5NWYnVGbgQXZsBCIgACIgACIgACIgACIgACIgACIgACIgoQD7BSKnMXesZXZkdCI90TPgQXZnJXYUVmdpR3YhhCImlGIlNHblBSfgACIgACIgACIgACIgACIgACIgAiCNsTKoMXesZXZE9GVlR2bjlmbV5WdyBCIgACIgACIgACIgACIgACIgACIgACIgoQD7QHb1NXZSh2YlVGczBSPrASZ1xWY25SKiQGbllmRlR2bjlmb1JCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgACIgAiCNsHIpcSZk92Yp5WdnASP90DI0V2ZyFGVlZXa0NWYoAiZpBCIgACIgACIgACIgACIgACIgACIK0QfgACIgACIgACIgACIgACIgACIgAiCNsjIgICIrACdwlmcjNnbhJHdu0FMb1VabNHdsV3clJnLlBSPrACdsV3clJFajVWZwNHIpwWYulmRzlmLdl2WzRHb1NXZy5SZoAiZpBCIgACIgACIgACIgACIgACIgACIgACIgoQD7BSKptyKgsDa0dmblxmLzRHb1NXZy5SZgwDIpByO4VGZulEdsV3clJnLlBSPgkGI0VGboAicvZGIgACIgACIgACIgACIgACIgACIgoQD7IiIg0DI0xWdzVmUoNWZlB3cgQXZsBCIgACIgACIgACIgACIgACIgACIK0wegkSZo42bpR3YuVnZg0DI0xWdzVmcu9mLyVmep52ZvNWZSh2YlVGczBCIgACIgACIgACIgACIgAiCNoQD7ciTJ1SaodCI9AyZuFGbuIXZ6lmbn92YlJFajVWZwNHIgACIgACIgACIgACIgACIK0wOlNHbhZGI9Ayc0xWdzVmUtlmclRnbp5iclpXaud2bjVmUoNWZlB3cgACIgACIgACIgACIgACIgoQD7UWdyRHI9Ayc19WdulGdu92YuIXZ6lmbn92YlJFajVWZwNHIgACIgACIgACIgACIgACIK0wOpgyYlJFajVWZwNFI3Vmbg0DIyVmep52ZvNWZSh2YlVGczBCIgACIgACIgACIgACIgAiCNsjbvlGdp52ZvNWZSh2YlVGcTRXarJWZ35ydvRmbpdHI8xHIu9Wa0lmbn92YlJFajVWZwNlL39GZul2dg0DIjVmUoNWZlB3UgQ3cu92YgACIgACIgACIgACIgACIgoQD7BSK39GZul2dg4WagcibvlGdp52ZvNWZSh2YlVGcTdCI8xHI39GZul2dg4WagcibvlGdp52ZvNWZSh2YlVGcTRXarJWZ3dCKgYWagACIgACIgACIgACIK0wegkCKu9Wa0lmbn92YlJFajVWZwNVZ6lGbhlGdp5Wag42bpR3YuVnZgACIgACIgAiCNoQD7wGb15GI9ACdldmchRVZ2lGdjFGI0VGbgACIgACIgAiCNsDbsVnbg0DIyVmep52ZvNWZSh2YlVGczBCdlxGIgACIgACIgoQDvoCI90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP9ACIgACIgACIgACIK0QROl0ROVEIUhVRU1yTU1CSDVURQNFIFNUSPZFIuQDIgACIgACIgACIgoQD90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP9AiKvACIgACIgACIK0gCN0HIgACIgACIgoQD7kSZslmZoIXZmZWdClXYyJXQzFEZhVmcuIXZkFWZyBCIgACIgACIgACIgoQD70HIgACIgACIgACIgAiCNsTK9BCIgACIgACIgACIgACIgAiCNsTKiESesxWdmN3clN2Y1NHIkVGZh9GbgciIgsCIl1WYu5SZslmZgsCIicCI052bGJCK0JXZsFGIgACIgACIgACIgACIgACIgACIgoQD7kiIlR2bt1ydllmdtMXesZXZkJCKkRWYuQ3cpx0czFGbj5SKiQGbllmRzlHb2VGZigCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBCIgACIgA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K4b9CK0lGbwNnLyR3cg8DIpgSbpJHduIHdzBSPgMXZj5WZ05WZzBCdlxGIgACIgACIgACIgAiCNsDMgoDIoR3ZuVGbukCMg4DIoR3ZuVGbukCKtlmc05Ccg4TPgAHKyVGdslmZukyLr4GXvgCdpxGcz5ic0NHI/ASKo0WayRnLyR3cg0DIzhGchJ3ZhJXYwBCdlxGIgACIgACIgACIgAiCNsDMgoDIoR3ZuVGbukibhVGbv9mQoIXZ0xWam5SKvsycc9CK0lGbwNnLpgSbpJHduIHdzByPgkCKtlmc05ic0NHI9AyckJ3b3BCdlxGIgACIgACIgACIgAiCNsDa0dmblxmLyR3cg0DIzJXYoNGI0VGbgACIgACIgACIgACIK0QfgACIgACIgACIgACIK0wO9BCMgozclNmblRnblNHIsADI6MHawFmcnFmchBHIsADI6MHZy92dgwCMgozcyFGajByeg4mc1RXZyBCIgACIgACIgACIgACIgAiCNsHIpIHdzFCKgYWagACIgACIgACIgACIK0wegkic0NHKzRXY0NFZlxWahRXZERXZnBibvlGdj5WdmBCIgACIgACIK0gCN8iKg0TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90DIgACIgACIgACIgoQDTJVRMRkTBhEIU5URWVEIJVFImAyUDlEVTlEVBR1Ug4yMgACIgACIgACIgAiCN0TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90DIq8CIgACIgACIgoQDK0QfgACIgACIgAiCNsDd4VGdg4mc1RXZyBCIgACIgACIgACIgoQDK0wOpIieiACLn9CskCejlC+LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNEmcgQWZul2bqJWdTByLvACIgACIgACIgACIgoQDK0QfgACIgACIgACIgACIK0wOp0VMb1VabVGbiFGV2VmcgwSKnc2JgwSXwsVXptVZsJWYUZXZyhCc4V0ZlJFI3VmboU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgACIgACIK0wegkyKrkGI7gGdn5WZs5SZsJWYUZXZyBCPgkGI7ADI9ASagQXZshCIy9mZgACIgACIgACIgACIK0gCNsTXgACIgACIgACIgACIK0QXiYmIgwiI/SK4isFIgACIgACIgACIgACIgACIK0ALdJifiACLi0YpgLyWgwSXiUiIgwiIDSK4isFIs0lIhKsIgwiIBSK4isFIs0lIhJCIsIigkCuIbBCIgACIgACIgACIgACIgAiCNwSXiMlIgwiIIWK4isFIs0lIzJCIsIyhlCuIbBCIgACIgACIgACIgACIgAiCNwSXiAmIgwiIDWK4isFIs0lI3JCIsIiglCuIbBCLdJSciACLiEYpgLyWgwSXigmIgwiIAWK4isFIs0lIrJCIsIivkCuIbBCIgACIgACIgACIgACIgAiCNwSXiM1aiACLiwYpgLyWgwSXiM3aiACLisYpgLyWgACIgACIgACIgACIgACIgoQDK0ALdJyvCLCIsIyikCuIbBCIgACIgACIgACIgACIgAiCNwSXi0mIgwiIJSK4isFIs0lIFOsIgwiIKSK4isFIs0lIiJCIsIyhkCuIbBCLdJiWiJCIsICikCuIbBCIgACIgACIgACIgACIgAiCNwSXiYnIgwiIFSK4isFIs0lIrZnIgwiIGSK4isFIs0lITtmdiACLiQJpgLyWgwSXiM3a2JCIsIykkCuIbBCIgACIgACIgACIgACIgAiCNoQDs0lInJCIsISukCuIbBCLdJCbiACLigLpgLyWgwSXi8mIgwiI1SK4isFIgACIgACIgACIgACIgACIK0ALdJSeiACLiILpgLyWgwSXiomIgwiIwSK4isFIs0lI7ICIsIyrkCuIbBCLdJSZiACLi4KpgLyWgACIgACIgACIgACIgACIgoQDs0lIjJCIsICrkCuIbBCLdJSUiACLisKpgLyWgwSXikmIgwiIqSK4isFIs0lI1JCIsICqkCuIbBCIgACIgACIgACIgACIgAiCNwSXi4mIgwiImSK4isFIs0lIyJCIsICpkCuIbBCLdJCPiACLiIKpgLyWgwSXi0kIgwiIhSK4isFIgACIgACIgACIgACIgACIK0ALdJiQiACLiAKpgLyWgwSXiYlIgwiIfSK4isFIs0lI+ICIsISnkCuIbBCLdJCdiACLiwJpgLyWgACIgACIgACIgACIgACIgoQDs0lIOJCIsIymkCuIbBCLdJCciACLioJpgLyWgwSXignIgwiIXSK4isFIs0lIkJCIsISlkCuIbBCIgACIgACIgACIgACIgAiCNwSXismLiACLiMKpgLyWgwSXismIcJCIsIytkCuIbBCLdJyanICIsIitkCuIbBCLdJyaIJCIsISrkCuIbBCIgACIgACIgACIgACIgAiCNwSXis2LiACLicKpgLyWgwSXismRiACLiUKpgLyWgwSXis2PiACLigJpgLyWgwSXis2WiACLiYJpgLyWgACIgACIgACIgACIgACIgoQDK0ALdJifnJCIsISjlCeukCuIbBCLdJiLiACLi0YpgPKpgLyWgACIgACIgACIgACIgACIgoQDs0lIMJCIsISjlCOukCuIbBCLdJiIcJCIsISjlC+tkCuIbBCLdJyJiACLi0YpgbLpgLyWgwSXi8kIgwiINWK41SK4isFIgACIgACIgACIgACIgACIK0ALdJSWiACLi0YpgLLpgLyWgwSXi43OiACLi0Ypg/KpgLyWgwSXiUkIgwiINWK4uSK4isFIs0lIIJCIsISjlCerkCuIbBCIgACIgACIgACIgACIgAiCNwSXiMkIgwiINWK4sSK4isFIs0lIJJCIsISjlCuqkCuIbBCLdJSViACLi0YpgjKpgLyWgwSXi8iIgwiINWK4nSK4isFIgACIgACIgACIgACIgACIK0ALdJiRiACLi0YpgXKpgLyWgwSXiIlIgwiINWK4kSK4isFIs0lIUJCIsISjlCOnkCuIbBCLdJCUiACLi0YpgrJpgLyWgACIgACIgACIgACIgACIgoQDs0lI/ICIsISjlCOmkCuIbBCLdJCWiACLi0YpgfJpgLyWgwSXislIgwiINWK4WSK4isFIs0lIEJCIsISjlCelkCuIbBCIgACIgACIgACIgACIgAiCNoQDs0lILJCIsIinkCejlCOnkCuIbBCIgACIgACIgACIgACIgAiCNwSXi0jIgwiIwSK4NWK4kSK4isFIs0lIr1jIgwiI+SK4wSK4NWK4kSK4isFIs0lI9ICIsISjlCOskCejlCOpkCuIbBCIgACIgACIgACIgACIgAiCNwSXis2eiACLicLpg3YpgXJpgLyWgwSXgIyeiACLi0YpgfLpg3YpgXJpgLyWgACIgACIgACIgACIgACIgoQDbBSPgUGbiFGV2VmcgQ3cu92YgACIgACIgACIgACIK0gLg4TLg0YpgPKpgDiOlNWa09mTg8yLgACIgACIgACIgACIK0QKzdmbpBHch1GI05WYsFGSoAyc05WYu92cu92YgYGbhhGIk5WYgMnclRHdlxGIk5WdvBXbvNEIuITMg8yLgACIgACIgACIgACIK0gCN0HIgACIgACIgACIgAiCNsTKdFzWdl2WwFWTyF2ahJHUhJHIskyJndCIs0FMb1VabBXYNJXYrFmcQFmcoAHeFdWZSBydl5GKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgACIgAiCNsHIpsyKpByOoR3ZuVGbuAXYNJXYrFmcQFmcgwDIpByOwASPgkGI0VGboAicvZGIgACIgACIgACIgAiCNsTXgACIgACIgACIgACIK0QXi0jIgwiIwSK4NWK4kSK4isFIs0lI6xmIgwiIwSK4NWK44SK4isFIs0lI6dmIgwiIwSK4NWK45SK4isFIs0lI69mIgwiIwSK4NWK41SK4isFIgACIgACIgACIgACIgACIK0ALdJielJCIsICskCejlCurkCuIbBCLdJieIJCIsICskCejlCerkCuIbBCLdJiejJCIsICskCejlCOrkCuIbBCLdJieuJCIsICskCejlCupkCuIbBCIgACIgACIgACIgACIgAiCNwSXioHdiACLiALpg3YpgzJpgLyWgwSXioHeiACLiALpg3YpgfJpgLyWgwSXig5wiACLiALpg3YpgXJpgLyWgwSXioXaiACLiALpg3YpgrKpgLyWgACIgACIgACIgACIgACIgoQDbBSPgAXYNJXYrFmcQFmcgQ3cu92YgACIgACIgACIgACIK0QK9AiPtACskCejlCOpkCOIsg5wg4TLgALpg3YpgXJpgDCL65GI+0CIwSK4NWK4mSK4gwiepBiPtACskCejlCuqkCOIucmLlhCIyF2ahJHUtEmUgQWZul2bqJWdTBiLxEDIv8CIgACIgACIgACIgAiCNoQD7kiIxQiZiACLn9yvkCeKdh5wKhCXpwFfc1HXbhyLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKiEDJmJCIsc2L/SK4p8TKwSK4NWK481lebpzPo0VOzkDM1xVL1ETOwUHXbpSKNWK4dlzM5ATdc1SNxkDM1x1W68DKo8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CIgACIgACIK0gCNsTKi0lIgwyZvwyLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKiASXiACLn9iKzxFLvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wJscCIoRXa3ByJPSK4nAyZul2YhxGclJHIFJ1TGVkQgcSXnAyc5xmdlREIoRXa3BSYt12bjBSZk92Yp5WVgU2YhxGclJFI6wUQDlEVJJ1Qg4yMg8yLgACIgACIgACIgACIK0gCNsTKiEkIgwyZvQapg/CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiI6ICIsc2LCWK4wSK4vgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wOpICItojIgwyZvoycc5CXCWK4wSK4vgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wOpICQiACLn9yLc9CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiImAkIgwyZv0CXvw1LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCN42bpRXY1R3YuVHUgMWazFmQgYCI5NmblJnc1NEIuIDIv8CIgACIgACIgACIgAiCNoQD7kiI9KsIgwyZvkCXvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wOpICvCLCIsc2Low1LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNkSvCjCI5gTMwsCdsFEImASK8KMKggDOxAzK0xWQgMXesZXZEByb0ByclNXZoRnblJXYQBiLxAyLvACIgACIgACIgACIgoQDK0wO0hXZUV2YyV3bzBSPgQHelRHI0VGbgACIgACIgACIgACIK0gCNsjIiAibyVHdlJHIpQHelRVZjJXdvNXIoAiZpBCIgACIgACIgACIgoQD7BSK0hXZUV2YyV3bzhyc5xmdlR0bUVGZvNWauV1czV2YvJHcg42bpR3YuVnZgACIgACIgAiCNoQDvoCI90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP9ACIgACIgACIgACIK0QKO9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wOpIigkC+ilCuIgwyZvsYpgLIpg/CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiICSK4IWK4iACLn9CilCugkC+LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKiIIpgfYpgLCIsc2LHWK4CSK4vgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0gCN0HIgACIgACIgACIgAiCNsTKdFzWdl2WlxmYhRlbvl2cyVmdu92YgwSZyhSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIgACIgoQD7kyJndCIskiIxQCXcJCIsc2Lp0FXc9CXdx1WcxXKo03ekoTI941ProiLbhyLoU2YhxGclJnLdBzWdl2WlxmYhRlbvl2cyVmdu92YoAHeFdWZSBydl5GI9ASZyBCdlxGIgACIgACIgACIgACIgACIK0wegkyKrkGI7gGdn5WZs5SZsJWYU52bpNnclZnbvNGI8ASagsDMg0DIpBCdlxGKgI3bmBCIgACIgACIgACIgoQDK0wOdBCIgACIgACIgACIgoQDdJSjlCuIgwiI+JyWgwSXiMIpgLCIsISJisFIs0lIBSK4iACLiEqwisFIs0lICSK4iACLiEmIbBCIgACIgACIgACIgACIgAiCNwSXigYpgLCIsIyUisFIs0lIHWK4iACLiMnIbBCLdJyglCuIgwiIgJyWgACIgACIgACIgACIgACIgoQDs0lICWK4iACLicnIbBCLdJSglCuIgwiIxJyWgwSXiAYpgLCIsICaisFIs0lI+SK4iACLismIbBCIgACIgACIgACIgACIgAiCNwSXiwYpgLCIsIyUrJyWgwSXisYpgLCIsIycrJyWgACIgACIgACIgACIgACIgoQDK0ALdJCskCejlCuIgwiI6JyWgACIgACIgACIgACIgACIgoQDK0ALdJSukCuIgwiInJyWgACIgACIgACIgACIgACIgoQDs0lINWK44SK4iACLiwkIbBCLdJCukCuIgwiIsJyWgACIgACIgACIgACIgACIgoQDs0lINWK41SK4iACLi8kIbBCLdJStkCuIgwiIvJyWgACIgACIgACIgACIgACIgoQDs0lINWK4ySK4iACLiklIbBCLdJiskCuIgwiI5JyWgACIgACIgACIgACIgACIgoQDs0lIwSK4iACLiomIbBCIgACIgACIgACIgACIgAiCNwSXi8KpgLCIsIyOisFIgACIgACIgACIgACIgACIK0ALdJSjlCurkCuIgwiIFJyWgwSXi4KpgLCIsISZisFIgACIgACIgACIgACIgACIK0ALdJSjlCOrkCuIgwiIDJyWgwSXiwKpgLCIsIyYisFIgACIgACIgACIgACIgACIK0ALdJyqkCuIgwiIRJyWgACIgACIgACIgACIgACIgoQDs0lINWK4qSK4iACLikkIbBCLdJiqkCuIgwiIpJyWgACIgACIgACIgACIgACIgoQDs0lINWK4oSK4iACLiUlIbBCLdJCqkCuIgwiI1JyWgACIgACIgACIgACIgACIgoQDs0lImSK4iACLi4mIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgTKpgLCIsIiUisFIs0lIkSK4iACLiInIbBCIgACIgACIgACIgACIgAiCNwSXiIKpgLCIsICPisFIs0lIhSK4iACLi0kIbBCLdJCokCuIgwiICJyWgwSXi8JpgLCIsIiVisFIgACIgACIgACIgACIgACIK0ALdJSnkCuIgwiI+IyWgACIgACIgACIgACIgACIgoQDs0lINWK4cSK4iACLiQlIbBCLdJCnkCuIgwiI0JyWgACIgACIgACIgACIgACIgoQDs0lIbSK4iACLi4kIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgrJpgLCIsICUisFIs0lIaSK4iACLiAnIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgfJpgLCIsICWisFIs0lIXSK4iACLignIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgXJpgLCIsICRisFIs0lIVSK4iACLiQmIbBCIgACIgACIgACIgACIgAiCNoQDs0lIvSK4NWK4mSK4iACLisrwisFIs0lIvSK4NWK4mSK4iACLiwnIbBCLdJStkCejlCupkCuIgwiI9JyWgACIgACIgACIgACIgACIgoQDs0lIeSK4NWK4cSK4iACLiskIbBCIgACIgACIgACIgACIgAiCNwSXiALpg3YpgTKpgLCIsISPisFIs0lI+SK4wSK4NWK4kSK4iACLisWPisFIgACIgACIgACIgACIgACIK0ALdJSjlC+tkCejlCelkCuIgwiI7JyWgwSXicLpg3YpgXJpgLCIsIya7JyWK0ALdJinkCejlCOnkCuIgwiILJyWgACIgACIgACIgACIgACIgoQDs0lIwSK4NWK4kSK4iACLi0jIbBCLdJivkCOskCejlCOpkCuIgwiIr1jIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgfLpg3YpgXJpgLCIsIyeisFIs0lI3SK4NWK4VSK4iACLis2eisFIgACIgACIgACIgACIgACIK0gCNwSXi0YpgPKpgLCIsIiLisFIgACIgACIgACIgACIgACIK0ALdJiokCejlC+okCuIgwiI84iIbBCLdJynkCejlC+okCuIgwiIW5iIbBCLdJCokCejlC+okCuIgwiIC5iIbBCLdJSokCejlC+okCuIgwiIN5iIbBCIgACIgACIgACIgACIgAiCNwSXiMKpgLCIsIyauIyWgACIgACIgACIgACIgACIgoQDs0lINWK43SK4iACLiICXisFIs0lI3SK4iACLismIcJyWgACIgACIgACIgACIgACIgoQDs0lINWK42SK4iACLiciIbBCLdJitkCuIgwiIrdiIbBCIgACIgACIgACIgACIgAiCNwSXi0Ypg3KpgLCIsICSisFIs0lItSK4iACLisGSisFIgACIgACIgACIgACIgACIK0ALdJSjlC+pkCuIgwiIvIyWgwSXicKpgLCIsIyavIyWgACIgACIgACIgACIgACIgoQDs0lINWK4lSK4iACLiYkIbBCLdJSpkCuIgwiIrZkIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgjJpgLCIsIyPisFIs0lIYSK4iACLis2PisFIgACIgACIgACIgACIgACIK0ALdJSjlCulkCuIgwiIbJyWgwSXiYJpgLCIsIyabJyWgACIgACIgACIgACIgACIgoQDK0ALdJyjkCuIgwiIsIyWgACIgACIgACIgACIgACIgoQDs0lIKSK4iACLiU4wisFIs0lIJSK4iACLi0mIbBCLdJyhkCuIgwiIiJyWgwSXigIpgLCIsIiWiJyWgACIgACIgACIgACIgACIgoQDs0lIFSK4iACLiYnIbBCLdJihkCuIgwiIrZnIbBCLdJClkCuIgwiITtmdisFIs0lITSK4iACLiM3a2JyWgACIgACIgACIgACIgACIgoQDs0lIdWK4iACLisCPisFIs0lIcWK4iACLisSTisFIgACIgACIgACIgACIgACIK0wWg0DIlxmYhRlbvl2cyVmdu92YgQ3cu92YgACIgACIgACIgACIK0gCNsTKi8LpgLCIsc2L1ADMFVHXvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0gCN0HIgACIgACIgACIgAiCNsTKiYmIoY2T4VGZulmL0hXZ0BSPgM3bQZGIgACIgACIgACIgACIgACIK0wOpgHZphyZulmc0NnY1NnL0hXZ0ByKgIyvkCuIgsCIpgHZpBCLxAyKgM3bQZGKn5WayR3ciV3cuQHelRHIrASKz9GUmBCLwgyZulmc0NnY1NnL0hXZ0BSPgQHelRHIgACIgACIgACIgACIgACIK0wOrsCeklGIpcienASP90DIpgHZphCdBJXYoNmL0hXZ0BiJmACa0dmblxmL0hXZ0BCPggHZphCImlGIgACIgACIgACIgACIgACIK0wOrsCeklGIpgGdn5WZs5Cd4VGdgwDI4RWaoAiZpBCIgACIgACIgACIgACIgAiCNszKrgHZpBSKx0CI90TIgkSK4RWaoQXQyFGaj5Cd4VGdoY2T4VGZulmLisHTiw1JPVUWINUSV9iRUB1PbRkIgYiJggGdn5WZs5Cd4VGdgwDI4RWaoAiZpBCIgACIgACIgACIgACIgAiCNsTMgsCIz9GUmBSPggHZpBCdlxGIgACIgACIgACIgACIgACIK0wegkSMtASP9ECIz9GUmhCIlxWaodHIgACIgACIgACIgAiCNsTKiYmIoY2T4VGZulmL0hXZ0BSPgM3bQZGI0VGbgACIgACIgACIgACIK0QKnk2JgkGdvhGaDhCInY2Jg42bpRXaz9GctUmUg8yLgACIgACIgACIgACIK0gCN0HIgACIgACIgACIgAiCNsTKiolIoY2T4VGZulmL0hXZ0BSPgM3bQpHIgACIgACIgACIgACIgACIK0wOpEDIrAycvBleocmbpJHdzJWdz5Cd4VGdgsCIpM3bQpHIsEDIrACeklGKn5WayR3ciV3cuQHelRHIrAiINWK4wSK4iAyKgkSMgsCI4RWagwCMocmbpJHdzJWdz5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgACIgAiCNsTLtgHZpBSKx0CI90TIgkSK4RWaoQXQyFGaj5Cd4VGdoY2T4VGZulmLisHTiw1JPVUWINUSV9iRUB1PbRkIgYiJgADI94DI4RWaoAiZpBCIgACIgACIgACIgACIgAiCNsTLtgHZpBSKwASP+ACeklGKgYWagACIgACIgACIgACIgACIgoQD70SL4RWagkyJ6dCI90TPgkCeklGK0Fkchh2YuQHelRHImYCIwASP+ACeklGKgYWagACIgACIgACIgACIgACIgoQD9BCIgACIgACIgACIgACIgAiCNsTLtgHZpBCIgACIgACIgACIgACIgACIgACIK0wegkSMtASP9ECIpkCeklGK0Fkchh2YuQHelRHKm9EelRmbp5iI+VSoCHGYodXcTN3aiAiJmACMg0jPggHZphCIlxWaodHIgACIgACIgACIgACIgACIK0wOxASLgM3bQpHI9ACeklGI0VGbgACIgACIgACIgACIgACIgoQD7BSKx0CI90TIgM3bQpHKgUGbph2dgACIgACIgACIgACIK0wOpIiWigiZPhXZk5WauQHelRHI9AycvBlegQXZsBCIgACIgACIgACIgoQDpgGclJFKgciWnAibvlGdpN3bw1SZSByLvACIgACIgACIgACIgoQDK0wOpISNwATR1xVMk0YpgDLpgLCIsc2LalyPdp3WdlHe3ZXd0NXcw9GboVGZjJWTCZ1Zy5mT800O6wlPcpVLBpXLht1PdtHXicCXMlFSDVlRSRFU/w1WcR0WoY2LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCN42bpRXYulmYt92YgciWmdCIlxGZuFGSg8yLgACIgACIgACIgACIK0gCNsTKiIYpgDLpgLCIsc2L68CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiIAWK4XSK4CSK4CWK4wSK4iACLn9Ca4FmOvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wOpIivkC+lkCugkCuglCOskCuIgwyZvsGehpzLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKiAYpgfJpgLIpgLYpgDLpgXJpgLCIsc2LohXY6Q2LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKi4LpgfJpgLIpgLYpgDLpgXJpgLCIsc2LrhXY6Q2LoU2YhxGclJnL0h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GdpxGIulWYtVmcgQ3c11GIzgTMgUGZvNGIyV2c1BiLn5SZoASZsJWY0ByLvACIgACIgACIgACIgoQDkJXYvJWeltGIzlHT2VGRgknch5WakJ3bgUGa0BSbvJnZgQWZ0NWZ09mcwByc0VHc0V3bgUGZvNWL0xWQgAXZltEIv8CIgACIgACIgACIgAiCNsTXgACIgACIgACIgACIK0QXioJpgLCIsISuDLyWgACIgACIgACIgACIgACIgoQDs0lI7JCIsICuDLyWgACIgACIgACIgACIgACIgoQDs0lIHSK4iACLic7wisFIgACIgACIgACIgACIgACIK0ALdJCskCejlCupkCuIgwiI2OsIbBCIgACIgACIgACIgACIgAiCNwSXigYpgLCIsIStDLyWgACIgACIgACIgACIgACIgoQDs0lI3SK4NWK4VSK4iACLiQ7wisFIgACIgACIgACIgACIgACIK0ALdJCskCejlCOpkCejlCOukCuIgwiIzOsIbBCIgACIgACIgACIgACIgAiCNwSXi4iIgwiIxOsIbBCIgACIgACIgACIgACIgAiCNwSXiwLpgLKpgLCIsICsDLyWgACIgACIgACIgACIgACIgoQDs0lI8SK4hSK4iACLi86wisFIgACIgACIgACIgACIgACIK0ALdJyrkCuIgwiIuOsIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgDLpgLCIsISrDLyWgACIgACIgACIgACIgACIgoQDs0lIWSK4iACLiw6wisFIgACIgACIgACIgACIgACIK0ALdJiokCuIgwiIrOsIbBCIgACIgACIgACIgACIgAiCNwSXi8JpgLCIsIiqDLyWgACIgACIgACIgACIgACIgoQDs0lIwSK4NWK4kSK4iACLik6wisFIgACIgACIgACIgACIgACIK0ALdJigkCuIgwiIoOsIbBCIgACIgACIgACIgACIgAiCNwSXiALpg3YpgrKpgLCIsIypDLyWgACIgACIgACIgACIgACIgoQDs0lIwSK4NWK4mSK4iACLiY6wisFIgACIgACIgACIgACIgACIK0ALdJyilCuIgwiIlOsIbBCIgACIgACIgACIgACIgAiCNwSXiUJpg3YpgTKpgLCIsICpDLyWgACIgACIgACIgACIgACIgoQDs0lIvSK4NWK45SK4iACLiM6wisFIgACIgACIgACIgACIgACIK0ALdJSjlCeukCuIgwiIiOsIbBCIgACIgACIgACIgACIgAiCNwSXiMYpgnLpgLCIsISoDLyWgACIgACIgACIgACIgACIgoQDs0lI5SK4iACLiA6wisFIgACIgACIgACIgACIgACIK0ALdJSnAKuIgwiIfOsIbBCIgACIgACIgACIgACIgAiCNwSXiwJgiLCIsIinDLyWgACIgACIgACIgACIgACIgoQDs0lIwSK4NWK4rSK4iACLi05wisFIgACIgACIgACIgACIgACIK0ALdJSglCOskCuIgwiIZOsIbBCIgACIgACIgACIgACIgAiCNwSXiALpg3YpgXJpgLCIsICmDLyWgACIgACIgACIgACIgACIgoQDs0lI1SK4iACLi44wisFIgACIgACIgACIgACIgACIK0ALdJStkCuIgwiINOsIbBCIgACIgACIgACIgACIgAiCNwSXikLpgLCIsICjDLyWgACIgACIgACIgACIgACIgoQDs0lIKSK4iACLiU4wisFIgACIgACIgACIgACIgACIK0ALdJSjlC+rkCuIgwiI4KsIbBCIgACIgACIgACIgACIgAiCNwSXiMlIgwiI3KsIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgvKpgLCIsIitCLyWgACIgACIgACIgACIgACIgoQDs0lIoSK4iACLiQrwisFIgACIgACIgACIgACIgACIK0ALdJSjlCOnkCuIgwiIzKsIbBCIgACIgACIgACIgACIgAiCNwSXiALpg3YpgLCIsISsCLyWgACIgACIgACIgACIgACIgoQDs0lIJWK4iACLi4qwisFIgACIgACIgACIgACIgACIK0ALdJCilCuIgwiIrKsIbBCIgACIgACIgACIgACIgAiCNwSXi8JpgLCIsIiqCLyWgACIgACIgACIgACIgACIgoQDs0lICWK4iACLikqwisFIgACIgACIgACIgACIgACIK0ALdJSglCuIgwiIoKsIbBCIgACIgACIgACIgACIgAiCNwSXiAYpgLCIsIypCLyWgACIgACIgACIgACIgACIgoQDs0lIwSK4NWK4kSK4iACLiUqwisFIgACIgACIgACIgACIgACIK0ALdJyglCuIgwiIkKsIbBCIgACIgACIgACIgACIgAiCNwSXiYJpgLCIsIyoCLyWgACIgACIgACIgACIgACIgoQDs0lI9SK4iACLiIqwisFIgACIgACIgACIgACIgACIK0ALdJCplCuIgwiIhKsIbBCIgACIgACIgACIgACIgAiCNwSXiAbpgLCIsICoCLyWgACIgACIgACIgACIgACIgoQDs0lIwSK4iACLigbxisFIgACIgACIgACIgACIgACIK0ALdJSjlCuskCuIgwiI6Co4isFIgACIgACIgACIgACIgACIK0ALdJyglCuIgwiIiSo4isFIgACIgACIgACIgACIgACIK0ALdJSglCOskCuIgwiIcusIbBCIgACIgACIgACIgACIgAiCNwSXiALpg3Ypg/JpgLCIsIClAKuIbBCIgACIgACIgACIgACIgAiCNwSXiIYpgbKpgLCIsIykAKuIbBCIgACIgACIgACIgACIgAiCNwSXi8Kpg3YpgDLpgLCIsISnAKuIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgDLpgLCIsICnAKuIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgrKpgLCIsISmAKuIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgPKpgLCIsICmAKuIbBCIgACIgACIgACIgACIgAiCNwSXikYpgLCIsIikFLyWgACIgACIgACIgACIgACIgoQDs0lIFWK4iACLikLgiLyWgACIgACIgACIgACIgACIgoQDs0lIMWK4iACLiAaxisFIgACIgACIgACIgACIgACIK0ALdJyilCuIgwiIwCo4isFIgACIgACIgACIgACIgACIK0ALdJCilCuIgwiIGusIbBCIgACIgACIgACIgACIgAiCNwSXi0YpgLCIsISoAKuIbBCIgACIgACIgACIgACIgAiCNsFI9Aycn5WawBXYNVGZvNEdsFGI0NnbvNGIgACIgACIgACIgAiCNoQD7kiIXSK4NWK4mSK4iACLn9CKc9CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiInSK4NWK4mSK4iACLn9SKc9CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQD7kiInSK4NWK4mSK4CWK4wSK4/SK41SK4iACLn9SKcpzbm9CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQDzNWaml2YlB3UgYCIzVGZvNGI0xWQg4CNg8yLgACIgACIgACIgACIK0gCNcCplC+Jg8yLgAyOpICNwATR1xlIgwyZvE0LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNkyJucCI09GZgwWY1NXa2BycpByJtcCIzlHb2VGRoAyJucCIv8CIgsTKiMDMwUUdcJCIsc2Lt8CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQDn0yJg8yLgAyOpICOwATR1xlIgwyZvYyLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNcyLnAyLvACI7kiIyADMFVHXiACLn9CQvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wJscCIv8CI7kiIxADMFVHXiACLn9SXc9CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQDnAiLCWK4wSK4nAyLvAyOpIyNwATR1xlIgwyZv0iOvgSZjFGbwVmcuQHelRHI9ACd4VGdgACIgACIgACIgACIK0wJt8yJg8yLgsTKiYDMwUUdcJCIsc2LmA0LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCN42bpR3YlR3byBHIu9Wa0FWd0Nmb1BFImASej5WZyJXdDBiLzAyLvACIgACIgACIgACIgoQDK0wJpcCIv8CI7kiIBBDMFVHXiACLn9SvC/CKlNWYsBXZy5Cd4VGdg0DI0hXZ0BCIgACIgACIgACIgoQDngyJg8yLgsTKikDMwUUdcJCIsc2L8K8LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNkSvCjCI5gTMwsCdsFEImASK8KMKggDOxAzK0xWQgQ3YlR3byBFIuIDIv8CIgACIgACIgACIgAiCNoQD7kiIyQCMyATR1xVMkICIsc2LpQCfzxFKuwVKzxFfehyLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKiIDJwIDMFVHXxQiIgwyZvkCZchiLclCZchyLoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNsTKpgGdn5WZs5CajRXYthCdhVGclJnLiAjMwUUdcJCI+0DIpg2Y0FWboACLn9SfsIzeuw1LoU2YhxGclJnL0hXZ0BSPgQHelRHIgACIgACIgACIgAiCNEyJNWK4jSK4nASYu1iZsFGag8GdulGI0JXZ252bjBiUFZVROBSelhGdg82cg8yLgACIgACIgACIgACIK0QKnMjMwIjL3AjL1AzJoAyc0l2ZpRGIuVWZ3RXZiByc09GZgQmbhBSKn4iLu4iLu4iLu4iLnAiLn5SZoAyc09GZgQWZ0FWZwVmUgQ3YlR3byBFIuEDIv8CIgACIgACIgACIgAiCNoQD7QHelRVZjJXdvNHI9ACd4VGdgQXZsBCIgACIgACIgACIgoQDK0wOiICIuJXd0VmcgkCd4VGVlNmc192chgCImlGIgACIgACIgACIgAiCNsHIpQHelRVZjJXdvNHKlR2bjlmbV9GVzlHb2VGRzNXZj9mcwBibvlGdj5WdmBCIgACIgACIK0gCN8iKg0TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90DIgACIgACIgACIgoQDDl0RPxEIO9USUFETT5UQSRFIFR0TDlkTVByTUBCMxADITlFTWVERg4SMgACIgACIgACIgAiCN0TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90TP90DIq8CIgACIgACIgoQD");</script>
  <!-- ======================================================== -->
 <!-- SHREE VAISHNAVI COMPUTERS - PRO WORKSTATION + OCR & DND  -->
 <!-- ======================================================== -->
@@ -1814,7 +1035,7 @@ window.svcPro = (function() {
     // B. Word (.docx) फ़ाइल
     else if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
       toast("Word फ़ाइल पढ़ी जा रही है...", "info");
-      loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', function() {
+      loadScript('libs/mammoth.browser.min.js', function() {
         const reader = new FileReader();
         reader.onload = function(e) {
           mammoth.extractRawText({ arrayBuffer: e.target.result })
@@ -1830,14 +1051,18 @@ window.svcPro = (function() {
         reader.readAsArrayBuffer(file);
       });
     } 
-    // C. इमेज OCR (Hindi + English)
+    // C. इमेज OCR (Hindi + English) - 100% Offline via libs/
     else if (file.type.startsWith('image/')) {
       toast("इमेज से टेक्स्ट स्कैन (OCR) किया जा रहा है... कृपया प्रतीक्षा करें", "info");
-      loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js', function() {
+      loadScript('libs/tesseract.min.js', function() {
+        const baseLibs = new URL('libs/', window.location.href).href;
         Tesseract.recognize(
           file,
           'hin+eng',
           {
+            workerPath: baseLibs + 'worker.min.js',
+            corePath: baseLibs,
+            langPath: baseLibs,
             logger: m => {
               if (m.status === 'recognizing text' && m.progress) {
                 toast(`स्कैनिंग: ${Math.round(m.progress * 100)}%`, "info");
@@ -2202,8 +1427,7 @@ window.svcPro = (function() {
   };
 })();
 </script>
-<!-- ======================================================== -->
-    <!-- ================= COMPLETE ULTIMATE OCR UPGRADE (ALL-IN-ONE) ================= -->
+<!-- ================= UNIFIED 100% OFFLINE OCR, PDF & WORD ENGINE ================= -->
 <style>
     .ocr-modal-overlay {
         position: fixed;
@@ -2375,7 +1599,7 @@ window.svcPro = (function() {
 
         <div class="ocr-status-title" id="ocrStatusTitle">फ़ाइल अपलोड हो रही है...</div>
         <div class="ocr-status-sub" id="ocrStatusSub">कृपया प्रतीक्षा करें, पेज को बंद न करें।</div>
-        <div class="ocr-enhance-badge" id="ocrEnhanceBadge">✨ स्मार्ट HD Enhancer & Line-Wise Corrector सक्रिय</div>
+        <div class="ocr-enhance-badge" id="ocrEnhanceBadge">✨ यूनिवर्सल स्मार्ट ऑफ़लाइन इंजन सक्रिय</div>
 
         <div class="ocr-progress-track">
             <div class="ocr-progress-fill" id="ocrProgressFill"></div>
@@ -2465,606 +1689,27 @@ window.svcPro = (function() {
             var s = document.createElement('script');
             s.src = url;
             s.onload = resolve;
-            s.onerror = function() { reject(new Error('इंटरनेट धीमा या बंद होने के कारण OCR इंजन लोड नहीं हो सका।')); };
+            s.onerror = function() { reject(new Error('लोकल लाइब्रेरी (' + url + ') लोड नहीं हो सकी।')); };
             document.head.appendChild(s);
         });
     }
 
-    // स्मार्ट हिंदी करेक्शन और लाइन-वाइज सुधारक
-    function fixOcrHindiText(rawText) {
-        if (!rawText) return '';
-        var t = rawText;
+    function universalSmartCleaner(text) {
+        if (!text) return '';
+        var t = text;
         t = t.replace(/जी एस टी/g, 'जीएसटी');
         t = t.replace(/संलग्न —/g, 'संलग्न –');
         t = t.replace(/कांउटर/g, 'काउंटर');
         t = t.replace(/([क-ह])्\s+([क-ह])/g, '$1्$2');
-        
-        var lines = t.split('\n');
-        var cleanedLines = lines.map(function(line) {
-            return line.replace(/\s+/g, ' ').trim();
-        });
-        return cleanedLines.filter(function(l) { return l.length > 0; }).join('\n');
-    }
-
-    function sortTesseractWordsLineWise(builder) {
-        if (!builder || !builder.blocks) return '';
-        var allLines = [];
-        builder.blocks.forEach(function(block) {
-            if (!block.paragraphs) return;
-            block.paragraphs.forEach(function(para) {
-                if (!para.lines) return;
-                para.lines.forEach(function(line) {
-                    var lineText = line.text ? line.text.trim() : '';
-                    if (lineText && line.bbox) {
-                        allLines.push({ text: lineText, y0: line.bbox.y0, x0: line.bbox.x0 });
-                    }
-                });
-            });
-        });
-        if (allLines.length === 0) return builder.text ? fixOcrHindiText(builder.text) : '';
-        
-        allLines.sort(function(a, b) {
-            if (Math.abs(a.y0 - b.y0) > 8) return a.y0 - b.y0;
-            return a.x0 - b.x0;
-        });
-
-        var finalLines = [];
-        var currentMergedLine = '';
-        var lastY = -999;
-        allLines.forEach(function(l) {
-            if (lastY === -999 || Math.abs(l.y0 - lastY) <= 8) {
-                currentMergedLine += (currentMergedLine ? ' ' : '') + l.text;
-            } else {
-                if (currentMergedLine) finalLines.push(currentMergedLine);
-                currentMergedLine = l.text;
-            }
-            lastY = l.y0;
-        });
-        if (currentMergedLine) finalLines.push(currentMergedLine);
-        return fixOcrHindiText(finalLines.join('\n'));
-    }
-
-    function processLineWiseOcrResult(res) {
-        if (!res || !res.data) return '';
-        try {
-            if (res.data.blocks && res.data.blocks.length > 0) {
-                var sorted = sortTesseractWordsLineWise(res.data);
-                if (sorted && sorted.trim().length > 0) return sorted;
-            }
-        } catch (e) {}
-        return fixOcrHindiText(res.data.text ? res.data.text.trim() : '');
-    }
-
-    function enhanceBlurryCanvas(sourceCanvas) {
-        var w = sourceCanvas.width;
-        var h = sourceCanvas.height;
-        var scale = (w < 1600 && h < 1600) ? 2 : 1.5;
-        var targetW = Math.min(3200, Math.round(w * scale));
-        var targetH = Math.min(3200, Math.round(h * scale));
-
-        var outCanvas = document.createElement('canvas');
-        outCanvas.width = targetW;
-        outCanvas.height = targetH;
-        var ctx = outCanvas.getContext('2d');
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(sourceCanvas, 0, 0, targetW, targetH);
-
-        try {
-            var imgData = ctx.getImageData(0, 0, targetW, targetH);
-            var d = imgData.data;
-            var len = d.length;
-            var minLum = 255, maxLum = 0;
-            var gray = new Uint8ClampedArray(targetW * targetH);
-
-            for (var i = 0, p = 0; i < len; i += 4, p++) {
-                var lum = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
-                gray[p] = lum;
-                if (lum < minLum) minLum = lum;
-                if (lum > maxLum) maxLum = lum;
-            }
-            var range = Math.max(1, maxLum - minLum);
-            var contrasted = new Uint8ClampedArray(targetW * targetH);
-            for (var k = 0; k < gray.length; k++) {
-                var norm = ((gray[k] - minLum) / range) * 255;
-                norm = (norm < 155) ? Math.max(0, norm * 0.65) : Math.min(255, norm * 1.18);
-                contrasted[k] = Math.round(norm);
-            }
-            for (var y = 1; y < targetH - 1; y++) {
-                for (var x = 1; x < targetW - 1; x++) {
-                    var idx = y * targetW + x;
-                    var sharpVal = (contrasted[idx] * 5 - contrasted[idx - 1] - contrasted[idx + 1] - contrasted[idx - targetW] - contrasted[idx + targetW]);
-                    var finalPixel = Math.min(255, Math.max(0, sharpVal));
-                    var rgbaIdx = idx * 4;
-                    d[rgbaIdx] = finalPixel; d[rgbaIdx+1] = finalPixel; d[rgbaIdx+2] = finalPixel; d[rgbaIdx+3] = 255;
-                }
-            }
-            ctx.putImageData(imgData, 0, 0);
-        } catch (e) {}
-        return outCanvas;
-    }
-
-    function imageUrlToCanvas(dataUrl) {
-        return new Promise(function(resolve, reject) {
-            var img = new Image();
-            img.onload = function() {
-                var c = document.createElement('canvas');
-                c.width = img.naturalWidth || img.width;
-                c.height = img.naturalHeight || img.height;
-                var ctx = c.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                resolve(c);
-            };
-            img.onerror = function() { reject(new Error('इमेज फ़ाइल क्षतिग्रस्त है।')); };
-            img.src = dataUrl;
-        });
-    }
-
-    function applyExtractedText(extractedText) {
-        var uniBox = document.getElementById('unicodeField');
-        if (uniBox) {
-            uniBox.value = fixOcrHindiText(extractedText.trim());
-            if (typeof window.autoReverseConvert === 'function') {
-                window.autoReverseConvert();
-            } else {
-                uniBox.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        }
-    }
-
-    async function processOcrFileWithProgress(file) {
-        if (!file) return;
-        openOcrModal(file.size, '📂 फ़ाइल की जाँच और अपलोड शुरू...', 'फ़ाइल: ' + file.name);
-
-        if (file.size === 0) return failOcrModal('चयनित फ़ाइल बिल्कुल खाली (0 KB) है।');
-        if (file.size > 35 * 1024 * 1024) return failOcrModal('फ़ाइल साइज बहुत बड़ा है (' + formatFileSize(file.size) + ')।');
-
-        var ext = (file.name.split('.').pop() || '').toLowerCase();
-        var isImage = file.type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'jfif'].indexOf(ext) !== -1;
-        var isPdf = file.type === 'application/pdf' || ext === 'pdf';
-        var isTxt = file.type === 'text/plain' || ext === 'txt';
-
-        if (!isImage && !isPdf && !isTxt) return failOcrModal('अमान्य फ़ाइल फ़ॉर्मेट (.' + ext + ')! कृपया फोटो, PDF या .TXT फ़ाइल चुनें।');
-
-        try {
-            var fileData = await new Promise(function(resolve, reject) {
-                var reader = new FileReader();
-                reader.onprogress = function(evt) {
-                    if (evt.lengthComputable && evt.total > 0) {
-                        var pct = Math.round((evt.loaded / evt.total) * 30);
-                        setOcrProgress(pct, '📤 फ़ाइल अपलोड हो रही है...', formatFileSize(evt.loaded) + ' / ' + formatFileSize(evt.total));
-                    }
-                };
-                reader.onload = function(e) {
-                    setOcrProgress(30, '✅ फ़ाइल लोड हुई!', 'अक्षरों को साफ और व्यवस्थित किया जा रहा है...');
-                    resolve(e.target.result);
-                };
-                reader.onerror = function() { reject(new Error('फ़ाइल पढ़ने में त्रुटि।')); };
-
-                if (isTxt) reader.readAsText(file);
-                else if (isPdf) reader.readAsArrayBuffer(file);
-                else reader.readAsDataURL(file);
-            });
-
-            if (isTxt) {
-                if (!fileData.trim()) return failOcrModal('यह टेक्स्ट फ़ाइल खाली है।');
-                setOcrProgress(100, '✅ टेक्स्ट लोड पूर्ण!', 'कन्वर्ट कर दिया गया है।');
-                applyExtractedText(fileData);
-                setTimeout(window.closeOcrModal, 900);
-                return;
-            }
-
-            if (!navigator.onLine && typeof Tesseract === 'undefined') {
-                return failOcrModal('इंटरनेट कनेक्शन बंद है!');
-            }
-
-            if (isPdf) {
-                setOcrProgress(35, '📄 PDF रीडर लोड हो रहा है...', 'कृपया प्रतीक्षा करें...');
-                await loadScriptIfMissing(function() { return typeof window.pdfjsLib !== 'undefined'; }, 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-                var pdfDoc = await window.pdfjsLib.getDocument({ data: fileData }).promise;
-                await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
-
-                var totalPages = pdfDoc.numPages;
-                var fullPdfText = '';
-
-                for (var p = 1; p <= totalPages; p++) {
-                    var pageStartPct = 38 + Math.round(((p - 1) / totalPages) * 58);
-                    setOcrProgress(pageStartPct, '📄 PDF पेज ' + p + '/' + totalPages + ' स्कैन हो रहा है...', 'शब्द लाइन-वाइज और शुद्ध किए जा रहे हैं...');
-
-                    var page = await pdfDoc.getPage(p);
-                    var viewport = page.getViewport({ scale: 2.5 });
-                    var rawCanvas = document.createElement('canvas');
-                    var ctx = rawCanvas.getContext('2d');
-                    rawCanvas.width = viewport.width;
-                    rawCanvas.height = viewport.height;
-                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-                    var sharpPdfCanvas = enhanceBlurryCanvas(rawCanvas);
-                    var res = await window.Tesseract.recognize(sharpPdfCanvas, 'hin+eng');
-                    var pageText = processLineWiseOcrResult(res);
-
-                    if (!pageText || pageText.length < 5) {
-                        var fallbackRes = await window.Tesseract.recognize(rawCanvas, 'hin+eng');
-                        var fbText = processLineWiseOcrResult(fallbackRes);
-                        if (fbText.length > pageText.length) pageText = fbText;
-                    }
-
-                    if (pageText) fullPdfText += pageText + '\n\n';
-                }
-
-                if (!fullPdfText.trim()) return failOcrModal('PDF में कोई टेक्स्ट नहीं मिला!');
-                setOcrProgress(100, '✅ PDF स्कैनिंग पूर्ण!', 'टेक्स्ट बॉक्स में भर दिया गया है।');
-                applyExtractedText(fullPdfText);
-                setTimeout(window.closeOcrModal, 1100);
-                return;
-            }
-
-            setOcrProgress(36, '✨ इमेज HD Sharp की जा रही है...', 'कंट्रास्ट सुधारा जा रहा है...');
-            var origCanvas = await imageUrlToCanvas(fileData);
-            var enhancedCanvas = enhanceBlurryCanvas(origCanvas);
-
-            setOcrProgress(44, '⚙️ OCR इंजन लोड हो रहा है...', '...');
-            await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
-
-            var result = await window.Tesseract.recognize(enhancedCanvas, 'hin+eng', {
-                logger: function(m) {
-                    if (m.status === 'recognizing text') {
-                        var scanPct = 64 + Math.round((m.progress || 0) * 34);
-                        setOcrProgress(scanPct, '🔍 लाइन-वाइज शब्द स्कैन हो रहे हैं...', Math.round((m.progress || 0) * 100) + '%');
-                    }
-                }
-            });
-
-            var finalText = processLineWiseOcrResult(result);
-            if (finalText.length < 8) {
-                var backupRes = await window.Tesseract.recognize(origCanvas, 'hin+eng');
-                var backupText = processLineWiseOcrResult(backupRes);
-                if (backupText.length > finalText.length) finalText = backupText;
-            }
-
-            if (!finalText) return failOcrModal('इमेज में कोई अक्षर नहीं मिला!');
-            setOcrProgress(100, '✅ स्कैनिंग शत-प्रतिशत पूर्ण!', 'टेक्स्ट कन्वर्ट हो गया है।');
-            applyExtractedText(finalText);
-            setTimeout(window.closeOcrModal, 1100);
-
-        } catch (err) {
-            failOcrModal(err.message || 'त्रुटि आई। कृपया पुनः प्रयास करें।');
-        }
-    }
-
-    function interceptFileEvent(e) {
-        var t = e.target;
-        if (t && t.tagName === 'INPUT' && t.type === 'file') {
-            var acceptVal = t.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                t.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
-            if (t.files && t.files.length > 0) {
-                e.stopImmediatePropagation();
-                e.preventDefault();
-                var selectedFile = t.files[0];
-                t.value = '';
-                processOcrFileWithProgress(selectedFile);
-            }
-        }
-    }
-
-    document.addEventListener('change', interceptFileEvent, true);
-    var origInputClick = HTMLInputElement.prototype.click;
-    HTMLInputElement.prototype.click = function() {
-        if (this.type === 'file') {
-            var acceptVal = this.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                this.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
-        }
-        return origInputClick.apply(this, arguments);
-    };
-
-    function fixFileInputs() {
-        var fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(function(inp) {
-            var acceptVal = inp.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                inp.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
-        });
-    }
-    document.addEventListener('DOMContentLoaded', fixFileInputs);
-    window.addEventListener('click', fixFileInputs);
-    setInterval(fixFileInputs, 1000);
-})();
-</script>
-<!-- ================= UNIVERSAL SMART OCR CLEANER ENGINE ================= -->
-<style>
-    .ocr-modal-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(11, 37, 69, 0.75);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
-    }
-
-    .ocr-modal-box {
-        background: #ffffff;
-        width: 94%;
-        max-width: 460px;
-        border-radius: 14px;
-        padding: 24px 20px;
-        text-align: center;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-        border-top: 5px solid #003366;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-        color: #1e293b;
-    }
-
-    .ocr-spinner-wrap {
-        position: relative;
-        width: 88px;
-        height: 88px;
-        margin: 0 auto 14px auto;
-    }
-
-    .ocr-spinner {
-        width: 88px;
-        height: 88px;
-        border: 6px solid #e2e8f0;
-        border-top: 6px solid #FF7722;
-        border-right: 6px solid #003366;
-        border-radius: 50%;
-        animation: ocrWheelSpin 0.9s linear infinite;
-    }
-
-    .ocr-percent-center {
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 1.08rem;
-        font-weight: 800;
-        color: #003366;
-    }
-
-    @keyframes ocrWheelSpin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .ocr-status-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #0B2545;
-        margin-bottom: 5px;
-    }
-
-    .ocr-status-sub {
-        font-size: 0.86rem;
-        color: #64748b;
-        margin-bottom: 12px;
-    }
-
-    .ocr-enhance-badge {
-        display: inline-block;
-        background: #eff6ff;
-        color: #1d4ed8;
-        border: 1px solid #bfdbfe;
-        font-size: 0.76rem;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 20px;
-        margin-bottom: 12px;
-    }
-
-    .ocr-progress-track {
-        width: 100%;
-        height: 10px;
-        background: #e2e8f0;
-        border-radius: 20px;
-        overflow: hidden;
-        margin-bottom: 14px;
-    }
-
-    .ocr-progress-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #003366, #FF7722);
-        transition: width 0.2s ease;
-    }
-
-    .ocr-size-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 10px 8px;
-        margin-bottom: 10px;
-    }
-
-    .ocr-size-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .ocr-size-label {
-        font-size: 0.72rem;
-        color: #64748b;
-        font-weight: 600;
-        margin-bottom: 3px;
-    }
-
-    .ocr-size-val {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .ocr-size-val.done-val { color: #16a34a; }
-    .ocr-size-val.rem-val { color: #ea580c; }
-
-    .ocr-error-box {
-        display: none;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        border-left: 4px solid #dc2626;
-        color: #991b1b;
-        padding: 12px 14px;
-        border-radius: 8px;
-        font-size: 0.86rem;
-        text-align: left;
-        margin-top: 12px;
-        line-height: 1.5;
-    }
-
-    .ocr-close-btn {
-        display: none;
-        margin-top: 14px;
-        background: #003366;
-        color: #ffffff;
-        border: none;
-        padding: 9px 24px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-    }
-
-    .ocr-close-btn:hover {
-        background: #FF7722;
-    }
-</style>
-
-<div id="ocrProgressModal" class="ocr-modal-overlay">
-    <div class="ocr-modal-box">
-        <div class="ocr-spinner-wrap">
-            <div class="ocr-spinner" id="ocrSpinnerWheel"></div>
-            <div class="ocr-percent-center" id="ocrPercentText">0%</div>
-        </div>
-
-        <div class="ocr-status-title" id="ocrStatusTitle">फ़ाइल अपलोड हो रही है...</div>
-        <div class="ocr-status-sub" id="ocrStatusSub">कृपया प्रतीक्षा करें, पेज को बंद न करें।</div>
-        <div class="ocr-enhance-badge" id="ocrEnhanceBadge">✨ यूनिवर्सल स्मार्ट OCR क्लीनर सक्रिय</div>
-
-        <div class="ocr-progress-track">
-            <div class="ocr-progress-fill" id="ocrProgressFill"></div>
-        </div>
-
-        <div class="ocr-size-grid">
-            <div class="ocr-size-item">
-                <span class="ocr-size-label">कुल साइज (Total)</span>
-                <span class="ocr-size-val" id="ocrTotalSize">0 KB</span>
-            </div>
-            <div class="ocr-size-item">
-                <span class="ocr-size-label">पूरा हुआ (Done)</span>
-                <span class="ocr-size-val done-val" id="ocrDoneSize">0 KB</span>
-            </div>
-            <div class="ocr-size-item">
-                <span class="ocr-size-label">बाकी है (Left)</span>
-                <span class="ocr-size-val rem-val" id="ocrRemSize">0 KB</span>
-            </div>
-        </div>
-
-        <div class="ocr-error-box" id="ocrErrorBox"></div>
-        <button class="ocr-close-btn" id="ocrCloseBtn" onclick="closeOcrModal()">ठीक है (Close)</button>
-    </div>
-</div>
-
-<script>
-(function() {
-    var currentFileTotalBytes = 0;
-
-    function formatFileSize(bytes) {
-        if (!bytes || bytes <= 0) return '0.00 KB';
-        var mb = bytes / (1024 * 1024);
-        if (mb >= 1) return mb.toFixed(2) + ' MB';
-        return (bytes / 1024).toFixed(2) + ' KB';
-    }
-
-    function updateByteMetrics(pct) {
-        var cleanPct = Math.min(100, Math.max(0, pct));
-        var doneBytes = (currentFileTotalBytes * cleanPct) / 100;
-        var remBytes = Math.max(0, currentFileTotalBytes - doneBytes);
-        document.getElementById('ocrTotalSize').innerText = formatFileSize(currentFileTotalBytes);
-        document.getElementById('ocrDoneSize').innerText = formatFileSize(doneBytes);
-        document.getElementById('ocrRemSize').innerText = formatFileSize(remBytes);
-    }
-
-    function openOcrModal(fileSize, title, sub) {
-        currentFileTotalBytes = fileSize || 0;
-        document.getElementById('ocrProgressModal').style.display = 'flex';
-        var wheel = document.getElementById('ocrSpinnerWheel');
-        wheel.style.animationPlayState = 'running';
-        wheel.style.borderTopColor = '#FF7722';
-        document.getElementById('ocrErrorBox').style.display = 'none';
-        document.getElementById('ocrCloseBtn').style.display = 'none';
-        document.getElementById('ocrEnhanceBadge').style.display = 'inline-block';
-        setOcrProgress(0, title || '📂 फ़ाइल अपलोड हो रही है...', sub || 'कृपया प्रतीक्षा करें...');
-    }
-
-    function setOcrProgress(pct, title, sub) {
-        var cleanPct = Math.min(100, Math.max(0, Math.round(pct)));
-        document.getElementById('ocrPercentText').innerText = cleanPct + '%';
-        document.getElementById('ocrProgressFill').style.width = cleanPct + '%';
-        updateByteMetrics(cleanPct);
-        if (title) document.getElementById('ocrStatusTitle').innerText = title;
-        if (sub) document.getElementById('ocrStatusSub').innerText = sub;
-    }
-
-    function failOcrModal(reason) {
-        var wheel = document.getElementById('ocrSpinnerWheel');
-        wheel.style.animationPlayState = 'paused';
-        wheel.style.borderTopColor = '#dc2626';
-        document.getElementById('ocrStatusTitle').innerText = '❌ फ़ाइल प्रोसेस नहीं हो सकी!';
-        document.getElementById('ocrStatusSub').innerText = 'नीचे दिए गए कारण की जाँच करें:';
-        document.getElementById('ocrEnhanceBadge').style.display = 'none';
-        var errBox = document.getElementById('ocrErrorBox');
-        errBox.style.display = 'block';
-        errBox.innerHTML = '<strong>कारण (Reason):</strong> ' + reason;
-        document.getElementById('ocrCloseBtn').style.display = 'inline-block';
-    }
-
-    window.closeOcrModal = function() {
-        document.getElementById('ocrProgressModal').style.display = 'none';
-    };
-
-    function loadScriptIfMissing(srcCheck, url) {
-        return new Promise(function(resolve, reject) {
-            if (srcCheck()) return resolve();
-            var s = document.createElement('script');
-            s.src = url;
-            s.onload = resolve;
-            s.onerror = function() { reject(new Error('इंटरनेट धीमा होने के कारण OCR इंजन लोड नहीं हो सका।')); };
-            document.head.appendChild(s);
-        });
-    }
-
-    // ⭐ यूनिवर्सल स्मार्ट टेक्स्ट क्लीनर (किसी भी हिंदी/अंग्रेज़ी शब्द और मात्रा को व्यवस्थित करने के लिए)
-    function universalSmartCleaner(text) {
-        if (!text) return '';
-        var t = text;
-
-        // 1. हलंकार (्) और मात्राओं के बीच के फालतू गैप हटाना ताकि शब्द टूटे नहीं
-        t = t.replace(/([क-ह])्\s+([क-ह])/g, '$1्$2');
-
-        // 2. छोटी 'ि' की मात्रा का सही स्थान पर समायोजन
         t = t.replace(/(\S)ि\s+([क-ह])/g, 'ि$1$2');
 
-        // 3. लाइनों और शब्दों के बीच के अत्यधिक खाली स्पेस को एक समान करना
         var lines = t.split('\n');
         var cleanedLines = lines.map(function(line) {
             return line.replace(/\s+/g, ' ').trim();
         });
-        
         return cleanedLines.filter(function(l) { return l.length > 0; }).join('\n');
     }
 
-    // Tesseract के शब्दों को सटीक लाइन-वाइज (ऊपर से नीचे) क्रम में जमाने का इंजन
     function sortTesseractWordsLineWise(builder) {
         if (!builder || !builder.blocks) return '';
         var allLines = [];
@@ -3191,6 +1836,18 @@ window.svcPro = (function() {
         }
     }
 
+    function runOfflineTesseract(canvas, onProg) {
+        var baseLibs = new URL('libs/', window.location.href).href;
+        return window.Tesseract.recognize(canvas, 'hin+eng', {
+            workerPath: baseLibs + 'worker.min.js',
+            corePath: baseLibs,
+            langPath: baseLibs,
+            logger: function(m) {
+                if (typeof onProg === 'function') onProg(m);
+            }
+        });
+    }
+
     async function processOcrFileWithProgress(file) {
         if (!file) return;
         openOcrModal(file.size, '📂 फ़ाइल की जाँच और अपलोड शुरू...', 'फ़ाइल: ' + file.name);
@@ -3202,8 +1859,11 @@ window.svcPro = (function() {
         var isImage = file.type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'jfif'].indexOf(ext) !== -1;
         var isPdf = file.type === 'application/pdf' || ext === 'pdf';
         var isTxt = file.type === 'text/plain' || ext === 'txt';
+        var isDocx = ['docx', 'doc'].indexOf(ext) !== -1 || file.type.indexOf('word') !== -1;
 
-        if (!isImage && !isPdf && !isTxt) return failOcrModal('अमान्य फ़ाइल फ़ॉर्मेट (.' + ext + ')! कृपया फोटो, PDF या .TXT फ़ाइल चुनें।');
+        if (!isImage && !isPdf && !isTxt && !isDocx) {
+            return failOcrModal('अमान्य फ़ाइल फ़ॉर्मेट (.' + ext + ')! कृपया Word (.docx), PDF, फोटो या .TXT फ़ाइल चुनें।');
+        }
 
         try {
             var fileData = await new Promise(function(resolve, reject) {
@@ -3220,8 +1880,8 @@ window.svcPro = (function() {
                 };
                 reader.onerror = function() { reject(new Error('फ़ाइल पढ़ने में त्रुटि।')); };
 
-                if (isTxt) reader.readAsText(file);
-                else if (isPdf) reader.readAsArrayBuffer(file);
+                if (isTxt) reader.readAsText(file, 'UTF-8');
+                else if (isPdf || isDocx) reader.readAsArrayBuffer(file);
                 else reader.readAsDataURL(file);
             });
 
@@ -3233,17 +1893,25 @@ window.svcPro = (function() {
                 return;
             }
 
-            if (!navigator.onLine && typeof Tesseract === 'undefined') {
-                return failOcrModal('इंटरनेट कनेक्शन बंद है!');
+            if (isDocx) {
+                setOcrProgress(55, '📄 Word (.docx) फ़ाइल पढ़ी जा रही है...', 'ऑफ़लाइन इंजन सक्रिय...');
+                await loadScriptIfMissing(function() { return typeof window.mammoth !== 'undefined'; }, 'libs/mammoth.browser.min.js');
+                var docRes = await window.mammoth.extractRawText({ arrayBuffer: fileData });
+                var docText = (docRes && docRes.value) ? docRes.value.trim() : '';
+                if (!docText) return failOcrModal('Word फ़ाइल में कोई टेक्स्ट नहीं मिला या यह पुरानी बाइनरी .doc फ़ाइल है (कृपया .docx चुनें)।');
+                setOcrProgress(100, '✅ Word फ़ाइल लोड पूर्ण!', 'टेक्स्ट कन्वर्ट कर दिया गया है।');
+                applyExtractedText(docText);
+                setTimeout(window.closeOcrModal, 900);
+                return;
             }
 
             if (isPdf) {
-                setOcrProgress(35, '📄 PDF रीडर लोड हो रहा है...', 'कृपया प्रतीक्षा करें...');
-                await loadScriptIfMissing(function() { return typeof window.pdfjsLib !== 'undefined'; }, 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                setOcrProgress(35, '📄 ऑफ़लाइन PDF रीडर लोड हो रहा है...', 'कृपया प्रतीक्षा करें...');
+                await loadScriptIfMissing(function() { return typeof window.pdfjsLib !== 'undefined'; }, 'libs/pdf.min.js');
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'libs/pdf.worker.min.js';
 
                 var pdfDoc = await window.pdfjsLib.getDocument({ data: fileData }).promise;
-                await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+                await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'libs/tesseract.min.js');
 
                 var totalPages = pdfDoc.numPages;
                 var fullPdfText = '';
@@ -3261,11 +1929,11 @@ window.svcPro = (function() {
                     await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
                     var sharpPdfCanvas = enhanceBlurryCanvas(rawCanvas);
-                    var res = await window.Tesseract.recognize(sharpPdfCanvas, 'hin+eng');
+                    var res = await runOfflineTesseract(sharpPdfCanvas);
                     var pageText = processLineWiseOcrResult(res);
 
                     if (!pageText || pageText.length < 5) {
-                        var fallbackRes = await window.Tesseract.recognize(rawCanvas, 'hin+eng');
+                        var fallbackRes = await runOfflineTesseract(rawCanvas);
                         var fbText = processLineWiseOcrResult(fallbackRes);
                         if (fbText.length > pageText.length) pageText = fbText;
                     }
@@ -3284,21 +1952,19 @@ window.svcPro = (function() {
             var origCanvas = await imageUrlToCanvas(fileData);
             var enhancedCanvas = enhanceBlurryCanvas(origCanvas);
 
-            setOcrProgress(44, '⚙️ OCR इंजन लोड हो रहा है...', '...');
-            await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+            setOcrProgress(44, '⚙️ ऑफ़लाइन OCR इंजन लोड हो रहा है...', '...');
+            await loadScriptIfMissing(function() { return typeof window.Tesseract !== 'undefined'; }, 'libs/tesseract.min.js');
 
-            var result = await window.Tesseract.recognize(enhancedCanvas, 'hin+eng', {
-                logger: function(m) {
-                    if (m.status === 'recognizing text') {
-                        var scanPct = 64 + Math.round((m.progress || 0) * 34);
-                        setOcrProgress(scanPct, '🔍 लाइन-वाइज शब्द स्कैन हो रहे हैं...', Math.round((m.progress || 0) * 100) + '%');
-                    }
+            var result = await runOfflineTesseract(enhancedCanvas, function(m) {
+                if (m.status === 'recognizing text') {
+                    var scanPct = 64 + Math.round((m.progress || 0) * 34);
+                    setOcrProgress(scanPct, '🔍 लाइन-वाइज शब्द स्कैन हो रहे हैं...', Math.round((m.progress || 0) * 100) + '%');
                 }
             });
 
             var finalText = processLineWiseOcrResult(result);
             if (finalText.length < 8) {
-                var backupRes = await window.Tesseract.recognize(origCanvas, 'hin+eng');
+                var backupRes = await runOfflineTesseract(origCanvas);
                 var backupText = processLineWiseOcrResult(backupRes);
                 if (backupText.length > finalText.length) finalText = backupText;
             }
@@ -3316,10 +1982,10 @@ window.svcPro = (function() {
     function interceptFileEvent(e) {
         var t = e.target;
         if (t && t.tagName === 'INPUT' && t.type === 'file') {
-            var acceptVal = t.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                t.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
+            // Ignore .TTF / .OTF font loader input so custom font loading works normally
+            if (t.id === 'fontLoaderInput') return;
+
+            t.setAttribute('accept', '.txt,.docx,.doc,.pdf,image/*,application/pdf,text/plain');
             if (t.files && t.files.length > 0) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
@@ -3333,31 +1999,14 @@ window.svcPro = (function() {
     document.addEventListener('change', interceptFileEvent, true);
     var origInputClick = HTMLInputElement.prototype.click;
     HTMLInputElement.prototype.click = function() {
-        if (this.type === 'file') {
-            var acceptVal = this.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                this.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
+        if (this.type === 'file' && this.id !== 'fontLoaderInput') {
+            this.setAttribute('accept', '.txt,.docx,.doc,.pdf,image/*,application/pdf,text/plain');
         }
         return origInputClick.apply(this, arguments);
     };
-
-    function fixFileInputs() {
-        var fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(function(inp) {
-            var acceptVal = inp.getAttribute('accept') || '';
-            if (!acceptVal || acceptVal.indexOf('pdf') === -1) {
-                inp.setAttribute('accept', 'image/*,.pdf,.txt,application/pdf,text/plain');
-            }
-        });
-    }
-    document.addEventListener('DOMContentLoaded', fixFileInputs);
-    window.addEventListener('click', fixFileInputs);
-    setInterval(fixFileInputs, 1000);
 })();
 </script>
 <!-- ================================================================================= -->
-    <!-- ================= 100% GUARANTEED DESKTOP HIDDEN FIX ================= -->
 <style>
     /* यह कोड कंप्यूटर और लैपटॉप (769px से बड़ी स्क्रीन) पर इस बॉक्स और बटन को कभी प्रकट नहीं होने देगा */
     @media screen and (min-width: 769px) {
@@ -3593,5 +2242,360 @@ window.svcPro = (function() {
     window.onclick = function(e) { if(e.target == document.getElementById('plugAndPlayModal')) { closePlugAndPlayTools(); } }
 </script>
 <!-- ================================================================= -->
+<!-- ================= SVC PURE HINDI READ-ALOUD (TTS PROOFREADER) ================= -->
+<style>
+.svc-tts-speaking {
+    background: #fef2f2 !important;
+    border-color: #ef4444 !important;
+    color: #dc2626 !important;
+    animation: pulse-red 1.2s infinite;
+}
+</style>
+<script id="svc-hindi-tts">
+(function() {
+    var synth = window.speechSynthesis;
+    var isSpeaking = false;
+    var chunks = [];
+    var idx = 0;
+    var hiVoice = null;
+
+    var TXT_LISTEN = "\uD83D\uDD0A \u0938\u0941\u0928\u0947\u0902";
+    var TXT_LISTEN_READ = "\uD83D\uDD0A \u0938\u0941\u0928\u0947\u0902 (Read)";
+    var TXT_STOP = "\u23F9\uFE0F \u0930\u094B\u0915\u0947\u0902";
+
+    function pickHindiVoice() {
+        if (!synth) return null;
+        var vs = synth.getVoices() || [];
+        return vs.find(function(v) { return /hi(-|_)IN/i.test(v.lang) && /Swara|Google|Kalpana|Natural/i.test(v.name); }) ||
+               vs.find(function(v) { return /hi(-|_)IN/i.test(v.lang); }) ||
+               vs.find(function(v) { return /^hi/i.test(v.lang) || /Hindi|\u0939\u093F\u0928\u094D\u0926\u0940/i.test(v.name); }) || null;
+    }
+
+    if (synth && typeof synth.onvoiceschanged !== "undefined") {
+        synth.onvoiceschanged = function() { hiVoice = pickHindiVoice(); };
+    }
+
+    function cleanForHindiSpeech(t) {
+        if (!t) return "";
+        var s = t;
+        s = s.replace(/(^|[\s(])\u0930[\u0941\u0942]\.\s*(\d[\d,]*)\s*\/-/g, "$1\u0930\u0941\u092A\u092F\u0947 $2 \u092E\u093E\u0924\u094D\u0930 ");
+        s = s.replace(/(\d[\d,]*)\s*\/-/g, "$1 \u0930\u0941\u092A\u092F\u0947 \u092E\u093E\u0924\u094D\u0930 ");
+        s = s.replace(/\/-/g, " \u092E\u093E\u0924\u094D\u0930 ");
+        s = s.replace(/\u20B9\s*/g, "\u0930\u0941\u092A\u092F\u0947 ");
+        s = s.replace(/(^|[\s(])\u0930[\u0941\u0942]\.\s*/g, "$1\u0930\u0941\u092A\u092F\u0947 ");
+        s = s.replace(/(^|[\s(])\u0915\u094D\u0930\.\s*/g, "$1\u0915\u094D\u0930\u092E\u093E\u0902\u0915 ");
+        s = s.replace(/(^|[\s(])\u0926\u093F\.\s*/g, "$1\u0926\u093F\u0928\u093E\u0902\u0915 ");
+        s = s.replace(/(^|[\s(])\u092E\u094B\.\s*/g, "$1\u092E\u094B\u092C\u093E\u0907\u0932 ");
+        s = s.replace(/(^|[\s(])\u092A\u0902\u091C\u0940\.\s*/g, "$1\u092A\u0902\u091C\u0940\u092F\u0928 ");
+        s = s.replace(/(^|[\s(])\u0928\u093F\.\s*/g, "$1\u0928\u093F\u0935\u093E\u0938\u0940 ");
+        s = s.replace(/[\u2014\u2013]/g, ", ");
+        s = s.replace(/\.{2,}/g, " ");
+        s = s.replace(/[ \t]+/g, " ").trim();
+        return s;
+    }
+
+    function splitHindiChunks(text) {
+        var rawParts = text.split(/(?<=[\u0964\u0965!?\n])/);
+        var out = [];
+        rawParts.forEach(function(p) {
+            var s = p.trim();
+            if (!s) return;
+            while (s.length > 220) {
+                var cut = s.lastIndexOf(",", 220);
+                if (cut < 80) cut = s.lastIndexOf(" ", 220);
+                if (cut < 1) cut = 220;
+                out.push(s.slice(0, cut + 1).trim());
+                s = s.slice(cut + 1).trim();
+            }
+            if (s) out.push(s);
+        });
+        return out.length ? out : [text];
+    }
+
+    function setBtnState(active) {
+        ["ttsUnicodeBtn", "ttsTrayBtn"].forEach(function(id) {
+            var b = document.getElementById(id);
+            if (!b) return;
+            if (active) {
+                b.classList.add("svc-tts-speaking");
+                b.textContent = TXT_STOP;
+            } else {
+                b.classList.remove("svc-tts-speaking");
+                b.textContent = (id === "ttsUnicodeBtn") ? TXT_LISTEN_READ : TXT_LISTEN;
+            }
+        });
+    }
+
+    function stopReading(silent) {
+        isSpeaking = false;
+        chunks = [];
+        idx = 0;
+        window._svcActiveUtterance = null;
+        if (synth) { try { synth.cancel(); } catch (e) {} }
+        setBtnState(false);
+        if (!silent && window.svcPro && window.svcPro.toast) {
+            window.svcPro.toast("\u23F9\uFE0F \u092A\u0922\u093C\u0928\u093E \u0930\u094B\u0915 \u0926\u093F\u092F\u093E \u0917\u092F\u093E", "info");
+        }
+    }
+
+    function speakNext() {
+        if (!isSpeaking || idx >= chunks.length) {
+            var finished = isSpeaking;
+            stopReading(true);
+            if (finished && window.svcPro && window.svcPro.toast) {
+                window.svcPro.toast("\u2713 \u092A\u094D\u0930\u0942\u092B\u0930\u0940\u0921\u093F\u0902\u0917 \u0935\u093E\u091A\u0928 \u092A\u0942\u0930\u094D\u0923 \u0939\u0941\u0906!", "success");
+            }
+            return;
+        }
+        var part = chunks[idx++];
+        if (!part || !part.trim()) { speakNext(); return; }
+        var u = new SpeechSynthesisUtterance(part);
+        window._svcActiveUtterance = u;
+        if (!hiVoice) hiVoice = pickHindiVoice();
+        if (hiVoice) u.voice = hiVoice;
+        u.lang = "hi-IN";
+        u.rate = 0.92;
+        u.pitch = 1.0;
+        u.onend = function() { if (isSpeaking) speakNext(); };
+        u.onerror = function(ev) {
+            if (ev && (ev.error === "canceled" || ev.error === "interrupted")) return;
+            if (isSpeaking) speakNext();
+        };
+        if (synth.paused) { try { synth.resume(); } catch (e) {} }
+        synth.speak(u);
+    }
+
+    window.toggleHindiReadAloud = function() {
+        if (!synth) {
+            alert("Browser does not support Text-to-Speech.");
+            return;
+        }
+        if (isSpeaking) {
+            stopReading(false);
+            return;
+        }
+        var uBox = document.getElementById("unicodeField");
+        var dBox = document.getElementById("devlysField");
+        if (dBox && dBox.value.trim() && (!uBox || !uBox.value.trim()) && typeof window.runDevlysToUnicode === "function") {
+            window.runDevlysToUnicode();
+        }
+        var raw = "";
+        if (uBox && uBox.selectionStart !== uBox.selectionEnd) {
+            raw = uBox.value.substring(uBox.selectionStart, uBox.selectionEnd);
+        } else if (dBox && dBox.selectionStart !== dBox.selectionEnd && typeof window.processDevlysToUnicode === "function") {
+            raw = window.processDevlysToUnicode(dBox.value.substring(dBox.selectionStart, dBox.selectionEnd));
+        } else if (uBox && uBox.value.trim()) {
+            raw = uBox.value;
+        }
+        if (!raw.trim()) {
+            var msgEmpty = "\u0938\u0941\u0928\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u092A\u0939\u0932\u0947 \u091F\u0947\u0915\u094D\u0938\u094D\u091F \u091F\u093E\u0907\u092A \u092F\u093E \u0915\u0928\u094D\u0935\u0930\u094D\u091F \u0915\u0930\u0947\u0902!";
+            if (window.svcPro && window.svcPro.toast) window.svcPro.toast(msgEmpty, "warning");
+            else alert(msgEmpty);
+            return;
+        }
+        var cleaned = cleanForHindiSpeech(raw);
+        chunks = splitHindiChunks(cleaned);
+        idx = 0;
+        isSpeaking = true;
+        try { synth.cancel(); } catch (e) {}
+        setBtnState(true);
+        if (window.svcPro && window.svcPro.toast) {
+            window.svcPro.toast("\uD83D\uDD0A \u0936\u0941\u0926\u094D\u0927 \u0939\u093F\u0902\u0926\u0940 \u0935\u093E\u091A\u0928 \u0936\u0941\u0930\u0942... (\u0930\u094B\u0915\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u092B\u093F\u0930 \u0915\u094D\u0932\u093F\u0915 \u0915\u0930\u0947\u0902)", "info");
+        }
+        setTimeout(function() { if (isSpeaking) speakNext(); }, 80);
+    };
+
+    function injectButtons() {
+        var tip = "\u0932\u093F\u0916\u0947 \u0917\u090F \u0939\u093F\u0902\u0926\u0940 \u092E\u0948\u091F\u0930 \u0915\u094B \u0938\u093E\u092B\u093C \u0906\u0935\u093E\u091C\u093C \u092E\u0947\u0902 \u0938\u0941\u0928\u0947\u0902 (Proofreading)";
+        var micBtn = document.getElementById("micUnicode");
+        if (micBtn && !document.getElementById("ttsUnicodeBtn")) {
+            var b1 = document.createElement("button");
+            b1.type = "button";
+            b1.id = "ttsUnicodeBtn";
+            b1.className = "btn-tool";
+            b1.title = tip;
+            b1.textContent = TXT_LISTEN_READ;
+            b1.onclick = window.toggleHindiReadAloud;
+            micBtn.parentNode.insertBefore(b1, micBtn.nextSibling);
+        }
+        var tray = document.getElementById("svcHeaderTray");
+        if (tray && !document.getElementById("ttsTrayBtn")) {
+            var groups = tray.querySelectorAll(".svc-tray-group");
+            var targetGrp = groups.length > 1 ? groups[1] : groups[0];
+            if (targetGrp) {
+                var b2 = document.createElement("button");
+                b2.type = "button";
+                b2.id = "ttsTrayBtn";
+                b2.className = "svc-pbtn";
+                b2.title = tip;
+                b2.textContent = TXT_LISTEN;
+                b2.onclick = window.toggleHindiReadAloud;
+                targetGrp.appendChild(b2);
+            }
+        }
+    }
+
+    window.addEventListener("beforeunload", function() {
+        if (synth) { try { synth.cancel(); } catch (e) {} }
+    });
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", injectButtons);
+    } else {
+        injectButtons();
+    }
+})();
+</script>
+<!-- ================= SVC ONE-TIME VOICE PRIVACY CONSENT POPUP ================= -->
+<style>
+.svc-voice-modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 37, 69, 0.72);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000000;
+    padding: 16px;
+}
+.svc-voice-modal-card {
+    background: #ffffff;
+    max-width: 460px;
+    width: 100%;
+    border-radius: 12px;
+    border-top: 5px solid #003366;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    padding: 22px 20px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #1e293b;
+}
+.svc-voice-modal-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.svc-voice-modal-body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #FF7722;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+.svc-voice-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.svc-voice-btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.svc-voice-btn-accept {
+    background: linear-gradient(135deg, #0055a5 0%, #003366 100%);
+    color: #ffffff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 51, 102, 0.25);
+}
+.svc-voice-btn-accept:hover {
+    background: #FF7722;
+}
+</style>
+
+<script id="svc-voice-consent-guard">
+(function() {
+    var CONSENT_KEY = "svc_voice_privacy_consent_v1";
+    var pendingBtn = null;
+    var modalEl = null;
+
+    function buildModal() {
+        if (modalEl) return modalEl;
+        modalEl = document.createElement("div");
+        modalEl.className = "svc-voice-modal-bg";
+        modalEl.id = "svcVoiceConsentModal";
+
+        var card = document.createElement("div");
+        card.className = "svc-voice-modal-card";
+
+        var title = document.createElement("div");
+        title.className = "svc-voice-modal-title";
+        title.textContent = "\uD83C\uDF99\uFE0F \u0935\u0949\u0907\u0938 \u091F\u093E\u0907\u092A\u093F\u0902\u0917 \u0917\u094B\u092A\u0928\u0940\u092F\u0924\u093E \u0938\u0942\u091A\u0928\u093E";
+
+        var body = document.createElement("div");
+        body.className = "svc-voice-modal-body";
+        body.textContent = "\u0907\u0938 \u092A\u094B\u0930\u094D\u091F\u0932 \u0915\u0947 \u0938\u092D\u0940 \u092B\u093C\u0949\u0928\u094D\u091F \u0915\u0928\u094D\u0935\u0930\u094D\u091F\u0930, OCR \u0935 PDF \u091F\u0942\u0932\u094D\u0938 100% \u0911\u092B\u093C\u0932\u093E\u0907\u0928 \u0915\u093E\u092E \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964 \u0915\u093F\u0902\u0924\u0941 'Voice Typing' \u0938\u0941\u0935\u093F\u0927\u093E \u0906\u092A\u0915\u0947 \u092C\u094D\u0930\u093E\u0909\u091C\u093C\u0930 \u0915\u0947 \u0907\u0928-\u092C\u093F\u0932\u094D\u091F Speech Recognition \u0907\u0902\u091C\u0928 \u0915\u093E \u0909\u092A\u092F\u094B\u0917 \u0915\u0930\u0924\u0940 \u0939\u0948, \u091C\u094B \u0906\u0935\u093E\u091C\u093C \u0915\u094B \u091F\u0947\u0915\u094D\u0938\u094D\u091F \u092E\u0947\u0902 \u092C\u0926\u0932\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0911\u0921\u093F\u092F\u094B \u0915\u094B \u092C\u094D\u0930\u093E\u0909\u091C\u093C\u0930 \u0938\u0930\u094D\u0935\u0930 \u092A\u0930 \u092D\u0947\u091C \u0938\u0915\u0924\u093E \u0939\u0948\u0964 \u0915\u094D\u092F\u093E \u0906\u092A \u092E\u093E\u0907\u0915\u094D\u0930\u094B\u092B\u093C\u094B\u0928 \u091A\u093E\u0932\u0942 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0938\u0939\u092E\u0924 \u0939\u0948\u0902? (\u092F\u0939 \u0938\u0939\u092E\u0924\u093F \u0915\u0947\u0935\u0932 \u090F\u0915 \u092C\u093E\u0930 \u0926\u0947\u0928\u0940 \u0939\u094B\u0917\u0940)";
+
+        var actions = document.createElement("div");
+        actions.className = "svc-voice-modal-actions";
+
+        var cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "svc-voice-btn-cancel";
+        cancelBtn.textContent = "\u2715 \u0930\u0926\u094D\u0926 \u0915\u0930\u0947\u0902 (Cancel)";
+        cancelBtn.onclick = function() {
+            modalEl.style.display = "none";
+            pendingBtn = null;
+        };
+
+        var acceptBtn = document.createElement("button");
+        acceptBtn.type = "button";
+        acceptBtn.className = "svc-voice-btn-accept";
+        acceptBtn.textContent = "\u2713 \u0938\u0939\u092E\u0924 \u0939\u0942\u0901, \u092E\u093E\u0907\u0915 \u091A\u093E\u0932\u0942 \u0915\u0930\u0947\u0902";
+        acceptBtn.onclick = function() {
+            try { localStorage.setItem(CONSENT_KEY, "accepted"); } catch (e) {}
+            modalEl.style.display = "none";
+            var btnToTrigger = pendingBtn;
+            pendingBtn = null;
+            if (btnToTrigger) {
+                setTimeout(function() { btnToTrigger.click(); }, 50);
+            }
+        };
+
+        actions.appendChild(cancelBtn);
+        actions.appendChild(acceptBtn);
+        card.appendChild(title);
+        card.appendChild(body);
+        card.appendChild(actions);
+        modalEl.appendChild(card);
+        document.body.appendChild(modalEl);
+        return modalEl;
+    }
+
+    document.addEventListener("click", function(e) {
+        var btn = e.target && e.target.closest ? e.target.closest("#micDevlys, #micUnicode, #topNavVoiceBtn") : null;
+        if (!btn) return;
+        var hasConsent = false;
+        try { hasConsent = (localStorage.getItem(CONSENT_KEY) === "accepted"); } catch (err) {}
+        if (!hasConsent) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            pendingBtn = btn;
+            var m = buildModal();
+            m.style.display = "flex";
+        }
+    }, true);
+})();
+</script>
+<script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
 </body>
 </html>
