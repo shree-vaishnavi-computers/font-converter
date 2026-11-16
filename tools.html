@@ -762,7 +762,7 @@ let numberResultText="";
 $("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
 $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
 </script>
-<!-- ================= SVC PRODUCTION AI+ ASSISTANT (STREAMING + FILE READER) + NEURAL TRANSLATOR ================= -->
+<!-- ================= SVC FINAL VERIFIED AI+ SUITE (STREAMING + FILE READER + GOOGLE-LENS TRANSLATOR) ================= -->
 <style>
 .panel#aidraft .card:before{background:linear-gradient(180deg,#155eef,#0ea5e9)}
 .panel#aitranslate .card:before{background:linear-gradient(180deg,#ea580c,#f59e0b)}
@@ -788,11 +788,11 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 .svc-ai-modal-card{background:#fff;max-width:480px;width:100%;border-radius:14px;border-top:5px solid #155eef;box-shadow:0 15px 40px rgba(0,0,0,.35);padding:22px 20px;color:#1e293b}
 </style>
 
-<!-- TAB 7: PRODUCTION LIVE-STREAMING AI+ ASSISTANT & DOCUMENT DRAFTER -->
+<!-- TAB 7: LIVE-STREAMING AI+ ASSISTANT & DOCUMENT DRAFTER -->
 <section class="panel" id="aidraft">
   <div class="card">
     <div class="row" style="justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
-      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge">LIVE STREAMING · PRO SUITE</span></h2>
+      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge">AUTO-LATEST · LIVE STREAMING</span></h2>
       <div class="row" style="gap:6px;flex-wrap:wrap">
         <select id="aiModelSelect" style="padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;border:1px solid #93c5fd;background:#eff6ff;color:#1e3a8a">
           <option value="auto_fast" selected>⚡ Fast AI (Auto-Latest Gemini)</option>
@@ -839,26 +839,27 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   </div>
 </section>
 
-<!-- TAB 8: AI+ OLD/BLURRY PAPER SCANNER & NEURAL ENGLISH->HINDI TRANSLATOR -->
+<!-- TAB 8: GOOGLE-LENS STYLE LAYOUT-PRESERVING SCANNER & TRANSLATOR -->
 <section class="panel" id="aitranslate">
   <div class="card">
-    <h2>AI+ Document Scanner &amp; Neural Hindi Translator <span class="ai-badge">OFFLINE HD OCR + FAST ONLINE AI</span></h2>
-    <p class="hint">पुराने या धुंधले कागज़ (JPG/PNG), PDF या Word (.docx) फ़ाइल चुनें। <b>HD OCR स्कैनिंग आपके ब्राउज़र में ऑफ़लाइन</b> होगी, और उसके बाद तेज़ ऑनलाइन Neural AI इंजन किसी भी जटिल अंग्रेजी पत्र का शुद्ध हिंदी में अनुवाद करेगा।</p>
+    <h2>AI+ Visual &amp; Document Layout Translator <span class="ai-badge">SAME-FORMAT · GOOGLE LENS STYLE</span></h2>
+    <p class="hint">आप जिस फ़ॉर्मेट (<b>Photo JPG/PNG, PDF, या Word .docx</b>) में फ़ाइल अपलोड करेंगे, यह उसके मूल लेआउट, कॉलम और स्थान को सुरक्षित रखते हुए <b>ठीक उसी फ़ॉर्मेट में अनुवादित फ़ाइल</b> तैयार करके देगा।</p>
+
     <div class="grid">
       <div>
-        <label>दस्तावेज़ चुनें (PDF, Image, PNG, Word .docx)</label>
-        <input type="file" id="aiTransFile" accept=".pdf,.docx,.doc,.txt,image/*">
+        <label>दस्तावेज़ चुनें (Image JPG/PNG, PDF, या Word .docx)</label>
+        <input type="file" id="aiTransFile" accept=".pdf,.docx,.doc,image/*">
         <div class="row" style="margin-top:7px">
           <button type="button" class="btn danger" id="aiTransClearBtn">× Clear All</button>
           <span class="small" id="aiTransFileInfo">कोई फ़ाइल चयनित नहीं</span>
         </div>
       </div>
       <div>
-        <label>स्कैन गुणवत्ता सुधार (Offline Old/Blurry Paper)</label>
+        <label>स्कैन गुणवत्ता सुधार (Old / Blurry Paper)</label>
         <select id="aiTransMode">
           <option value="hd_auto" selected>HD Auto-Enhance (पुराने/धुंधले कागज़ हेतु)</option>
-          <option value="high_contrast">Ultra B&amp;W Contrast (अत्यधिक फीकी स्याही हेतु)</option>
-          <option value="normal">Standard Scan (साफ़ प्रिंटेड पेज हेतु)</option>
+          <option value="high_contrast">Ultra B&amp;W Contrast (फीकी स्याही हेतु)</option>
+          <option value="normal">Standard Scan (साफ़ प्रिंटेड फ़ाइल हेतु)</option>
         </select>
       </div>
       <div>
@@ -871,29 +872,40 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       </div>
     </div>
 
-    <div class="row" style="margin-top:12px">
-      <button type="button" class="btn primary" id="aiScanRunBtn">🔍 1. Offline HD Scan (Extract English)</button>
-      <button type="button" class="btn primary" id="aiTranslateRunBtn" style="background:linear-gradient(135deg,#c2410c,#ea580c);border-color:#ea580c">🌐 2. Translate to Pure Hindi (Fast AI)</button>
-      <button type="button" class="btn" id="aiSendToChatBtn" style="background:#eff6ff;border-color:#93c5fd;color:#1e3a8a">🤖 Send to AI+ Assistant</button>
-      <button type="button" class="btn" id="aiTransWordBtn">📘 Download Word (.doc)</button>
-      <button type="button" class="btn" id="aiTransTxtBtn">💾 Download .txt</button>
-      <button type="button" class="btn" id="aiTransPrintBtn">🖨️ Print / Save PDF</button>
-      <button type="button" class="btn" id="aiTransCopyBtn">📄 Copy Hindi</button>
+    <div class="row" style="margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="btn primary" id="aiLayoutTranslateBtn" style="background:linear-gradient(135deg,#c2410c,#ea580c);border-color:#ea580c">🌐 Scan &amp; Translate (Same Format)</button>
+      <button type="button" class="btn primary hidden" id="aiDownloadSameFmtBtn">⬇️ Download Translated File (Same Format)</button>
+      <button type="button" class="btn" id="aiSendToChatBtn" style="background:#eff6ff;border-color:#93c5fd;color:#1e3a8a">🤖 Send Text to AI+ Assistant</button>
+      <button type="button" class="btn" id="aiTransCopyBtn">📄 Copy Hindi Text</button>
       <button type="button" class="btn danger hidden" id="aiRevokeTransBtn">🔒 AI अनुमति हटाएँ</button>
     </div>
 
     <div id="aiTransStatus" class="status" role="status" aria-live="polite"></div>
 
-    <div class="ai-split" style="margin-top:12px">
+    <div id="aiVisualPreviewWrap" class="ai-split hidden" style="margin-top:14px">
       <div>
-        <label>स्कैन किया गया English टेक्स्ट (Offline Sentence-Reflowed):</label>
-        <textarea id="aiEnglishText" class="ai-doc-box" placeholder="फ़ाइल स्कैन करने के बाद यहाँ साफ़ जुड़ा हुआ English टेक्स्ट आएगा (आप सीधे टाइप/पेस्ट भी कर सकते हैं)..."></textarea>
+        <label>मूल दस्तावेज़ (Original Preview):</label>
+        <div id="aiOrigVisualBox" style="border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;padding:10px;max-height:560px;overflow:auto;text-align:center"></div>
       </div>
       <div>
-        <label>अनुवादित शुद्ध हिंदी दस्तावेज़ (Human-Grade Hindi Output):</label>
-        <textarea id="aiHindiText" class="ai-doc-box" placeholder="यहाँ पूरे वाक्यों का शुद्ध हिंदी अनुवाद तैयार होगा..."></textarea>
+        <label>अनुवादित दस्तावेज़ (Same Layout Hindi Output):</label>
+        <div id="aiTransVisualBox" style="border:2px solid #93c5fd;border-radius:10px;background:#ffffff;padding:10px;max-height:560px;overflow:auto;text-align:center"></div>
       </div>
     </div>
+
+    <details style="margin-top:12px">
+      <summary style="cursor:pointer;font-weight:700;color:#1e3a8a">📝 निकाला गया टेक्स्ट देखें / संपादित करें (Extracted &amp; Translated Text)</summary>
+      <div class="ai-split" style="margin-top:8px">
+        <div>
+          <label>मूल English टेक्स्ट:</label>
+          <textarea id="aiEnglishText" class="ai-doc-box" style="min-height:180px"></textarea>
+        </div>
+        <div>
+          <label>अनुवादित हिंदी टेक्स्ट:</label>
+          <textarea id="aiHindiText" class="ai-doc-box" style="min-height:180px"></textarea>
+        </div>
+      </div>
+    </details>
 
     <div class="small" style="margin-top:10px;color:#475569;background:#f1f5f9;padding:8px 10px;border-radius:6px;border-left:3px solid #64748b">
       ⚠️ <b>गोपनीयता एवं सुरक्षा निर्देश:</b> कृपया अनुवाद हेतु किसी भी व्यक्ति का आधार नंबर, बैंक विवरण या अति-गोपनीय सरकारी दस्तावेज़ अपलोड न करें।
@@ -924,7 +936,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   const CHAT_STORE_KEY = "svc_ai_session_chat_v1";
   let pendingAction = null;
   let chatHistory = [];
-  let attachedDoc = null; // { name, text }
+  let attachedDoc = null;
   let isGenerating = false;
   let stopRequested = false;
 
@@ -1024,7 +1036,6 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return blocked.test(txt);
   }
 
-  // Extract text locally in browser for chat attachment (PDF / DOCX / TXT)
   async function extractLocalDocumentText(file) {
     const ext = (file.name.split(".").pop() || "").toLowerCase();
     if (ext === "txt") return (await file.text()).trim();
@@ -1052,7 +1063,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         fullText += (fullText ? "\n\n" : "") + pageStr;
       }
       if (fullText.trim().length < 25) {
-        throw Error("यह स्कैन की गई इमेज PDF है—कृपया पहले '🌐 AI+ Scan & Translate' टैब में इसका Offline HD Scan करें।");
+        throw Error("यह स्कैन की गई इमेज PDF है—कृपया पहले '🌐 AI+ Scan & Translate' टैब में इसका अनुवाद करें।");
       }
       return fullText.trim();
     }
@@ -1128,13 +1139,12 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       const sp = document.createElement("span");
       sp.className = "small";
       sp.style.marginLeft = "auto";
-      sp.textContent = `⚡ ${elapsedSec}s · ${modelUsed}`;
+      sp.textContent = `⚡ ${elapsedSec}s · ${modelUsed || "Auto-AI"}`;
       bar.appendChild(sp);
     }
     div.appendChild(bar);
   }
 
-  // Restore saved chat on reload
   (function restoreSessionChat(){
     try {
       const saved = JSON.parse(sessionStorage.getItem(CHAT_STORE_KEY) || "[]");
@@ -1155,7 +1165,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     } catch (e) {}
   })();
 
-  // ================= PART A: LIVE-STREAMING AI ENGINE WITH STOP & FAILOVER =================
+  // ================= PART A: AUTO-LATEST DYNAMIC AI ENGINE =================
   async function ensurePuterLoaded() {
     if (location.protocol === "file:") {
       throw Error("आपने फ़ाइल सीधे कंप्यूटर फ़ोल्डर (file:///) से खोली है। इसे अपनी GitHub वेबसाइट पर खोलें।");
@@ -1227,7 +1237,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 
     const todayStr = new Date().toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric" });
     const systemPrompt = `Today's date is ${todayStr}. You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal (India).
-1. Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}. If a rule or rate may have changed recently, clearly mention the applicable provision and advise verifying the latest official gazette/circular.
+1. Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}.
 2. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
 3. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
 4. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered. Never repeat sentences unnecessarily.
@@ -1236,7 +1246,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 
     try {
       await ensurePuterLoaded();
-      // Auto-resolve latest active models dynamically from Puter SDK (Future-proof)
+
       let liveModels = [];
       try {
         if (typeof window.puter.ai.listModels === "function") {
@@ -1261,21 +1271,21 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       const resolvedLegal = pickLatest(["claude-4", "claude-3-7", "claude-3-5-sonnet"], ["claude-3-5-sonnet"]);
 
       const primary = mode === "auto_pro" ? resolvedPro : (mode === "auto_legal" ? resolvedLegal : resolvedFast);
-      // Including "" (empty model) tells Puter SDK to automatically use its latest server-side default model
       const fallbackOrder = [primary, resolvedFast, resolvedPro, resolvedLegal, ""].filter((v, i, a) => a.indexOf(v) === i);
+
       const apiMessages = [
         { role: "system", content: systemPrompt },
         ...chatHistory.slice(-10).map(m => ({ role: m.role, content: m.content }))
       ];
 
       let fullReply = "";
-      let activeModel = chosenModel;
+      let activeModel = primary || "Auto-AI";
       let success = false;
 
       for (const m of fallbackOrder) {
         if (stopRequested) break;
         try {
-          activeModel = m;
+          activeModel = m || "Auto-Latest";
           const chatOpts = m ? { model: m, stream: true, temperature: 0.2 } : { stream: true, temperature: 0.2 };
           const resp = await window.puter.ai.chat(apiMessages, chatOpts);
           if (resp && typeof resp[Symbol.asyncIterator] === "function") {
@@ -1298,7 +1308,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
             success = true;
             break;
           }
-        } catch (err) { /* failover to next model */ }
+        } catch (err) { /* try next fallback model */ }
       }
 
       if (!success && !stopRequested) throw Error("AI से उत्तर प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।");
@@ -1337,10 +1347,15 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     el("aiDraftStatus").className = "status";
   };
 
-  // ================= PART B: OFFLINE HD OCR + FAST ONLINE NEURAL TRANSLATOR =================
+  // ================= PART B: GOOGLE-LENS STYLE SAME-FORMAT LAYOUT TRANSLATOR =================
+  let translatedOutputBlob = null;
+  let translatedOutputName = "";
+
   el("aiTransFile").onchange = () => {
     const f = el("aiTransFile").files[0];
     el("aiTransFileInfo").textContent = f ? `${f.name} (${prettyBytes(f.size)})` : "कोई फ़ाइल चयनित नहीं";
+    el("aiDownloadSameFmtBtn").classList.add("hidden");
+    translatedOutputBlob = null;
   };
 
   el("aiTransClearBtn").onclick = () => {
@@ -1348,26 +1363,26 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     el("aiTransFileInfo").textContent = "कोई फ़ाइल चयनित नहीं";
     el("aiEnglishText").value = "";
     el("aiHindiText").value = "";
+    el("aiOrigVisualBox").innerHTML = "";
+    el("aiTransVisualBox").innerHTML = "";
+    el("aiVisualPreviewWrap").classList.add("hidden");
+    el("aiDownloadSameFmtBtn").classList.add("hidden");
+    translatedOutputBlob = null;
     el("aiTransStatus").className = "status";
     el("aiTransStatus").textContent = "";
   };
 
-  function preprocessDocumentCanvas(srcCanvas, mode) {
-    const scale = (srcCanvas.width < 1800) ? 2.0 : 1.35;
-    const w = Math.min(3400, Math.round(srcCanvas.width * scale));
-    const h = Math.min(3400, Math.round(srcCanvas.height * scale));
+  function buildEnhancedOcrCanvas(srcCanvas, mode) {
+    if (mode === "normal") return srcCanvas;
+    const w = srcCanvas.width, h = srcCanvas.height;
     const c = document.createElement("canvas");
     c.width = w; c.height = h;
     const ctx = c.getContext("2d");
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(srcCanvas, 0, 0, w, h);
-    if (mode === "normal") return c;
-
+    ctx.drawImage(srcCanvas, 0, 0);
     const img = ctx.getImageData(0, 0, w, h);
     const d = img.data;
-    const gray = new Uint8ClampedArray(w * h);
     let minL = 255, maxL = 0;
+    const gray = new Uint8ClampedArray(w * h);
 
     for (let i = 0, p = 0; i < d.length; i += 4, p++) {
       const lum = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
@@ -1376,135 +1391,18 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       if (lum > maxL) maxL = lum;
     }
     const span = Math.max(1, maxL - minL);
-    const normArr = new Uint8ClampedArray(w * h);
-    const threshold = mode === "high_contrast" ? 168 : 152;
-
+    const thr = mode === "high_contrast" ? 168 : 150;
     for (let k = 0; k < gray.length; k++) {
       let v = ((gray[k] - minL) / span) * 255;
       v = (mode === "high_contrast")
-        ? (v < threshold ? Math.max(0, v * 0.45) : 255)
-        : (v < threshold ? Math.max(0, v * 0.62) : Math.min(255, v * 1.22));
-      normArr[k] = Math.round(v);
-    }
-
-    for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        const idx = y * w + x;
-        const sharp = normArr[idx] * 5 - normArr[idx - 1] - normArr[idx + 1] - normArr[idx - w] - normArr[idx + w];
-        const px = Math.min(255, Math.max(0, sharp));
-        const r = idx * 4;
-        d[r] = px; d[r + 1] = px; d[r + 2] = px; d[r + 3] = 255;
-      }
+        ? (v < thr ? Math.max(0, v * 0.4) : 255)
+        : (v < thr ? Math.max(0, v * 0.6) : Math.min(255, v * 1.25));
+      const r = k * 4;
+      d[r] = v; d[r + 1] = v; d[r + 2] = v; d[r + 3] = 255;
     }
     ctx.putImageData(img, 0, 0);
     return c;
   }
-
-  function reflowBrokenSentences(raw) {
-    if (!raw) return "";
-    let t = raw.replace(/\r\n/g, "\n").replace(/[ \t]+/g, " ");
-    t = t.replace(/([a-zA-Z])-\s*\n\s*([a-zA-Z])/g, "$1$2");
-    const paras = t.split(/\n{2,}/);
-    return paras.map(p => {
-      const lines = p.split("\n").map(x => x.trim()).filter(Boolean);
-      let joined = "";
-      for (let i = 0; i < lines.length; i++) {
-        const cur = lines[i];
-        if (!joined) { joined = cur; continue; }
-        if (/^(\d+[\.\)]|[a-zA-Z][\.\)]|•|-|Subject|Ref|To,|From,|Date|Sub:|Sir,|Madam,)/i.test(cur) || /[.!?:।]$/.test(joined)) {
-          joined += "\n" + cur;
-        } else {
-          joined += " " + cur;
-        }
-      }
-      return joined;
-    }).join("\n\n").trim();
-  }
-
-  el("aiScanRunBtn").onclick = async () => {
-    const f = el("aiTransFile").files[0];
-    if (!f) return msg("aiTransStatus", "पहले PDF, Photo (JPG/PNG) या Word (.docx) फ़ाइल चुनें।", "bad");
-    const mode = el("aiTransMode").value;
-    const ext = (f.name.split(".").pop() || "").toLowerCase();
-
-    el("aiScanRunBtn").disabled = true;
-    showPdfTask("Offline HD Document Scanner", "आपके ब्राउज़र में ऑफ़लाइन HD स्कैनिंग जारी है…", false);
-    try {
-      let extracted = "";
-      if (ext === "txt") {
-        extracted = await f.text();
-      } else if (ext === "docx" || ext === "doc") {
-        if (!window.mammoth) {
-          await new Promise((res, rej) => {
-            const s = document.createElement("script");
-            s.src = "libs/mammoth.browser.min.js";
-            s.onload = res; s.onerror = () => rej(Error("libs/mammoth.browser.min.js नहीं मिली।"));
-            document.head.appendChild(s);
-          });
-        }
-        const res = await window.mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() });
-        extracted = res.value || "";
-      } else if (ext === "pdf" || f.type === "application/pdf") {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
-        const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
-        const worker = await Tesseract.createWorker("eng", 1, {
-          workerPath: new URL("libs/worker.min.js", location.href).href,
-          corePath: new URL("libs/", location.href).href,
-          langPath: new URL("libs", location.href).href,
-          workerBlobURL: false
-        });
-        for (let p = 1; p <= pdf.numPages; p++) {
-          updatePdfTask(p - 1, pdf.numPages, `Offline HD Scan · PDF पेज ${p}/${pdf.numPages}`);
-          const page = await pdf.getPage(p);
-          const vp = page.getViewport({ scale: 2.2 });
-          const rawC = document.createElement("canvas");
-          rawC.width = vp.width; rawC.height = vp.height;
-          await page.render({ canvasContext: rawC.getContext("2d"), viewport: vp }).promise;
-          const hdC = preprocessDocumentCanvas(rawC, mode);
-          const r = await worker.recognize(hdC);
-          extracted += (extracted ? "\n\n" : "") + (r.data.text || "");
-          rawC.width = 1; hdC.width = 1;
-        }
-        await worker.terminate();
-      } else {
-        const url = URL.createObjectURL(f);
-        const img = await new Promise((res, rej) => {
-          const im = new Image();
-          im.onload = () => res(im);
-          im.onerror = () => rej(Error("इमेज फ़ाइल पढ़ी नहीं जा सकी।"));
-          im.src = url;
-        });
-        const rawC = document.createElement("canvas");
-        rawC.width = img.naturalWidth || img.width;
-        rawC.height = img.naturalHeight || img.height;
-        rawC.getContext("2d").drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-
-        const hdC = preprocessDocumentCanvas(rawC, mode);
-        const worker = await Tesseract.createWorker("eng", 1, {
-          workerPath: new URL("libs/worker.min.js", location.href).href,
-          corePath: new URL("libs/", location.href).href,
-          langPath: new URL("libs", location.href).href,
-          workerBlobURL: false,
-          logger: m => { if (m.status === "recognizing text") updatePdfTask(Math.round((m.progress || 0) * 100), 100, "ऑफ़लाइन HD अक्षरों की पहचान जारी…"); }
-        });
-        const r = await worker.recognize(hdC);
-        extracted = r.data.text || "";
-        await worker.terminate();
-        rawC.width = 1; hdC.width = 1;
-      }
-
-      const cleanEng = reflowBrokenSentences(extracted);
-      if (!cleanEng) throw Error("दस्तावेज़ में पढ़ने योग्य टेक्स्ट नहीं मिला।");
-      el("aiEnglishText").value = cleanEng;
-      msg("aiTransStatus", "✓ ऑफ़लाइन HD स्कैनिंग पूरी! अब '🌐 2. Translate to Pure Hindi (Fast AI)' दबाएँ।", "good");
-    } catch (e) {
-      msg("aiTransStatus", e.message || String(e), "bad");
-    } finally {
-      el("aiScanRunBtn").disabled = false;
-      await hidePdfTask();
-    }
-  };
 
   function polishDomainHindi(hindiText, domain) {
     let t = hindiText
@@ -1526,93 +1424,305 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return t;
   }
 
-  function splitTextForNeural(text, maxLen = 1400) {
-    const lines = text.split("\n");
-    const chunks = [];
-    let cur = "";
-    for (const line of lines) {
-      if ((cur + "\n" + line).length > maxLen && cur) {
-        chunks.push(cur);
-        cur = line;
-      } else {
-        cur = cur ? (cur + "\n" + line) : line;
+  async function translateLinesBatch(linesArray, domain) {
+    const cleanLines = linesArray.map(s => s.replace(/\s+/g, " ").trim());
+    const resultLines = new Array(cleanLines.length).fill("");
+    const nonEmptyIdx = [];
+    cleanLines.forEach((txt, idx) => { if (txt) nonEmptyIdx.push(idx); });
+    if (!nonEmptyIdx.length) return resultLines;
+
+    const BATCH = 25;
+    for (let i = 0; i < nonEmptyIdx.length; i += BATCH) {
+      const sliceIdx = nonEmptyIdx.slice(i, i + BATCH);
+      const joinedQuery = sliceIdx.map(idx => cleanLines[idx]).join("\n");
+      const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=hi&dt=t&q=" + encodeURIComponent(joinedQuery);
+      const resp = await fetch(url);
+      if (!resp.ok) throw Error("अनुवाद सर्वर से संपर्क नहीं हो सका।");
+      const data = await resp.json();
+      let combined = "";
+      if (Array.isArray(data) && Array.isArray(data[0])) {
+        data[0].forEach(seg => { if (seg && seg[0]) combined += seg[0]; });
       }
+      const splitOut = combined.split("\n");
+      sliceIdx.forEach((origIdx, k) => {
+        const raw = (splitOut[k] !== undefined ? splitOut[k] : cleanLines[origIdx]).trim();
+        resultLines[origIdx] = polishDomainHindi(raw, domain);
+      });
     }
-    if (cur) chunks.push(cur);
-    return chunks;
+    return resultLines;
   }
 
-  async function executeNeuralTranslation() {
-    const eng = el("aiEnglishText").value;
-    if (!eng || !eng.trim()) return msg("aiTransStatus", "पहले कोई फ़ाइल स्कैन करें या बाएँ बॉक्स में English टेक्स्ट पेस्ट करें।", "bad");
-    const domain = el("aiTransDomain").value;
+  function sampleBoxBackground(ctx, x0, y0, x1, y1, canvasW, canvasH) {
+    const sx = Math.max(0, Math.min(canvasW - 1, Math.round(x0 - 2)));
+    const sy = Math.max(0, Math.min(canvasH - 1, Math.round(y0 - 2)));
+    const p = ctx.getImageData(sx, sy, 1, 1).data;
+    const lum = 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2];
+    return {
+      bg: `rgb(${p[0]},${p[1]},${p[2]})`,
+      fg: lum < 128 ? "#ffffff" : "#111827"
+    };
+  }
 
-    el("aiTranslateRunBtn").disabled = true;
-    showPdfTask("Fast Online Neural Translator", "पूरे वाक्यों का संदर्भ सहित शुद्ध हिंदी में अनुवाद हो रहा है…", false);
-    try {
-      const chunks = splitTextForNeural(eng, 1400);
-      const translatedParts = [];
+  function renderTranslatedOverlayCanvas(origCanvas, linesData, hindiLines) {
+    const w = origCanvas.width, h = origCanvas.height;
+    const out = document.createElement("canvas");
+    out.width = w; out.height = h;
+    const ctx = out.getContext("2d");
+    ctx.drawImage(origCanvas, 0, 0);
 
-      for (let i = 0; i < chunks.length; i++) {
-        updatePdfTask(i, chunks.length, `अनुवाद प्रगति · भाग ${i + 1}/${chunks.length}`);
-        const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=hi&dt=t&q=" + encodeURIComponent(chunks[i]);
-        const resp = await fetch(url);
-        if (!resp.ok) throw Error("अनुवाद सर्वर से संपर्क नहीं हो सका।");
-        const data = await resp.json();
-        let partHindi = "";
-        if (Array.isArray(data) && Array.isArray(data[0])) {
-          data[0].forEach(seg => { if (seg && seg[0]) partHindi += seg[0]; });
-        }
-        translatedParts.push(partHindi);
+    linesData.forEach((ln, idx) => {
+      const hiText = hindiLines[idx];
+      if (!hiText || !ln.bbox) return;
+      const { x0, y0, x1, y1 } = ln.bbox;
+      const boxW = Math.max(12, x1 - x0);
+      const boxH = Math.max(10, y1 - y0);
+
+      const { bg, fg } = sampleBoxBackground(ctx, x0, y0, x1, y1, w, h);
+      ctx.fillStyle = bg;
+      ctx.fillRect(Math.max(0, x0 - 2), Math.max(0, y0 - 1), boxW + 4, boxH + 3);
+
+      let fontSize = Math.max(10, Math.round(boxH * 0.78));
+      ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", "Mangal", Arial, sans-serif`;
+      let measured = ctx.measureText(hiText).width;
+      while (measured > boxW * 1.06 && fontSize > 8) {
+        fontSize -= 1;
+        ctx.font = `600 ${fontSize}px "Noto Sans Devanagari", "Mangal", Arial, sans-serif`;
+        measured = ctx.measureText(hiText).width;
       }
 
-      const rawHindi = translatedParts.join("\n");
-      el("aiHindiText").value = polishDomainHindi(rawHindi, domain);
-      msg("aiTransStatus", "✓ शुद्ध हिंदी अनुवाद तैयार है! आप इसे Word (.doc), PDF या .txt में डाउनलोड कर सकते हैं।", "good");
+      ctx.fillStyle = fg;
+      ctx.textBaseline = "middle";
+      ctx.fillText(hiText, x0, y0 + boxH / 2, boxW * 1.08);
+    });
+
+    return out;
+  }
+
+  async function runSameFormatTranslation() {
+    const f = el("aiTransFile").files[0];
+    if (!f) return msg("aiTransStatus", "पहले कोई Image (JPG/PNG), PDF या Word (.docx) फ़ाइल चुनें।", "bad");
+
+    const mode = el("aiTransMode").value;
+    const domain = el("aiTransDomain").value;
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    const baseName = f.name.replace(/\.[^.]+$/, "");
+
+    el("aiLayoutTranslateBtn").disabled = true;
+    el("aiDownloadSameFmtBtn").classList.add("hidden");
+    el("aiOrigVisualBox").innerHTML = "";
+    el("aiTransVisualBox").innerHTML = "";
+    translatedOutputBlob = null;
+
+    showPdfTask("Google-Lens Same-Format Translator", "मूल फ़ॉर्मेट और लेआउट का विश्लेषण हो रहा है…", false);
+
+    try {
+      if (ext === "docx" || ext === "doc") {
+        if (!window.mammoth) {
+          await new Promise((res, rej) => {
+            const s = document.createElement("script");
+            s.src = "libs/mammoth.browser.min.js";
+            s.onload = res; s.onerror = () => rej(Error("libs/mammoth.browser.min.js नहीं मिली।"));
+            document.head.appendChild(s);
+          });
+        }
+        const conv = await window.mammoth.convertToHtml({ arrayBuffer: await f.arrayBuffer() });
+        const origHtml = conv.value || "";
+        if (!origHtml.trim()) throw Error("Word फ़ाइल में पढ़ने योग्य सामग्री नहीं मिली।");
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = origHtml;
+
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null);
+        const textNodes = [];
+        const rawTexts = [];
+        let node;
+        while ((node = walker.nextNode())) {
+          if (node.nodeValue && node.nodeValue.trim()) {
+            textNodes.push(node);
+            rawTexts.push(node.nodeValue.trim());
+          }
+        }
+
+        updatePdfTask(50, 100, "Word दस्तावेज़ की फ़ॉर्मेटिंग सहित अनुवाद जारी…");
+        const translatedTexts = await translateLinesBatch(rawTexts, domain);
+        textNodes.forEach((n, i) => { n.nodeValue = " " + translatedTexts[i] + " "; });
+
+        const finalHtml = tempDiv.innerHTML;
+        el("aiOrigVisualBox").innerHTML = `<div style="text-align:left;padding:12px;font-size:14px">${origHtml}</div>`;
+        el("aiTransVisualBox").innerHTML = `<div style="text-align:left;padding:12px;font-family:'Noto Sans Devanagari','Mangal',Arial,sans-serif;font-size:15px">${finalHtml}</div>`;
+        el("aiVisualPreviewWrap").classList.remove("hidden");
+
+        el("aiEnglishText").value = rawTexts.join("\n");
+        el("aiHindiText").value = translatedTexts.join("\n");
+
+        const wordDocHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+          <head><meta charset='utf-8'><title>${baseName}-Hindi</title>
+          <style>body{font-family:'Mangal','Noto Sans Devanagari',Arial,sans-serif;font-size:12pt;line-height:1.6} table{border-collapse:collapse;width:100%} td,th{border:1px solid #444;padding:6px}</style></head>
+          <body>${finalHtml}</body></html>`;
+        translatedOutputBlob = new Blob(["\ufeff", wordDocHtml], { type: "application/msword" });
+        translatedOutputName = `${baseName}-Hindi.doc`;
+        el("aiDownloadSameFmtBtn").textContent = "📘 Download Translated Word (.doc)";
+        el("aiDownloadSameFmtBtn").classList.remove("hidden");
+        msg("aiTransStatus", "✓ Word फ़ाइल की मूल फ़ॉर्मेटिंग व टेबल सहित हिंदी अनुवाद तैयार है!", "good");
+      }
+
+      else if (ext === "pdf" || f.type === "application/pdf") {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
+        const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+        const worker = await Tesseract.createWorker("eng", 1, {
+          workerPath: new URL("libs/worker.min.js", location.href).href,
+          corePath: new URL("libs/", location.href).href,
+          langPath: new URL("libs", location.href).href,
+          workerBlobURL: false
+        });
+
+        const outPdf = await PDFLib.PDFDocument.create();
+        let allEng = [], allHi = [];
+
+        for (let p = 1; p <= pdf.numPages; p++) {
+          updatePdfTask(p - 1, pdf.numPages, `PDF लेआउट अनुवाद · पेज ${p}/${pdf.numPages}`);
+          const page = await pdf.getPage(p);
+          const vp = page.getViewport({ scale: 2.0 });
+          const origC = document.createElement("canvas");
+          origC.width = vp.width; origC.height = vp.height;
+          await page.render({ canvasContext: origC.getContext("2d"), viewport: vp }).promise;
+
+          const ocrC = buildEnhancedOcrCanvas(origC, mode);
+          const rec = await worker.recognize(ocrC);
+          const lines = (rec.data.lines || []).filter(l => l.text && l.text.trim());
+          const engLines = lines.map(l => l.text.trim());
+          const hiLines = await translateLinesBatch(engLines, domain);
+
+          allEng.push(...engLines);
+          allHi.push(...hiLines);
+
+          const transC = renderTranslatedOverlayCanvas(origC, lines, hiLines);
+
+          const img1 = document.createElement("img");
+          img1.src = origC.toDataURL("image/jpeg", 0.85);
+          img1.style.cssText = "max-width:100%;border:1px solid #cbd5e1;margin-bottom:10px;border-radius:6px";
+          el("aiOrigVisualBox").appendChild(img1);
+
+          const img2 = document.createElement("img");
+          img2.src = transC.toDataURL("image/jpeg", 0.92);
+          img2.style.cssText = "max-width:100%;border:1px solid #93c5fd;margin-bottom:10px;border-radius:6px";
+          el("aiTransVisualBox").appendChild(img2);
+
+          const jpgBytes = await new Promise(r => transC.toBlob(b => b.arrayBuffer().then(r), "image/jpeg", 0.92));
+          const embedded = await outPdf.embedJpg(jpgBytes);
+          const pdfPage = outPdf.addPage([vp.width, vp.height]);
+          pdfPage.drawImage(embedded, { x: 0, y: 0, width: vp.width, height: vp.height });
+
+          origC.width = 1; ocrC.width = 1; transC.width = 1;
+        }
+        await worker.terminate();
+
+        el("aiVisualPreviewWrap").classList.remove("hidden");
+        el("aiEnglishText").value = allEng.join("\n");
+        el("aiHindiText").value = allHi.join("\n");
+
+        const pdfBytes = await outPdf.save();
+        translatedOutputBlob = new Blob([pdfBytes], { type: "application/pdf" });
+        translatedOutputName = `${baseName}-Hindi.pdf`;
+        el("aiDownloadSameFmtBtn").textContent = "📕 Download Translated PDF (Same Layout)";
+        el("aiDownloadSameFmtBtn").classList.remove("hidden");
+        msg("aiTransStatus", "✓ मूल PDF के ठीक उसी लेआउट में हिंदी PDF तैयार है!", "good");
+      }
+
+      else {
+        const url = URL.createObjectURL(f);
+        const img = await new Promise((res, rej) => {
+          const im = new Image();
+          im.onload = () => res(im);
+          im.onerror = () => rej(Error("इमेज फ़ाइल पढ़ी नहीं जा सकी।"));
+          im.src = url;
+        });
+
+        const origC = document.createElement("canvas");
+        origC.width = img.naturalWidth || img.width;
+        origC.height = img.naturalHeight || img.height;
+        origC.getContext("2d").drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        const ocrC = buildEnhancedOcrCanvas(origC, mode);
+        const worker = await Tesseract.createWorker("eng", 1, {
+          workerPath: new URL("libs/worker.min.js", location.href).href,
+          corePath: new URL("libs/", location.href).href,
+          langPath: new URL("libs", location.href).href,
+          workerBlobURL: false,
+          logger: m => { if (m.status === "recognizing text") updatePdfTask(Math.round((m.progress || 0) * 80), 100, "अक्षरों की सटीक लोकेशन स्कैन हो रही है…"); }
+        });
+        const rec = await worker.recognize(ocrC);
+        await worker.terminate();
+
+        const lines = (rec.data.lines || []).filter(l => l.text && l.text.trim());
+        if (!lines.length) throw Error("फ़ोटो में पढ़ने योग्य English टेक्स्ट नहीं मिला।");
+
+        updatePdfTask(90, 100, "मूल स्थान पर हिंदी बैठाई जा रही है…");
+        const engLines = lines.map(l => l.text.trim());
+        const hiLines = await translateLinesBatch(engLines, domain);
+
+        const transC = renderTranslatedOverlayCanvas(origC, lines, hiLines);
+
+        const p1 = document.createElement("img");
+        p1.src = origC.toDataURL("image/png");
+        p1.style.cssText = "max-width:100%;border-radius:6px";
+        el("aiOrigVisualBox").appendChild(p1);
+
+        const p2 = document.createElement("img");
+        p2.src = transC.toDataURL("image/png");
+        p2.style.cssText = "max-width:100%;border-radius:6px";
+        el("aiTransVisualBox").appendChild(p2);
+
+        el("aiVisualPreviewWrap").classList.remove("hidden");
+        el("aiEnglishText").value = engLines.join("\n");
+        el("aiHindiText").value = hiLines.join("\n");
+
+        const outMime = f.type === "image/jpeg" ? "image/jpeg" : "image/png";
+        const outExt = f.type === "image/jpeg" ? "jpg" : "png";
+        translatedOutputBlob = await new Promise(r => transC.toBlob(r, outMime, 0.95));
+        translatedOutputName = `${baseName}-Hindi.${outExt}`;
+        el("aiDownloadSameFmtBtn").textContent = `🖼️ Download Translated Image (.${outExt.toUpperCase()})`;
+        el("aiDownloadSameFmtBtn").classList.remove("hidden");
+
+        origC.width = 1; ocrC.width = 1; transC.width = 1;
+        msg("aiTransStatus", "✓ Google Lens शैली में मूल फ़ोटो के ऊपर ही शुद्ध हिंदी अनुवाद तैयार है!", "good");
+      }
     } catch (e) {
-      msg("aiTransStatus", "अनुवाद त्रुटि: इंटरनेट कनेक्शन जाँचें या पुनः प्रयास करें। (" + (e.message || String(e)) + ")", "bad");
+      msg("aiTransStatus", e.message || String(e), "bad");
     } finally {
-      el("aiTranslateRunBtn").disabled = false;
+      el("aiLayoutTranslateBtn").disabled = false;
       await hidePdfTask();
     }
   }
 
-  el("aiTranslateRunBtn").onclick = () => runWithAiConsent(executeNeuralTranslation);
+  el("aiLayoutTranslateBtn").onclick = () => runWithAiConsent(runSameFormatTranslation);
+
+  el("aiDownloadSameFmtBtn").onclick = () => {
+    if (!translatedOutputBlob) return;
+    downloadBlob(translatedOutputBlob, translatedOutputName);
+    msg("aiTransStatus", `✓ ${translatedOutputName} डाउनलोड हो गई!`, "good");
+  };
 
   el("aiSendToChatBtn").onclick = () => {
     const hindi = el("aiHindiText").value.trim();
     const eng = el("aiEnglishText").value.trim();
     const content = hindi || eng;
-    if (!content) return msg("aiTransStatus", "पहले कोई दस्तावेज़ स्कैन या अनुवाद करें।", "bad");
+    if (!content) return msg("aiTransStatus", "पहले कोई दस्तावेज़ स्कैन व अनुवाद करें।", "bad");
 
-    attachedDoc = { name: "Scanned-Document.txt", text: content.slice(0, 14000) };
-    el("aiAttachName").textContent = "📄 Scanned-Document.txt";
+    attachedDoc = { name: "Translated-Document.txt", text: content.slice(0, 14000) };
+    el("aiAttachName").textContent = "📄 Translated-Document.txt";
     el("aiAttachPill").style.display = "inline-flex";
 
     const draftTabBtn = document.querySelector('.tabs button[data-tab="aidraft"]');
     if (draftTabBtn) draftTabBtn.click();
     el("aiFreePrompt").focus();
-    msg("aiDraftStatus", "✓ स्कैन/अनुवादित दस्तावेज़ संलग्न हो गया है। अब अपना निर्देश लिखें।", "good");
+    msg("aiDraftStatus", "✓ अनुवादित दस्तावेज़ संलग्न हो गया है। अब अपना निर्देश लिखें।", "good");
   };
 
-  el("aiTransWordBtn").onclick = () => {
-    if (!exportAsWordDoc("Translated Hindi Document", el("aiHindiText").value, "SVC-Translated-Hindi.doc"))
-      return msg("aiTransStatus", "डाउनलोड करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
-    msg("aiTransStatus", "✓ हिंदी Word (.doc) फ़ाइल डाउनलोड हो गई।", "good");
-  };
-  el("aiTransTxtBtn").onclick = () => {
-    const t = el("aiHindiText").value;
-    if (!t.trim()) return msg("aiTransStatus", "डाउनलोड करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
-    downloadBlob(new Blob([t], { type: "text/plain;charset=utf-8" }), "SVC-Translated-Hindi.txt");
-    msg("aiTransStatus", "✓ Text (.txt) फ़ाइल डाउनलोड हो गई।", "good");
-  };
-  el("aiTransPrintBtn").onclick = () => {
-    if (!printFormattedText("Translated Hindi Document", el("aiHindiText").value))
-      return msg("aiTransStatus", "प्रिंट करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
-  };
   el("aiTransCopyBtn").onclick = async () => {
     const t = el("aiHindiText").value;
-    if (!t.trim()) return msg("aiTransStatus", "कॉपी करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
+    if (!t.trim()) return msg("aiTransStatus", "कॉपी करने से पहले अनुवाद करें।", "bad");
     await navigator.clipboard.writeText(t);
     msg("aiTransStatus", "✓ अनुवादित हिंदी टेक्स्ट कॉपी हो गया!", "good");
   };
