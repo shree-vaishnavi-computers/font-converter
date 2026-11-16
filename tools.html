@@ -762,8 +762,7 @@ let numberResultText="";
 $("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
 $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
 </script>
-<!-- ================= SVC DIRECT ZERO-KEY AI ASSISTANT + NEURAL TRANSLATOR ================= -->
-<script src="https://js.puter.com/v2/"></script>
+<!-- ================= SVC DIRECT ZERO-KEY HIGH-ACCURACY AI ASSISTANT + NEURAL TRANSLATOR ================= -->
 <style>
 .panel#aidraft .card:before{background:linear-gradient(180deg,#155eef,#0ea5e9)}
 .panel#aitranslate .card:before{background:linear-gradient(180deg,#ea580c,#f59e0b)}
@@ -784,11 +783,11 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 .svc-ai-modal-card{background:#fff;max-width:480px;width:100%;border-radius:14px;border-top:5px solid #155eef;box-shadow:0 15px 40px rgba(0,0,0,.35);padding:22px 20px;color:#1e293b}
 </style>
 
-<!-- TAB 7: DIRECT ZERO-KEY AI+ ASSISTANT & DRAFTER -->
+<!-- TAB 7: DIRECT ZERO-KEY HIGH-ACCURACY AI+ ASSISTANT & DRAFTER -->
 <section class="panel" id="aidraft">
   <div class="card">
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
-      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge" id="aiEngineBadge">DIRECT AI · READY</span></h2>
+      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge" id="aiEngineBadge">GEMINI 2.5 / GPT-4o · ZERO-KEY</span></h2>
       <div class="row">
         <button type="button" class="btn danger" id="aiChatClearBtn">🗑️ नई चैट</button>
         <button type="button" class="btn danger hidden" id="aiRevokeDraftBtn">🔒 अनुमति हटाएँ</button>
@@ -806,6 +805,10 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     </div>
 
     <div id="aiDraftStatus" class="status" role="status" aria-live="polite"></div>
+
+    <div class="small" style="margin-top:10px;color:#475569;background:#f1f5f9;padding:8px 10px;border-radius:6px;border-left:3px solid #64748b">
+      ⚠️ <b>गोपनीयता एवं सुरक्षा निर्देश:</b> यह AI सुविधा केवल सामान्य प्रारूपण (Drafting) एवं जानकारी सहायता हेतु है। कृपया इसमें किसी भी व्यक्ति का आधार नंबर, बैंक विवरण, पासवर्ड या अति-गोपनीय सरकारी रिकॉर्ड न डालें। बाहरी AI सेवा पर प्रेषित सामग्री की गोपनीयता की जिम्मेदारी स्वयं उपयोगकर्ता की होगी।
+    </div>
   </div>
 </section>
 
@@ -862,6 +865,10 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         <label>अनुवादित शुद्ध हिंदी दस्तावेज़ (Human-Grade Hindi Output):</label>
         <textarea id="aiHindiText" class="ai-doc-box" placeholder="यहाँ पूरे वाक्यों का शुद्ध हिंदी अनुवाद तैयार होगा..."></textarea>
       </div>
+    </div>
+
+    <div class="small" style="margin-top:10px;color:#475569;background:#f1f5f9;padding:8px 10px;border-radius:6px;border-left:3px solid #64748b">
+      ⚠️ <b>गोपनीयता एवं सुरक्षा निर्देश:</b> कृपया अनुवाद हेतु किसी भी व्यक्ति का आधार नंबर, बैंक विवरण या अति-गोपनीय सरकारी दस्तावेज़ अपलोड न करें।
     </div>
   </div>
 </section>
@@ -1023,16 +1030,31 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     win.scrollTop = win.scrollHeight;
   }
 
-  // ================= PART A: ZERO-KEY DIRECT AI ENGINE (PUTER.JS) =================
-  async function queryDirectAI(messages) {
-    if (!window.puter || !window.puter.ai) {
-      throw Error("AI लाइब्रेरी लोड नहीं हो पाई। कृपया पेज रिफ्रेश (F5) करें और इंटरनेट जाँचें।");
+  // ================= PART A: ZERO-KEY HIGH-ACCURACY AI ENGINE =================
+  async function ensurePuterLoaded() {
+    if (location.protocol === "file:") {
+      throw Error("आपने फ़ाइल सीधे कंप्यूटर फ़ोल्डर (file:///) से खोली है। इसे अपनी GitHub वेबसाइट पर खोलें।");
     }
-    const models = ["gpt-4o-mini", "claude-3-5-sonnet", "gemini-2.0-flash"];
+    if (window.puter && window.puter.ai) return;
+    await new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = "https://js.puter.com/v2/";
+      s.onload = res;
+      s.onerror = () => rej(Error("AI इंजन लोड नहीं हो सका। इंटरनेट कनेक्शन जाँचें।"));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function queryDirectAI(messages) {
+    await ensurePuterLoaded();
+    const models = ["gemini-2.5-flash", "gpt-4o", "claude-3-5-sonnet", "deepseek-chat"];
     let lastErr = null;
     for (const model of models) {
       try {
-        const res = await window.puter.ai.chat(messages, { model });
+        const res = await window.puter.ai.chat(messages, {
+          model,
+          temperature: 0.2
+        });
         const text = typeof res === "string"
           ? res
           : (res?.message?.content?.[0]?.text || res?.message?.content || res?.text || "");
