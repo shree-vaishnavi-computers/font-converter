@@ -795,9 +795,9 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge">LIVE STREAMING · PRO SUITE</span></h2>
       <div class="row" style="gap:6px;flex-wrap:wrap">
         <select id="aiModelSelect" style="padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;border:1px solid #93c5fd;background:#eff6ff;color:#1e3a8a">
-          <option value="gemini-2.5-flash" selected>⚡ Fast AI (Gemini 2.5 Flash — 1s)</option>
-          <option value="gpt-4o">🧠 Pro AI (GPT-4o — गहन ड्राफ्टिंग)</option>
-          <option value="claude-3-5-sonnet">⚖️ Legal AI (Claude 3.5 Sonnet)</option>
+          <option value="auto_fast" selected>⚡ Fast AI (Auto-Latest Gemini)</option>
+          <option value="auto_pro">🧠 Pro AI (Auto-Latest GPT)</option>
+          <option value="auto_legal">⚖️ Legal AI (Auto-Latest Claude)</option>
         </select>
         <button type="button" class="btn danger" id="aiChatClearBtn">🗑️ नई चैट</button>
         <button type="button" class="btn danger hidden" id="aiRevokeDraftBtn">🔒 अनुमति हटाएँ</button>
@@ -1225,17 +1225,44 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     const t0 = performance.now();
     const botUI = createBotBubble();
 
-    const systemPrompt = `You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal.
-1. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
-2. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
-3. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered. Never repeat sentences unnecessarily.
-4. Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
-5. Output clean plain text without markdown asterisks (**) or hash headers (#).`;
+    const todayStr = new Date().toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric" });
+    const systemPrompt = `Today's date is ${todayStr}. You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal (India).
+1. Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}. If a rule or rate may have changed recently, clearly mention the applicable provision and advise verifying the latest official gazette/circular.
+2. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
+3. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
+4. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered. Never repeat sentences unnecessarily.
+5. Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
+6. Output clean plain text without markdown asterisks (**) or hash headers (#).`;
 
     try {
       await ensurePuterLoaded();
-      const chosenModel = el("aiModelSelect").value;
-      const fallbackOrder = [chosenModel, "gemini-2.5-flash", "gpt-4o", "claude-3-5-sonnet"].filter((v, i, a) => a.indexOf(v) === i);
+      // Auto-resolve latest active models dynamically from Puter SDK (Future-proof)
+      let liveModels = [];
+      try {
+        if (typeof window.puter.ai.listModels === "function") {
+          const list = await window.puter.ai.listModels();
+          if (Array.isArray(list)) {
+            liveModels = list.map(x => typeof x === "string" ? x : (x?.id || x?.name || "")).filter(Boolean);
+          }
+        }
+      } catch (e) {}
+
+      const pickLatest = (keywords, staticFallbacks) => {
+        for (const kw of keywords) {
+          const matches = liveModels.filter(id => id.toLowerCase().includes(kw)).sort().reverse();
+          if (matches.length) return matches[0];
+        }
+        return staticFallbacks[0];
+      };
+
+      const mode = el("aiModelSelect").value;
+      const resolvedFast = pickLatest(["gemini-3", "gemini-2.5-flash", "gemini-2"], ["gemini-2.5-flash"]);
+      const resolvedPro = pickLatest(["gpt-5", "gpt-4.1", "gpt-4o"], ["gpt-4o"]);
+      const resolvedLegal = pickLatest(["claude-4", "claude-3-7", "claude-3-5-sonnet"], ["claude-3-5-sonnet"]);
+
+      const primary = mode === "auto_pro" ? resolvedPro : (mode === "auto_legal" ? resolvedLegal : resolvedFast);
+      // Including "" (empty model) tells Puter SDK to automatically use its latest server-side default model
+      const fallbackOrder = [primary, resolvedFast, resolvedPro, resolvedLegal, ""].filter((v, i, a) => a.indexOf(v) === i);
       const apiMessages = [
         { role: "system", content: systemPrompt },
         ...chatHistory.slice(-10).map(m => ({ role: m.role, content: m.content }))
@@ -1249,7 +1276,8 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         if (stopRequested) break;
         try {
           activeModel = m;
-          const resp = await window.puter.ai.chat(apiMessages, { model: m, stream: true, temperature: 0.2 });
+          const chatOpts = m ? { model: m, stream: true, temperature: 0.2 } : { stream: true, temperature: 0.2 };
+          const resp = await window.puter.ai.chat(apiMessages, chatOpts);
           if (resp && typeof resp[Symbol.asyncIterator] === "function") {
             fullReply = "";
             for await (const part of resp) {
