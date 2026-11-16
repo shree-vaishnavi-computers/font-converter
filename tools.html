@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#12366b">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data:; connect-src 'self' blob: data:; img-src 'self' blob: data:; font-src 'self' blob: data:; worker-src 'self' blob:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://js.puter.com; connect-src 'self' blob: data: https://*.puter.com https://api.groq.com https://generativelanguage.googleapis.com https://translate.googleapis.com; img-src 'self' blob: data:; font-src 'self' blob: data:; worker-src 'self' blob:;">
 <title>SHREE VAISHNAVI COMPUTERS | Professional Tools Suite</title>
 <link rel="stylesheet" href="libs/cropper.min.css">
 <style>
@@ -761,6 +761,610 @@ function hiIndian(n){if(!n)return"शून्य";const u=["","हज़ार"
 let numberResultText="";
 $("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
 $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
+</script>
+<!-- ================= SVC DIRECT ZERO-KEY AI ASSISTANT + NEURAL TRANSLATOR ================= -->
+<script src="https://js.puter.com/v2/"></script>
+<style>
+.panel#aidraft .card:before{background:linear-gradient(180deg,#155eef,#0ea5e9)}
+.panel#aitranslate .card:before{background:linear-gradient(180deg,#ea580c,#f59e0b)}
+.ai-badge{display:inline-block;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.4px}
+.ai-chat-window{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:14px;height:410px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.ai-msg{max-width:86%;padding:12px 15px;border-radius:14px;font-size:15px;line-height:1.75;white-space:pre-wrap;word-wrap:break-word;position:relative}
+.ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.bot{align-self:flex-start;background:#ffffff;color:#1e293b;border:1px solid #dbe5f2;border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.ai-msg-actions{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;flex-wrap:wrap}
+.ai-mini-btn{background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer}
+.ai-mini-btn:hover{background:#e0f2fe;color:#0369a1;border-color:#7dd3fc}
+.ai-input-bar{display:flex;gap:8px;align-items:flex-end}
+.ai-input-bar textarea{min-height:56px;max-height:160px;flex:1;border:2px solid #93c5fd;background:#fff;font-size:15px}
+.ai-doc-box{font-family:"Noto Sans Devanagari","Mangal",Arial,sans-serif;font-size:16px;line-height:1.85;min-height:290px;background:#fff}
+.ai-split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:780px){.ai-split{grid-template-columns:1fr}.ai-msg{max-width:95%}}
+.svc-ai-modal-bg{position:fixed;inset:0;background:rgba(11,37,69,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000000;padding:16px}
+.svc-ai-modal-card{background:#fff;max-width:480px;width:100%;border-radius:14px;border-top:5px solid #155eef;box-shadow:0 15px 40px rgba(0,0,0,.35);padding:22px 20px;color:#1e293b}
+</style>
+
+<!-- TAB 7: DIRECT ZERO-KEY AI+ ASSISTANT & DRAFTER -->
+<section class="panel" id="aidraft">
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge" id="aiEngineBadge">DIRECT AI · READY</span></h2>
+      <div class="row">
+        <button type="button" class="btn danger" id="aiChatClearBtn">🗑️ नई चैट</button>
+        <button type="button" class="btn danger hidden" id="aiRevokeDraftBtn">🔒 अनुमति हटाएँ</button>
+      </div>
+    </div>
+    <p class="hint">सीधे कोई भी प्रश्न पूछें या सरकारी आदेश, नोटिस, शपथ-पत्र अथवा आवेदन लिखवाएँ — बिना किसी API Key या सेटिंग के तुरंत काम करता है।</p>
+
+    <div id="aiChatWindow" class="ai-chat-window">
+      <div class="ai-msg bot">नमस्ते! मैं आपका <b>AI+ Assistant</b> हूँ। आप मुझसे किसी भी विषय पर सटीक प्रश्न पूछ सकते हैं या कोई भी सरकारी आदेश, लीगल नोटिस, अनुबंध अथवा आवेदन तैयार करवा सकते हैं। बताइए, मैं आपकी क्या सहायता करूँ?</div>
+    </div>
+
+    <div class="ai-input-bar">
+      <textarea id="aiFreePrompt" placeholder="यहाँ अपना सवाल या ड्राफ़्ट का पूरा मैटर लिखें... (Enter से भेजें, नई लाइन के लिए Shift+Enter)"></textarea>
+      <button type="button" class="btn primary" id="aiSendChatBtn" style="height:56px;padding:0 22px;font-size:15px">भेजें ➤</button>
+    </div>
+
+    <div id="aiDraftStatus" class="status" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- TAB 8: AI+ OLD/BLURRY PAPER SCANNER & NEURAL ENGLISH->HINDI TRANSLATOR -->
+<section class="panel" id="aitranslate">
+  <div class="card">
+    <h2>AI+ Document Scanner &amp; Neural Hindi Translator <span class="ai-badge">OFFLINE HD OCR + FAST ONLINE AI</span></h2>
+    <p class="hint">पुराने या धुंधले कागज़ (JPG/PNG), PDF या Word (.docx) फ़ाइल चुनें। <b>HD OCR स्कैनिंग आपके ब्राउज़र में ऑफ़लाइन</b> होगी, और उसके बाद तेज़ ऑनलाइन Neural AI इंजन किसी भी जटिल अंग्रेजी पत्र का शुद्ध हिंदी में अनुवाद करेगा।</p>
+    <div class="grid">
+      <div>
+        <label>दस्तावेज़ चुनें (PDF, Image, PNG, Word .docx)</label>
+        <input type="file" id="aiTransFile" accept=".pdf,.docx,.doc,.txt,image/*">
+        <div class="row" style="margin-top:7px">
+          <button type="button" class="btn danger" id="aiTransClearBtn">× Clear All</button>
+          <span class="small" id="aiTransFileInfo">कोई फ़ाइल चयनित नहीं</span>
+        </div>
+      </div>
+      <div>
+        <label>स्कैन गुणवत्ता सुधार (Offline Old/Blurry Paper)</label>
+        <select id="aiTransMode">
+          <option value="hd_auto" selected>HD Auto-Enhance (पुराने/धुंधले कागज़ हेतु)</option>
+          <option value="high_contrast">Ultra B&amp;W Contrast (अत्यधिक फीकी स्याही हेतु)</option>
+          <option value="normal">Standard Scan (साफ़ प्रिंटेड पेज हेतु)</option>
+        </select>
+      </div>
+      <div>
+        <label>अनुवाद शब्दावली सुधार</label>
+        <select id="aiTransDomain">
+          <option value="general_official" selected>सामान्य एवं प्रशासनिक हिंदी</option>
+          <option value="legal_court">विधिक एवं न्यायालयी शब्दावली</option>
+          <option value="engineering_tender">अभियांत्रिकी एवं संवेदक शब्दावली</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <button type="button" class="btn primary" id="aiScanRunBtn">🔍 1. Offline HD Scan (Extract English)</button>
+      <button type="button" class="btn primary" id="aiTranslateRunBtn" style="background:linear-gradient(135deg,#c2410c,#ea580c);border-color:#ea580c">🌐 2. Translate to Pure Hindi (Fast AI)</button>
+      <button type="button" class="btn" id="aiTransWordBtn">📘 Download Hindi Word (.doc)</button>
+      <button type="button" class="btn" id="aiTransTxtBtn">💾 Download .txt</button>
+      <button type="button" class="btn" id="aiTransPrintBtn">🖨️ Print / Save PDF</button>
+      <button type="button" class="btn" id="aiTransCopyBtn">📄 Copy Hindi</button>
+      <button type="button" class="btn danger hidden" id="aiRevokeTransBtn">🔒 AI अनुमति हटाएँ</button>
+    </div>
+
+    <div id="aiTransStatus" class="status" role="status" aria-live="polite"></div>
+
+    <div class="ai-split" style="margin-top:12px">
+      <div>
+        <label>स्कैन किया गया English टेक्स्ट (Offline Sentence-Reflowed):</label>
+        <textarea id="aiEnglishText" class="ai-doc-box" placeholder="फ़ाइल स्कैन करने के बाद यहाँ साफ़ जुड़ा हुआ English टेक्स्ट आएगा (आप सीधे टाइप/पेस्ट भी कर सकते हैं)..."></textarea>
+      </div>
+      <div>
+        <label>अनुवादित शुद्ध हिंदी दस्तावेज़ (Human-Grade Hindi Output):</label>
+        <textarea id="aiHindiText" class="ai-doc-box" placeholder="यहाँ पूरे वाक्यों का शुद्ध हिंदी अनुवाद तैयार होगा..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transparent Privacy Consent Modal -->
+<div id="svcAiConsentModal" class="svc-ai-modal-bg">
+  <div class="svc-ai-modal-card">
+    <h3 style="margin:0 0 10px;color:#003366">🤖 AI+ ऑनलाइन प्रोसेसिंग सूचना</h3>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #155eef;padding:12px;border-radius:8px;font-size:13.5px;line-height:1.65;margin-bottom:15px">
+      इस पोर्टल के <b>बाकी सभी टूल्स (PDF, फोटो, टाइपिंग, Excel, कैलकुलेटर और HD OCR स्कैनिंग) 100% ऑफ़लाइन</b> आपके ब्राउज़र में ही काम करते हैं।<br><br>
+      आपके मोबाइल या पीसी को धीमा होने से बचाने के लिए <b>AI+ Assistant और हिंदी अनुवाद फ़ीचर सुरक्षित ऑनलाइन AI</b> का उपयोग करते हैं। आप <b>'🔒 अनुमति हटाएँ'</b> बटन से कभी भी यह अनुमति वापस ले सकते हैं।
+    </div>
+    <div class="row" style="justify-content:flex-end">
+      <button type="button" class="btn" id="svcAiCancelBtn">✕ रद्द करें</button>
+      <button type="button" class="btn primary" id="svcAiAcceptBtn">✓ सहमत हूँ, AI+ चालू करें</button>
+    </div>
+  </div>
+</div>
+
+<script id="svc-ai-plus-engine">
+(function(){
+  "use strict";
+  const el = id => document.getElementById(id);
+  const AI_CONSENT_KEY = "svc_ai_hybrid_consent_v1";
+  let pendingAction = null;
+  let chatHistory = [];
+
+  const tabBar = el("tabs");
+  if (tabBar && !tabBar.querySelector('[data-tab="aidraft"]')) {
+    const b1 = document.createElement("button");
+    b1.dataset.tab = "aidraft";
+    b1.textContent = "🤖 AI+ Assistant";
+    const b2 = document.createElement("button");
+    b2.dataset.tab = "aitranslate";
+    b2.textContent = "🌐 AI+ Scan & Translate";
+    [b1, b2].forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("active", x === btn));
+        document.querySelectorAll(".panel").forEach(x => x.classList.toggle("active", x.id === btn.dataset.tab));
+      });
+      tabBar.appendChild(btn);
+    });
+  }
+
+  function hasAiConsent() {
+    try { return localStorage.getItem(AI_CONSENT_KEY) === "accepted"; } catch (e) { return false; }
+  }
+
+  function syncAiUIState() {
+    const ok = hasAiConsent();
+    ["aiRevokeDraftBtn", "aiRevokeTransBtn"].forEach(id => {
+      const b = el(id);
+      if (b) b.classList.toggle("hidden", !ok);
+    });
+  }
+  syncAiUIState();
+
+  function runWithAiConsent(fn) {
+    if (hasAiConsent()) {
+      fn();
+    } else {
+      pendingAction = fn;
+      el("svcAiConsentModal").style.display = "flex";
+    }
+  }
+
+  el("svcAiCancelBtn").onclick = () => { el("svcAiConsentModal").style.display = "none"; pendingAction = null; };
+  el("svcAiAcceptBtn").onclick = () => {
+    try { localStorage.setItem(AI_CONSENT_KEY, "accepted"); } catch (e) {}
+    el("svcAiConsentModal").style.display = "none";
+    syncAiUIState();
+    const fn = pendingAction;
+    pendingAction = null;
+    if (fn) fn();
+  };
+
+  function revokeAiConsent() {
+    try { localStorage.removeItem(AI_CONSENT_KEY); } catch (e) {}
+    syncAiUIState();
+    msg("aiDraftStatus", "🔒 AI ऑनलाइन अनुमति हटा दी गई है।", "info");
+    msg("aiTransStatus", "🔒 AI ऑनलाइन अनुमति हटा दी गई है।", "info");
+  }
+  if (el("aiRevokeDraftBtn")) el("aiRevokeDraftBtn").onclick = revokeAiConsent;
+  if (el("aiRevokeTransBtn")) el("aiRevokeTransBtn").onclick = revokeAiConsent;
+
+  function exportAsWordDoc(title, bodyText, filename) {
+    if (!bodyText || !bodyText.trim()) return false;
+    const escaped = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+    const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'><title>${title}</title>
+      <style>body{font-family:'Mangal','Noto Sans Devanagari',Arial,sans-serif;font-size:13pt;line-height:1.75;margin:1in;}</style></head>
+      <body>${escaped}</body></html>`;
+    downloadBlob(new Blob(["\ufeff", html], { type: "application/msword" }), filename);
+    return true;
+  }
+
+  function printFormattedText(title, bodyText) {
+    if (!bodyText || !bodyText.trim()) return false;
+    const w = window.open("", "_blank", "width=850,height=900");
+    if (!w) { window.print(); return true; }
+    const escaped = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>
+      <style>body{font-family:"Mangal","Noto Sans Devanagari",Arial,sans-serif;font-size:14pt;line-height:1.8;padding:36px;color:#000}@media print{body{padding:0}}</style>
+      </head><body>${escaped}</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); }, 300);
+    return true;
+  }
+
+  function isUnsafeRequest(txt) {
+    const blocked = /(फर्जी|नकली\s*(?:दस्तावेज|सर्टिफिकेट|मार्कशीट|स्टांप|हस्ताक्षर|नोटिस)|fake\s*(?:document|certificate|marksheet|signature|stamp|notice)|forge|forgery|धमकी|ब्लैकमेल|blackmail|extortion|हफ्ता\s*वसूली|जालसाजी|fraud|scam|defam|अवैध\s*कब्जा)/i;
+    return blocked.test(txt);
+  }
+
+  function appendChatBubble(role, text, elapsedSec) {
+    const win = el("aiChatWindow");
+    const div = document.createElement("div");
+    div.className = `ai-msg ${role}`;
+    const bodySpan = document.createElement("div");
+    bodySpan.textContent = text;
+    div.appendChild(bodySpan);
+
+    if (role === "bot") {
+      const bar = document.createElement("div");
+      bar.className = "ai-msg-actions";
+
+      const bCopy = document.createElement("button");
+      bCopy.className = "ai-mini-btn";
+      bCopy.textContent = "📄 Copy";
+      bCopy.onclick = async () => {
+        await navigator.clipboard.writeText(text);
+        bCopy.textContent = "✓ Copied";
+        setTimeout(() => bCopy.textContent = "📄 Copy", 1500);
+      };
+
+      const bWord = document.createElement("button");
+      bWord.className = "ai-mini-btn";
+      bWord.textContent = "📘 Word (.doc)";
+      bWord.onclick = () => exportAsWordDoc("AI Response", text, "SVC-AI-Output.doc");
+
+      const bPrint = document.createElement("button");
+      bPrint.className = "ai-mini-btn";
+      bPrint.textContent = "🖨️ Print / PDF";
+      bPrint.onclick = () => printFormattedText("AI Response", text);
+
+      bar.append(bCopy, bWord, bPrint);
+      if (elapsedSec) {
+        const sp = document.createElement("span");
+        sp.className = "small";
+        sp.style.marginLeft = "auto";
+        sp.textContent = `⚡ ${elapsedSec}s`;
+        bar.appendChild(sp);
+      }
+      div.appendChild(bar);
+    }
+
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+  }
+
+  // ================= PART A: ZERO-KEY DIRECT AI ENGINE (PUTER.JS) =================
+  async function queryDirectAI(messages) {
+    if (!window.puter || !window.puter.ai) {
+      throw Error("AI लाइब्रेरी लोड नहीं हो पाई। कृपया पेज रिफ्रेश (F5) करें और इंटरनेट जाँचें।");
+    }
+    const models = ["gpt-4o-mini", "claude-3-5-sonnet", "gemini-2.0-flash"];
+    let lastErr = null;
+    for (const model of models) {
+      try {
+        const res = await window.puter.ai.chat(messages, { model });
+        const text = typeof res === "string"
+          ? res
+          : (res?.message?.content?.[0]?.text || res?.message?.content || res?.text || "");
+        if (text && text.trim()) return text;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw Error(lastErr?.message || "AI से उत्तर प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।");
+  }
+
+  async function sendToPureAI() {
+    const inputEl = el("aiFreePrompt");
+    const userText = inputEl.value.trim();
+    if (!userText) return;
+
+    if (isUnsafeRequest(userText)) {
+      return msg("aiDraftStatus", "⚠️ सुरक्षा नीति: फर्जी दस्तावेज़, धमकी, जालसाजी या गैर-कानूनी कार्य हेतु सहायता उपलब्ध नहीं है।", "bad");
+    }
+
+    el("aiDraftStatus").className = "status";
+    inputEl.value = "";
+    appendChatBubble("user", userText);
+    chatHistory.push({ role: "user", content: userText });
+
+    const sendBtn = el("aiSendChatBtn");
+    sendBtn.disabled = true;
+    sendBtn.textContent = "प्रोसेसिंग…";
+    const t0 = performance.now();
+
+    const systemPrompt = `You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal.
+1. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
+2. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
+3. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered. Never repeat sentences unnecessarily.
+4. Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
+5. Output clean plain text without markdown asterisks (**) or hash headers (#).`;
+
+    try {
+      const messages = [{ role: "system", content: systemPrompt }, ...chatHistory.slice(-8)];
+      let reply = await queryDirectAI(messages);
+      reply = reply.replace(/\*\*/g, "").replace(/^#+\s*/gm, "").trim();
+
+      const sec = ((performance.now() - t0) / 1000).toFixed(1);
+      chatHistory.push({ role: "assistant", content: reply });
+      appendChatBubble("bot", reply, sec);
+    } catch (e) {
+      appendChatBubble("bot", "⚠️ " + (e.message || "कृपया इंटरनेट जाँचें और पुनः प्रयास करें।"));
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "भेजें ➤";
+      inputEl.focus();
+    }
+  }
+
+  el("aiSendChatBtn").onclick = () => runWithAiConsent(sendToPureAI);
+  el("aiFreePrompt").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      runWithAiConsent(sendToPureAI);
+    }
+  });
+
+  el("aiChatClearBtn").onclick = () => {
+    chatHistory = [];
+    el("aiChatWindow").innerHTML = `<div class="ai-msg bot">नई चैट शुरू की गई है। बताइए, मैं आपकी क्या सहायता करूँ?</div>`;
+    el("aiDraftStatus").className = "status";
+  };
+
+  // ================= PART B: OFFLINE HD OCR + FAST ONLINE NEURAL TRANSLATOR =================
+  el("aiTransFile").onchange = () => {
+    const f = el("aiTransFile").files[0];
+    el("aiTransFileInfo").textContent = f ? `${f.name} (${prettyBytes(f.size)})` : "कोई फ़ाइल चयनित नहीं";
+  };
+
+  el("aiTransClearBtn").onclick = () => {
+    el("aiTransFile").value = "";
+    el("aiTransFileInfo").textContent = "कोई फ़ाइल चयनित नहीं";
+    el("aiEnglishText").value = "";
+    el("aiHindiText").value = "";
+    el("aiTransStatus").className = "status";
+    el("aiTransStatus").textContent = "";
+  };
+
+  function preprocessDocumentCanvas(srcCanvas, mode) {
+    const scale = (srcCanvas.width < 1800) ? 2.0 : 1.35;
+    const w = Math.min(3400, Math.round(srcCanvas.width * scale));
+    const h = Math.min(3400, Math.round(srcCanvas.height * scale));
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(srcCanvas, 0, 0, w, h);
+    if (mode === "normal") return c;
+
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    const gray = new Uint8ClampedArray(w * h);
+    let minL = 255, maxL = 0;
+
+    for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+      const lum = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+      gray[p] = lum;
+      if (lum < minL) minL = lum;
+      if (lum > maxL) maxL = lum;
+    }
+    const span = Math.max(1, maxL - minL);
+    const normArr = new Uint8ClampedArray(w * h);
+    const threshold = mode === "high_contrast" ? 168 : 152;
+
+    for (let k = 0; k < gray.length; k++) {
+      let v = ((gray[k] - minL) / span) * 255;
+      v = (mode === "high_contrast")
+        ? (v < threshold ? Math.max(0, v * 0.45) : 255)
+        : (v < threshold ? Math.max(0, v * 0.62) : Math.min(255, v * 1.22));
+      normArr[k] = Math.round(v);
+    }
+
+    for (let y = 1; y < h - 1; y++) {
+      for (let x = 1; x < w - 1; x++) {
+        const idx = y * w + x;
+        const sharp = normArr[idx] * 5 - normArr[idx - 1] - normArr[idx + 1] - normArr[idx - w] - normArr[idx + w];
+        const px = Math.min(255, Math.max(0, sharp));
+        const r = idx * 4;
+        d[r] = px; d[r + 1] = px; d[r + 2] = px; d[r + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return c;
+  }
+
+  function reflowBrokenSentences(raw) {
+    if (!raw) return "";
+    let t = raw.replace(/\r\n/g, "\n").replace(/[ \t]+/g, " ");
+    t = t.replace(/([a-zA-Z])-\s*\n\s*([a-zA-Z])/g, "$1$2");
+    const paras = t.split(/\n{2,}/);
+    return paras.map(p => {
+      const lines = p.split("\n").map(x => x.trim()).filter(Boolean);
+      let joined = "";
+      for (let i = 0; i < lines.length; i++) {
+        const cur = lines[i];
+        if (!joined) { joined = cur; continue; }
+        if (/^(\d+[\.\)]|[a-zA-Z][\.\)]|•|-|Subject|Ref|To,|From,|Date|Sub:|Sir,|Madam,)/i.test(cur) || /[.!?:।]$/.test(joined)) {
+          joined += "\n" + cur;
+        } else {
+          joined += " " + cur;
+        }
+      }
+      return joined;
+    }).join("\n\n").trim();
+  }
+
+  el("aiScanRunBtn").onclick = async () => {
+    const f = el("aiTransFile").files[0];
+    if (!f) return msg("aiTransStatus", "पहले PDF, Photo (JPG/PNG) या Word (.docx) फ़ाइल चुनें।", "bad");
+    const mode = el("aiTransMode").value;
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+
+    el("aiScanRunBtn").disabled = true;
+    showPdfTask("Offline HD Document Scanner", "आपके ब्राउज़र में ऑफ़लाइन HD स्कैनिंग जारी है…", false);
+    try {
+      let extracted = "";
+      if (ext === "txt") {
+        extracted = await f.text();
+      } else if (ext === "docx" || ext === "doc") {
+        if (!window.mammoth) {
+          await new Promise((res, rej) => {
+            const s = document.createElement("script");
+            s.src = "libs/mammoth.browser.min.js";
+            s.onload = res; s.onerror = () => rej(Error("libs/mammoth.browser.min.js नहीं मिली।"));
+            document.head.appendChild(s);
+          });
+        }
+        const res = await window.mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() });
+        extracted = res.value || "";
+      } else if (ext === "pdf" || f.type === "application/pdf") {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
+        const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+        const worker = await Tesseract.createWorker("eng", 1, {
+          workerPath: new URL("libs/worker.min.js", location.href).href,
+          corePath: new URL("libs/", location.href).href,
+          langPath: new URL("libs", location.href).href,
+          workerBlobURL: false
+        });
+        for (let p = 1; p <= pdf.numPages; p++) {
+          updatePdfTask(p - 1, pdf.numPages, `Offline HD Scan · PDF पेज ${p}/${pdf.numPages}`);
+          const page = await pdf.getPage(p);
+          const vp = page.getViewport({ scale: 2.2 });
+          const rawC = document.createElement("canvas");
+          rawC.width = vp.width; rawC.height = vp.height;
+          await page.render({ canvasContext: rawC.getContext("2d"), viewport: vp }).promise;
+          const hdC = preprocessDocumentCanvas(rawC, mode);
+          const r = await worker.recognize(hdC);
+          extracted += (extracted ? "\n\n" : "") + (r.data.text || "");
+          rawC.width = 1; hdC.width = 1;
+        }
+        await worker.terminate();
+      } else {
+        const url = URL.createObjectURL(f);
+        const img = await new Promise((res, rej) => {
+          const im = new Image();
+          im.onload = () => res(im);
+          im.onerror = () => rej(Error("इमेज फ़ाइल पढ़ी नहीं जा सकी।"));
+          im.src = url;
+        });
+        const rawC = document.createElement("canvas");
+        rawC.width = img.naturalWidth || img.width;
+        rawC.height = img.naturalHeight || img.height;
+        rawC.getContext("2d").drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        const hdC = preprocessDocumentCanvas(rawC, mode);
+        const worker = await Tesseract.createWorker("eng", 1, {
+          workerPath: new URL("libs/worker.min.js", location.href).href,
+          corePath: new URL("libs/", location.href).href,
+          langPath: new URL("libs", location.href).href,
+          workerBlobURL: false,
+          logger: m => { if (m.status === "recognizing text") updatePdfTask(Math.round((m.progress || 0) * 100), 100, "ऑफ़लाइन HD अक्षरों की पहचान जारी…"); }
+        });
+        const r = await worker.recognize(hdC);
+        extracted = r.data.text || "";
+        await worker.terminate();
+        rawC.width = 1; hdC.width = 1;
+      }
+
+      const cleanEng = reflowBrokenSentences(extracted);
+      if (!cleanEng) throw Error("दस्तावेज़ में पढ़ने योग्य टेक्स्ट नहीं मिला।");
+      el("aiEnglishText").value = cleanEng;
+      msg("aiTransStatus", "✓ ऑफ़लाइन HD स्कैनिंग पूरी! अब '🌐 2. Translate to Pure Hindi (Fast AI)' दबाएँ।", "good");
+    } catch (e) {
+      msg("aiTransStatus", e.message || String(e), "bad");
+    } finally {
+      el("aiScanRunBtn").disabled = false;
+      await hidePdfTask();
+    }
+  };
+
+  function polishDomainHindi(hindiText, domain) {
+    let t = hindiText
+      .replace(/विषय\s*:/g, "विषय:-")
+      .replace(/संदर्भ\s*:/g, "संदर्भ:-")
+      .replace(/ईमानदारी से आपका,?/g, "भवदीय,")
+      .replace(/आपका विश्वासपात्र,?/g, "भवदीय,")
+      .replace(/आदरणीय महोदय,?/g, "महोदय,");
+
+    if (domain === "legal_court") {
+      t = t.replace(/कानूनी नोटिस/g, "विधिक सूचना (Legal Notice)")
+           .replace(/स्थगन आदेश/g, "स्थगन आदेश (Stay Order)")
+           .replace(/हलफनामा/g, "शपथ-पत्र (Affidavit)");
+    } else if (domain === "engineering_tender") {
+      t = t.replace(/ठेकेदार/g, "संवेदक (Contractor)")
+           .replace(/बयाना राशि/g, "धरोहर राशि (EMD)")
+           .replace(/कार्य आदेश/g, "कार्यादेश (Work Order)");
+    }
+    return t;
+  }
+
+  function splitTextForNeural(text, maxLen = 1400) {
+    const lines = text.split("\n");
+    const chunks = [];
+    let cur = "";
+    for (const line of lines) {
+      if ((cur + "\n" + line).length > maxLen && cur) {
+        chunks.push(cur);
+        cur = line;
+      } else {
+        cur = cur ? (cur + "\n" + line) : line;
+      }
+    }
+    if (cur) chunks.push(cur);
+    return chunks;
+  }
+
+  async function executeNeuralTranslation() {
+    const eng = el("aiEnglishText").value;
+    if (!eng || !eng.trim()) return msg("aiTransStatus", "पहले कोई फ़ाइल स्कैन करें या बाएँ बॉक्स में English टेक्स्ट पेस्ट करें।", "bad");
+    const domain = el("aiTransDomain").value;
+
+    el("aiTranslateRunBtn").disabled = true;
+    showPdfTask("Fast Online Neural Translator", "पूरे वाक्यों का संदर्भ सहित शुद्ध हिंदी में अनुवाद हो रहा है…", false);
+    try {
+      const chunks = splitTextForNeural(eng, 1400);
+      const translatedParts = [];
+
+      for (let i = 0; i < chunks.length; i++) {
+        updatePdfTask(i, chunks.length, `अनुवाद प्रगति · भाग ${i + 1}/${chunks.length}`);
+        const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=hi&dt=t&q=" + encodeURIComponent(chunks[i]);
+        const resp = await fetch(url);
+        if (!resp.ok) throw Error("अनुवाद सर्वर से संपर्क नहीं हो सका।");
+        const data = await resp.json();
+        let partHindi = "";
+        if (Array.isArray(data) && Array.isArray(data[0])) {
+          data[0].forEach(seg => { if (seg && seg[0]) partHindi += seg[0]; });
+        }
+        translatedParts.push(partHindi);
+      }
+
+      const rawHindi = translatedParts.join("\n");
+      el("aiHindiText").value = polishDomainHindi(rawHindi, domain);
+      msg("aiTransStatus", "✓ शुद्ध हिंदी अनुवाद तैयार है! आप इसे Word (.doc), PDF या .txt में डाउनलोड कर सकते हैं।", "good");
+    } catch (e) {
+      msg("aiTransStatus", "अनुवाद त्रुटि: इंटरनेट कनेक्शन जाँचें या पुनः प्रयास करें। (" + (e.message || String(e)) + ")", "bad");
+    } finally {
+      el("aiTranslateRunBtn").disabled = false;
+      await hidePdfTask();
+    }
+  }
+
+  el("aiTranslateRunBtn").onclick = () => runWithAiConsent(executeNeuralTranslation);
+
+  el("aiTransWordBtn").onclick = () => {
+    if (!exportAsWordDoc("Translated Hindi Document", el("aiHindiText").value, "SVC-Translated-Hindi.doc"))
+      return msg("aiTransStatus", "डाउनलोड करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
+    msg("aiTransStatus", "✓ हिंदी Word (.doc) फ़ाइल डाउनलोड हो गई।", "good");
+  };
+  el("aiTransTxtBtn").onclick = () => {
+    const t = el("aiHindiText").value;
+    if (!t.trim()) return msg("aiTransStatus", "डाउनलोड करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
+    downloadBlob(new Blob([t], { type: "text/plain;charset=utf-8" }), "SVC-Translated-Hindi.txt");
+    msg("aiTransStatus", "✓ Text (.txt) फ़ाइल डाउनलोड हो गई।", "good");
+  };
+  el("aiTransPrintBtn").onclick = () => {
+    if (!printFormattedText("Translated Hindi Document", el("aiHindiText").value))
+      return msg("aiTransStatus", "प्रिंट करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
+  };
+  el("aiTransCopyBtn").onclick = async () => {
+    const t = el("aiHindiText").value;
+    if (!t.trim()) return msg("aiTransStatus", "कॉपी करने से पहले हिंदी अनुवाद तैयार करें।", "bad");
+    await navigator.clipboard.writeText(t);
+    msg("aiTransStatus", "✓ अनुवादित हिंदी टेक्स्ट कॉपी हो गया!", "good");
+  };
+})();
 </script>
 <script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
 </body></html>
