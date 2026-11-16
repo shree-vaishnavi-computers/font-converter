@@ -822,7 +822,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     </div>
 
     <div class="ai-attach-bar">
-      <input type="file" id="aiChatFileInput" accept=".pdf,.docx,.doc,.txt" class="hidden">
+      <input type="file" id="aiChatFileInput" accept=".pdf,.docx,.doc,.txt,image/*" class="hidden">
       <button type="button" class="btn" id="aiAttachBtn" style="padding:5px 11px;font-size:12.5px">📎 फ़ाइल जोड़ें (PDF / Word / TXT)</button>
       <span id="aiAttachPill" class="ai-attach-pill">
         <span id="aiAttachName"></span>
@@ -1147,9 +1147,15 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return null;
   }
 
-  async function extractLocalDocumentText(file) {
+  async function extractLocalDocumentOrVision(file) {
     const ext = (file.name.split(".").pop() || "").toLowerCase();
-    if (ext === "txt") return (await file.text()).trim();
+
+    // 1. Plain Text
+    if (ext === "txt") {
+      return { type: "text", text: (await file.text()).trim() };
+    }
+
+    // 2. Word (.docx)
     if (ext === "docx" || ext === "doc") {
       if (!window.mammoth) {
         await new Promise((res, rej) => {
@@ -1160,28 +1166,66 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         });
       }
       const res = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-      return (res.value || "").trim();
+      return { type: "text", text: (res.value || "").trim() };
     }
+
+    // 3. Direct Image (JPG/PNG/WebP) -> Send directly to Vision AI like Gemini/ChatGPT
+    if (file.type.startsWith("image/") || ["jpg", "jpeg", "png", "webp"].includes(ext)) {
+      const url = URL.createObjectURL(file);
+      const img = await new Promise((res, rej) => {
+        const im = new Image();
+        im.onload = () => res(im);
+        im.onerror = () => rej(Error("इमेज फ़ाइल पढ़ी नहीं जा सकी।"));
+        im.src = url;
+      });
+      const maxW = 1600;
+      const scale = Math.min(1, maxW / (img.naturalWidth || img.width || 1));
+      const c = document.createElement("canvas");
+      c.width = Math.round((img.naturalWidth || img.width) * scale);
+      c.height = Math.round((img.naturalHeight || img.height) * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = c.toDataURL("image/jpeg", 0.88);
+      c.width = 1;
+      return { type: "vision", images: [dataUrl], label: "1 Image" };
+    }
+
+    // 4. PDF -> Digital Text OR High-Res Page Images for Vision AI (up to 4 pages)
     if (ext === "pdf" || file.type === "application/pdf") {
       pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
       const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
       let fullText = "";
-      const maxPages = Math.min(pdf.numPages, 12);
-      for (let p = 1; p <= maxPages; p++) {
+      const maxTextPages = Math.min(pdf.numPages, 12);
+      for (let p = 1; p <= maxTextPages; p++) {
         const page = await pdf.getPage(p);
         const tc = await page.getTextContent();
-        const pageStr = tc.items.map(it => it.str).join(" ");
+        const pageStr = tc.items.map(it => it.str).join(" ").trim();
         fullText += (fullText ? "\n\n" : "") + pageStr;
       }
-      if (fullText.trim().length < 25) {
-        throw Error("यह स्कैन की गई इमेज PDF है—कृपया पहले '🌐 AI+ Scan & Translate' टैब में इसका अनुवाद करें।");
-      }
-      return fullText.trim();
-    }
-    throw Error("कृपया केवल PDF, Word (.docx) या Text (.txt) फ़ाइल चुनें।");
-  }
 
-  if (el("aiAttachBtn")) el("aiAttachBtn").onclick = () => el("aiChatFileInput").click();
+      // If digital text exists, use it directly
+      if (fullText.replace(/\s+/g, "").length >= 40) {
+        return { type: "text", text: fullText.trim() };
+      }
+
+      // Otherwise render scanned PDF pages as crisp images for Vision AI (Gemini / GPT-4o)
+      const visionPages = Math.min(pdf.numPages, 4);
+      const images = [];
+      for (let p = 1; p <= visionPages; p++) {
+        const page = await pdf.getPage(p);
+        const vp = page.getViewport({ scale: 1.8 });
+        const c = document.createElement("canvas");
+        c.width = vp.width;
+        c.height = vp.height;
+        await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+        images.push(c.toDataURL("image/jpeg", 0.85));
+        c.width = 1;
+      }
+      return { type: "vision", images, label: `${visionPages} Scanned Page(s)` };
+    }
+
+    throw Error("कृपया PDF, Word (.docx), Image (JPG/PNG) या Text (.txt) फ़ाइल चुनें।");
+  }
   if (el("aiAttachRemoveBtn")) {
     el("aiAttachRemoveBtn").onclick = () => {
       attachedDoc = null;
@@ -1194,14 +1238,19 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     el("aiChatFileInput").onchange = async () => {
       const f = el("aiChatFileInput").files[0];
       if (!f) return;
-      msg("aiDraftStatus", "📄 दस्तावेज़ पढ़ा जा रहा है…", "info");
+      msg("aiDraftStatus", "📄 दस्तावेज़/फ़ोटो तैयार की जा रही है…", "info");
       try {
-        const txt = await extractLocalDocumentText(f);
-        if (!txt) throw Error("फ़ाइल में पढ़ने योग्य टेक्स्ट नहीं मिला।");
-        attachedDoc = { name: f.name, text: txt.slice(0, 14000) };
-        el("aiAttachName").textContent = `📄 ${f.name}`;
+        const parsed = await extractLocalDocumentOrVision(f);
+        if (parsed.type === "text" && !parsed.text) throw Error("फ़ाइल में पढ़ने योग्य टेक्स्ट नहीं मिला।");
+        attachedDoc = {
+          name: f.name,
+          type: parsed.type,
+          text: parsed.text ? parsed.text.slice(0, 14000) : "",
+          images: parsed.images || []
+        };
+        el("aiAttachName").textContent = `📎 ${f.name}${parsed.label ? " (" + parsed.label + ")" : ""}`;
         el("aiAttachPill").style.display = "inline-flex";
-        msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना निर्देश लिखकर भेजें।`, "good");
+        msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना प्रश्न लिखकर भेजें।`, "good");
       } catch (e) {
         attachedDoc = null;
         el("aiAttachPill").style.display = "none";
@@ -1320,8 +1369,11 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     if (!rawPrompt && !attachedDoc) return;
 
     const userInstruction = rawPrompt || "संलग्न दस्तावेज़ का संक्षिप्त सार और मुख्य बिंदु हिंदी में बताएं।";
+    const hasVisionImages = attachedDoc && attachedDoc.type === "vision" && attachedDoc.images && attachedDoc.images.length > 0;
     const fullUserContent = attachedDoc
-      ? `[संलग्न दस्तावेज़: ${attachedDoc.name}]\n${attachedDoc.text}\n\n[उपयोगकर्ता निर्देश]:\n${userInstruction}`
+      ? (hasVisionImages
+          ? `[संलग्न विज़ुअल दस्तावेज़: ${attachedDoc.name}]\nउपयोगकर्ता का प्रश्न/निर्देश: ${userInstruction}`
+          : `[संलग्न दस्तावेज़: ${attachedDoc.name}]\n${attachedDoc.text}\n\n[उपयोगकर्ता निर्देश]:\n${userInstruction}`)
       : userInstruction;
 
     if (isUnsafeRequest(fullUserContent)) {
@@ -1337,6 +1389,8 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     inputEl.value = "";
 
     const displayBadge = attachedDoc ? `📎 ${attachedDoc.name}\n${userInstruction}` : userInstruction;
+    const currentImages = hasVisionImages ? attachedDoc.images.slice() : [];
+    attachedDoc = null;
     attachedDoc = null;
     if (el("aiChatFileInput")) el("aiChatFileInput").value = "";
     if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
@@ -1348,7 +1402,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     win.appendChild(uDiv);
     win.scrollTop = win.scrollHeight;
 
-    chatHistory.push({ role: "user", content: fullUserContent, display: displayBadge });
+    chatHistory.push({ role: "user", content: fullUserContent, display: displayBadge, images: currentImages });
     saveSessionChat();
 
     stopRequested = false;
@@ -1396,7 +1450,18 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 
       const apiMessages = [
         { role: "system", content: systemPrompt },
-        ...chatHistory.slice(-10).map(m => ({ role: m.role, content: m.content }))
+        ...chatHistory.slice(-10).map(m => {
+          if (m.images && m.images.length) {
+            return {
+              role: m.role,
+              content: [
+                { type: "text", text: m.content },
+                ...m.images.map(url => ({ type: "image_url", image_url: { url } }))
+              ]
+            };
+          }
+          return { role: m.role, content: m.content };
+        })
       ];
 
       let fullReply = "";
