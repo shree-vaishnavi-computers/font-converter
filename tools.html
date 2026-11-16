@@ -1402,6 +1402,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       let fullReply = "";
       let activeModel = primary || "Auto-AI";
       let success = false;
+      let lastApiErr = "";
 
       for (const m of fallbackOrder) {
         if (stopRequested) break;
@@ -1429,10 +1430,32 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
             success = true;
             break;
           }
-        } catch (err) { /* try next fallback model */ }
+        } catch (err) {
+          lastApiErr = err?.message || err?.error?.message || String(err || "");
+        }
       }
 
-      if (!success && !stopRequested) throw Error("AI से उत्तर प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।");
+      if (!success && !stopRequested) {
+        if (/fund|credit|quota|limit|balance|402|429|rate|payment/i.test(lastApiErr)) {
+          const now = new Date();
+          const nextResetUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+          const diffMs = Math.max(60000, nextResetUTC - now);
+          const hrs = Math.floor(diffMs / 3600000);
+          const mins = Math.floor((diffMs % 3600000) / 60000);
+          const istTimeStr = nextResetUTC.toLocaleTimeString("hi-IN", {
+            timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true
+          });
+          const istDateStr = nextResetUTC.toLocaleDateString("hi-IN", {
+            timeZone: "Asia/Kolkata", day: "numeric", month: "long"
+          });
+          throw Error(
+            `आपके AI खाते की आज की मुफ़्त उपयोग सीमा (Free Quota) समाप्त हो गई है।\n` +
+            `⏳ संभावित नवीनीकरण (Renewal Time): ${istDateStr} को सुबह ${istTimeStr} (IST) बजे तक (लगभग ${hrs} घंटे ${mins} मिनट शेष)।\n` +
+            `💡 तुरंत उपयोग जारी रखने के लिए: आप ऊपर '🚪 Logout' करके किसी दूसरे खाते से लॉगिन कर सकते हैं या अपने खाते में बैलेंस जोड़ सकते हैं।`
+          );
+        }
+        throw Error("AI से उत्तर प्राप्त नहीं हो सका। कृपया इंटरनेट जाँचें या पुनः प्रयास करें।");
+      }
 
       fullReply = (fullReply || "(उपयोगकर्ता द्वारा रोका गया)").replace(/\*\*/g, "").replace(/^#+\s*/gm, "").trim();
       botUI.bodySpan.textContent = fullReply;
