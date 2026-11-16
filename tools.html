@@ -762,20 +762,25 @@ let numberResultText="";
 $("numberConvert").onclick=()=>{try{const raw=$("numberInput").value;if(raw==="")throw Error("Number लिखें।");const v=Number(raw);if(!Number.isFinite(v)||Math.abs(v)>99999999999999)throw Error("Valid number लिखें; अधिकतम supported सीमा 99,99,99,99,99,999.99 है।");const cents=Math.round(Math.abs(v)*100),whole=Math.floor(cents/100),paise=cents%100,hi=$("numberLang").value==="hi",fn=hi?hiIndian:enIndian;let s=fn(whole);if($("numberFormat").value==="currency"){s+=(hi?" रुपये":" Rupees");if(paise)s+=(hi?" और ":" and ")+fn(paise)+(hi?" पैसे":" Paise");s+=hi?" मात्र":" Only"}else if(paise)s+=(hi?" दशमलव ":" Point ")+String(paise);if(v<0)s=(hi?"ऋणात्मक ":"Minus ")+s;numberResultText=s;msg("numberResult",s,"good")}catch(e){msg("numberResult",e.message,"bad")}};
 $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigator.clipboard.writeText(numberResultText);msg("numberResult",numberResultText+"\nCopied.","good")}catch(e){msg("numberResult","Copy unavailable; text select करके copy करें।","info")}};
 </script>
-<!-- ================= SVC DIRECT ZERO-KEY HIGH-ACCURACY AI ASSISTANT + NEURAL TRANSLATOR ================= -->
+<!-- ================= SVC PRODUCTION AI+ ASSISTANT (STREAMING + FILE READER) + NEURAL TRANSLATOR ================= -->
 <style>
 .panel#aidraft .card:before{background:linear-gradient(180deg,#155eef,#0ea5e9)}
 .panel#aitranslate .card:before{background:linear-gradient(180deg,#ea580c,#f59e0b)}
 .ai-badge{display:inline-block;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.4px}
-.ai-chat-window{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:14px;height:410px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.ai-chat-window{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:14px;height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:10px}
 .ai-msg{max-width:86%;padding:12px 15px;border-radius:14px;font-size:15px;line-height:1.75;white-space:pre-wrap;word-wrap:break-word;position:relative}
 .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border-bottom-right-radius:4px}
 .ai-msg.bot{align-self:flex-start;background:#ffffff;color:#1e293b;border:1px solid #dbe5f2;border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
-.ai-msg-actions{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;flex-wrap:wrap}
+.ai-msg-actions{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;flex-wrap:wrap;align-items:center}
 .ai-mini-btn{background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer}
 .ai-mini-btn:hover{background:#e0f2fe;color:#0369a1;border-color:#7dd3fc}
+.ai-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.ai-chip{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;cursor:pointer}
+.ai-chip:hover{background:#dbeafe}
+.ai-attach-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.ai-attach-pill{display:none;align-items:center;gap:6px;background:#e0f2fe;border:1px solid #7dd3fc;color:#0369a1;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
 .ai-input-bar{display:flex;gap:8px;align-items:flex-end}
-.ai-input-bar textarea{min-height:56px;max-height:160px;flex:1;border:2px solid #93c5fd;background:#fff;font-size:15px}
+.ai-input-bar textarea{min-height:58px;max-height:170px;flex:1;border:2px solid #93c5fd;background:#fff;font-size:15px}
 .ai-doc-box{font-family:"Noto Sans Devanagari","Mangal",Arial,sans-serif;font-size:16px;line-height:1.85;min-height:290px;background:#fff}
 .ai-split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:780px){.ai-split{grid-template-columns:1fr}.ai-msg{max-width:95%}}
@@ -783,25 +788,47 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 .svc-ai-modal-card{background:#fff;max-width:480px;width:100%;border-radius:14px;border-top:5px solid #155eef;box-shadow:0 15px 40px rgba(0,0,0,.35);padding:22px 20px;color:#1e293b}
 </style>
 
-<!-- TAB 7: DIRECT ZERO-KEY HIGH-ACCURACY AI+ ASSISTANT & DRAFTER -->
+<!-- TAB 7: PRODUCTION LIVE-STREAMING AI+ ASSISTANT & DOCUMENT DRAFTER -->
 <section class="panel" id="aidraft">
   <div class="card">
-    <div class="row" style="justify-content:space-between;margin-bottom:8px">
-      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge" id="aiEngineBadge">GEMINI 2.5 / GPT-4o · ZERO-KEY</span></h2>
-      <div class="row">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+      <h2 style="margin:0">AI+ Assistant &amp; Smart Drafter <span class="ai-badge">LIVE STREAMING · PRO SUITE</span></h2>
+      <div class="row" style="gap:6px;flex-wrap:wrap">
+        <select id="aiModelSelect" style="padding:6px 10px;font-size:13px;font-weight:700;border-radius:8px;border:1px solid #93c5fd;background:#eff6ff;color:#1e3a8a">
+          <option value="gemini-2.5-flash" selected>⚡ Fast AI (Gemini 2.5 Flash — 1s)</option>
+          <option value="gpt-4o">🧠 Pro AI (GPT-4o — गहन ड्राफ्टिंग)</option>
+          <option value="claude-3-5-sonnet">⚖️ Legal AI (Claude 3.5 Sonnet)</option>
+        </select>
         <button type="button" class="btn danger" id="aiChatClearBtn">🗑️ नई चैट</button>
         <button type="button" class="btn danger hidden" id="aiRevokeDraftBtn">🔒 अनुमति हटाएँ</button>
       </div>
     </div>
-    <p class="hint">सीधे कोई भी प्रश्न पूछें या सरकारी आदेश, नोटिस, शपथ-पत्र अथवा आवेदन लिखवाएँ — बिना किसी API Key या सेटिंग के तुरंत काम करता है।</p>
+    <p class="hint">सीधे प्रश्न पूछें, कोई PDF/Word पत्र जोड़कर उसका उत्तर ड्राफ़्ट करवाएँ, या सरकारी आदेश, लीगल नोटिस व आवेदन लिखवाएँ।</p>
 
     <div id="aiChatWindow" class="ai-chat-window">
-      <div class="ai-msg bot">नमस्ते! मैं आपका <b>AI+ Assistant</b> हूँ। आप मुझसे किसी भी विषय पर सटीक प्रश्न पूछ सकते हैं या कोई भी सरकारी आदेश, लीगल नोटिस, अनुबंध अथवा आवेदन तैयार करवा सकते हैं। बताइए, मैं आपकी क्या सहायता करूँ?</div>
+      <div class="ai-msg bot">नमस्ते! मैं आपका <b>AI+ Assistant</b> हूँ। आप मुझसे किसी भी विषय पर प्रश्न पूछ सकते हैं, या नीचे <b>📎 फ़ाइल जोड़ें</b> से कोई PDF/Word पत्र लगाकर उसका जवाब या ड्राफ़्ट तैयार करवा सकते हैं।</div>
+    </div>
+
+    <div class="ai-chips">
+      <button type="button" class="ai-chip" data-preset="निम्नलिखित विवरण के आधार पर शुद्ध हिंदी प्रशासनिक भाषा में एक कार्यालय आदेश (Office Order) तैयार करें (सभी नाम, क्रमांक, दिनांक व राशि ज्यों-के-त्यों रखें):&#10;">📄 कार्यालय आदेश</button>
+      <button type="button" class="ai-chip" data-preset="निम्नलिखित विषय पर एक औपचारिक सरकारी/कार्यालयी पत्र (Official Letter) शुद्ध हिंदी में लिखें:&#10;">✉️ सरकारी पत्र</button>
+      <button type="button" class="ai-chip" data-preset="निम्नलिखित तथ्यों के आधार पर एक विधिक सूचना (Legal Notice) तैयार करें:&#10;">⚖️ लीगल नोटिस</button>
+      <button type="button" class="ai-chip" data-preset="संलग्न दस्तावेज़ / नीचे लिखे मैटर का संक्षिप्त सार और बिंदुवार उत्तर तैयार करें:&#10;">📑 पत्र का जवाब / सार</button>
+      <button type="button" class="ai-chip" data-preset="नीचे लिखे ड्राफ़्ट की हिंदी भाषा को शुद्ध प्रशासनिक शैली में सुधारें और दोहराव हटाएँ:&#10;">✨ भाषा सुधारें</button>
+    </div>
+
+    <div class="ai-attach-bar">
+      <input type="file" id="aiChatFileInput" accept=".pdf,.docx,.doc,.txt" class="hidden">
+      <button type="button" class="btn" id="aiAttachBtn" style="padding:5px 11px;font-size:12.5px">📎 फ़ाइल जोड़ें (PDF / Word / TXT)</button>
+      <span id="aiAttachPill" class="ai-attach-pill">
+        <span id="aiAttachName"></span>
+        <button type="button" id="aiAttachRemoveBtn" style="border:none;background:none;color:#0369a1;font-weight:900;cursor:pointer;padding:0 2px">✕</button>
+      </span>
     </div>
 
     <div class="ai-input-bar">
       <textarea id="aiFreePrompt" placeholder="यहाँ अपना सवाल या ड्राफ़्ट का पूरा मैटर लिखें... (Enter से भेजें, नई लाइन के लिए Shift+Enter)"></textarea>
-      <button type="button" class="btn primary" id="aiSendChatBtn" style="height:56px;padding:0 22px;font-size:15px">भेजें ➤</button>
+      <button type="button" class="btn primary" id="aiSendChatBtn" style="height:58px;padding:0 22px;font-size:15px">भेजें ➤</button>
     </div>
 
     <div id="aiDraftStatus" class="status" role="status" aria-live="polite"></div>
@@ -847,7 +874,8 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     <div class="row" style="margin-top:12px">
       <button type="button" class="btn primary" id="aiScanRunBtn">🔍 1. Offline HD Scan (Extract English)</button>
       <button type="button" class="btn primary" id="aiTranslateRunBtn" style="background:linear-gradient(135deg,#c2410c,#ea580c);border-color:#ea580c">🌐 2. Translate to Pure Hindi (Fast AI)</button>
-      <button type="button" class="btn" id="aiTransWordBtn">📘 Download Hindi Word (.doc)</button>
+      <button type="button" class="btn" id="aiSendToChatBtn" style="background:#eff6ff;border-color:#93c5fd;color:#1e3a8a">🤖 Send to AI+ Assistant</button>
+      <button type="button" class="btn" id="aiTransWordBtn">📘 Download Word (.doc)</button>
       <button type="button" class="btn" id="aiTransTxtBtn">💾 Download .txt</button>
       <button type="button" class="btn" id="aiTransPrintBtn">🖨️ Print / Save PDF</button>
       <button type="button" class="btn" id="aiTransCopyBtn">📄 Copy Hindi</button>
@@ -893,8 +921,12 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   "use strict";
   const el = id => document.getElementById(id);
   const AI_CONSENT_KEY = "svc_ai_hybrid_consent_v1";
+  const CHAT_STORE_KEY = "svc_ai_session_chat_v1";
   let pendingAction = null;
   let chatHistory = [];
+  let attachedDoc = null; // { name, text }
+  let isGenerating = false;
+  let stopRequested = false;
 
   const tabBar = el("tabs");
   if (tabBar && !tabBar.querySelector('[data-tab="aidraft"]')) {
@@ -912,6 +944,14 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       tabBar.appendChild(btn);
     });
   }
+
+  document.querySelectorAll(".ai-chip").forEach(chip => {
+    chip.onclick = () => {
+      const box = el("aiFreePrompt");
+      box.value = chip.dataset.preset + box.value;
+      box.focus();
+    };
+  });
 
   function hasAiConsent() {
     try { return localStorage.getItem(AI_CONSENT_KEY) === "accepted"; } catch (e) { return false; }
@@ -984,53 +1024,138 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return blocked.test(txt);
   }
 
-  function appendChatBubble(role, text, elapsedSec) {
-    const win = el("aiChatWindow");
-    const div = document.createElement("div");
-    div.className = `ai-msg ${role}`;
-    const bodySpan = document.createElement("div");
-    bodySpan.textContent = text;
-    div.appendChild(bodySpan);
-
-    if (role === "bot") {
-      const bar = document.createElement("div");
-      bar.className = "ai-msg-actions";
-
-      const bCopy = document.createElement("button");
-      bCopy.className = "ai-mini-btn";
-      bCopy.textContent = "📄 Copy";
-      bCopy.onclick = async () => {
-        await navigator.clipboard.writeText(text);
-        bCopy.textContent = "✓ Copied";
-        setTimeout(() => bCopy.textContent = "📄 Copy", 1500);
-      };
-
-      const bWord = document.createElement("button");
-      bWord.className = "ai-mini-btn";
-      bWord.textContent = "📘 Word (.doc)";
-      bWord.onclick = () => exportAsWordDoc("AI Response", text, "SVC-AI-Output.doc");
-
-      const bPrint = document.createElement("button");
-      bPrint.className = "ai-mini-btn";
-      bPrint.textContent = "🖨️ Print / PDF";
-      bPrint.onclick = () => printFormattedText("AI Response", text);
-
-      bar.append(bCopy, bWord, bPrint);
-      if (elapsedSec) {
-        const sp = document.createElement("span");
-        sp.className = "small";
-        sp.style.marginLeft = "auto";
-        sp.textContent = `⚡ ${elapsedSec}s`;
-        bar.appendChild(sp);
+  // Extract text locally in browser for chat attachment (PDF / DOCX / TXT)
+  async function extractLocalDocumentText(file) {
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    if (ext === "txt") return (await file.text()).trim();
+    if (ext === "docx" || ext === "doc") {
+      if (!window.mammoth) {
+        await new Promise((res, rej) => {
+          const s = document.createElement("script");
+          s.src = "libs/mammoth.browser.min.js";
+          s.onload = res; s.onerror = () => rej(Error("libs/mammoth.browser.min.js नहीं मिली।"));
+          document.head.appendChild(s);
+        });
       }
-      div.appendChild(bar);
+      const res = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+      return (res.value || "").trim();
     }
-
-    win.appendChild(div);
-    win.scrollTop = win.scrollHeight;
+    if (ext === "pdf" || file.type === "application/pdf") {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
+      const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+      let fullText = "";
+      const maxPages = Math.min(pdf.numPages, 12);
+      for (let p = 1; p <= maxPages; p++) {
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        const pageStr = tc.items.map(it => it.str).join(" ");
+        fullText += (fullText ? "\n\n" : "") + pageStr;
+      }
+      if (fullText.trim().length < 25) {
+        throw Error("यह स्कैन की गई इमेज PDF है—कृपया पहले '🌐 AI+ Scan & Translate' टैब में इसका Offline HD Scan करें।");
+      }
+      return fullText.trim();
+    }
+    throw Error("कृपया केवल PDF, Word (.docx) या Text (.txt) फ़ाइल चुनें।");
   }
 
-  // ================= PART A: ZERO-KEY HIGH-ACCURACY AI ENGINE =================
+  el("aiAttachBtn").onclick = () => el("aiChatFileInput").click();
+  el("aiAttachRemoveBtn").onclick = () => {
+    attachedDoc = null;
+    el("aiChatFileInput").value = "";
+    el("aiAttachPill").style.display = "none";
+  };
+
+  el("aiChatFileInput").onchange = async () => {
+    const f = el("aiChatFileInput").files[0];
+    if (!f) return;
+    msg("aiDraftStatus", "📄 दस्तावेज़ पढ़ा जा रहा है…", "info");
+    try {
+      const txt = await extractLocalDocumentText(f);
+      if (!txt) throw Error("फ़ाइल में पढ़ने योग्य टेक्स्ट नहीं मिला।");
+      attachedDoc = { name: f.name, text: txt.slice(0, 14000) };
+      el("aiAttachName").textContent = `📄 ${f.name}`;
+      el("aiAttachPill").style.display = "inline-flex";
+      msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना निर्देश लिखकर भेजें।`, "good");
+    } catch (e) {
+      attachedDoc = null;
+      el("aiAttachPill").style.display = "none";
+      msg("aiDraftStatus", e.message || String(e), "bad");
+    }
+  };
+
+  function saveSessionChat() {
+    try { sessionStorage.setItem(CHAT_STORE_KEY, JSON.stringify(chatHistory.slice(-12))); } catch (e) {}
+  }
+
+  function createBotBubble() {
+    const win = el("aiChatWindow");
+    const div = document.createElement("div");
+    div.className = "ai-msg bot";
+    const bodySpan = document.createElement("div");
+    bodySpan.textContent = "⏳ विचार कर रहा है…";
+    div.appendChild(bodySpan);
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+    return { div, bodySpan, win };
+  }
+
+  function attachBotActions(div, finalText, elapsedSec, modelUsed) {
+    const bar = document.createElement("div");
+    bar.className = "ai-msg-actions";
+
+    const bCopy = document.createElement("button");
+    bCopy.className = "ai-mini-btn";
+    bCopy.textContent = "📄 Copy";
+    bCopy.onclick = async () => {
+      await navigator.clipboard.writeText(finalText);
+      bCopy.textContent = "✓ Copied";
+      setTimeout(() => bCopy.textContent = "📄 Copy", 1500);
+    };
+
+    const bWord = document.createElement("button");
+    bWord.className = "ai-mini-btn";
+    bWord.textContent = "📘 Word (.doc)";
+    bWord.onclick = () => exportAsWordDoc("AI Response", finalText, "SVC-AI-Output.doc");
+
+    const bPrint = document.createElement("button");
+    bPrint.className = "ai-mini-btn";
+    bPrint.textContent = "🖨️ Print / PDF";
+    bPrint.onclick = () => printFormattedText("AI Response", finalText);
+
+    bar.append(bCopy, bWord, bPrint);
+    if (elapsedSec) {
+      const sp = document.createElement("span");
+      sp.className = "small";
+      sp.style.marginLeft = "auto";
+      sp.textContent = `⚡ ${elapsedSec}s · ${modelUsed}`;
+      bar.appendChild(sp);
+    }
+    div.appendChild(bar);
+  }
+
+  // Restore saved chat on reload
+  (function restoreSessionChat(){
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(CHAT_STORE_KEY) || "[]");
+      if (Array.isArray(saved) && saved.length) {
+        chatHistory = saved;
+        const win = el("aiChatWindow");
+        saved.forEach(m => {
+          const d = document.createElement("div");
+          d.className = `ai-msg ${m.role === "user" ? "user" : "bot"}`;
+          const sp = document.createElement("div");
+          sp.textContent = m.display || m.content;
+          d.appendChild(sp);
+          if (m.role !== "user") attachBotActions(d, m.content, "", "Saved");
+          win.appendChild(d);
+        });
+        win.scrollTop = win.scrollHeight;
+      }
+    } catch (e) {}
+  })();
+
+  // ================= PART A: LIVE-STREAMING AI ENGINE WITH STOP & FAILOVER =================
   async function ensurePuterLoaded() {
     if (location.protocol === "file:") {
       throw Error("आपने फ़ाइल सीधे कंप्यूटर फ़ोल्डर (file:///) से खोली है। इसे अपनी GitHub वेबसाइट पर खोलें।");
@@ -1045,45 +1170,60 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     });
   }
 
-  async function queryDirectAI(messages) {
-    await ensurePuterLoaded();
-    const models = ["gemini-2.5-flash", "gpt-4o", "claude-3-5-sonnet", "deepseek-chat"];
-    let lastErr = null;
-    for (const model of models) {
-      try {
-        const res = await window.puter.ai.chat(messages, {
-          model,
-          temperature: 0.2
-        });
-        const text = typeof res === "string"
-          ? res
-          : (res?.message?.content?.[0]?.text || res?.message?.content || res?.text || "");
-        if (text && text.trim()) return text;
-      } catch (e) {
-        lastErr = e;
-      }
+  function setSendBtnMode(busy) {
+    const btn = el("aiSendChatBtn");
+    isGenerating = busy;
+    if (busy) {
+      btn.textContent = "⏹️ रोकें";
+      btn.classList.remove("primary");
+      btn.classList.add("danger");
+    } else {
+      btn.textContent = "भेजें ➤";
+      btn.classList.remove("danger");
+      btn.classList.add("primary");
     }
-    throw Error(lastErr?.message || "AI से उत्तर प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।");
   }
 
   async function sendToPureAI() {
+    if (isGenerating) {
+      stopRequested = true;
+      return;
+    }
     const inputEl = el("aiFreePrompt");
-    const userText = inputEl.value.trim();
-    if (!userText) return;
+    const rawPrompt = inputEl.value.trim();
+    if (!rawPrompt && !attachedDoc) return;
 
-    if (isUnsafeRequest(userText)) {
+    const userInstruction = rawPrompt || "संलग्न दस्तावेज़ का संक्षिप्त सार और मुख्य बिंदु हिंदी में बताएं।";
+    const fullUserContent = attachedDoc
+      ? `[संलग्न दस्तावेज़: ${attachedDoc.name}]\n${attachedDoc.text}\n\n[उपयोगकर्ता निर्देश]:\n${userInstruction}`
+      : userInstruction;
+
+    if (isUnsafeRequest(fullUserContent)) {
       return msg("aiDraftStatus", "⚠️ सुरक्षा नीति: फर्जी दस्तावेज़, धमकी, जालसाजी या गैर-कानूनी कार्य हेतु सहायता उपलब्ध नहीं है।", "bad");
     }
 
     el("aiDraftStatus").className = "status";
     inputEl.value = "";
-    appendChatBubble("user", userText);
-    chatHistory.push({ role: "user", content: userText });
 
-    const sendBtn = el("aiSendChatBtn");
-    sendBtn.disabled = true;
-    sendBtn.textContent = "प्रोसेसिंग…";
+    const displayBadge = attachedDoc ? `📎 ${attachedDoc.name}\n${userInstruction}` : userInstruction;
+    attachedDoc = null;
+    el("aiChatFileInput").value = "";
+    el("aiAttachPill").style.display = "none";
+
+    const win = el("aiChatWindow");
+    const uDiv = document.createElement("div");
+    uDiv.className = "ai-msg user";
+    uDiv.textContent = displayBadge;
+    win.appendChild(uDiv);
+    win.scrollTop = win.scrollHeight;
+
+    chatHistory.push({ role: "user", content: fullUserContent, display: displayBadge });
+    saveSessionChat();
+
+    stopRequested = false;
+    setSendBtnMode(true);
     const t0 = performance.now();
+    const botUI = createBotBubble();
 
     const systemPrompt = `You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal.
 1. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
@@ -1093,32 +1233,78 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 5. Output clean plain text without markdown asterisks (**) or hash headers (#).`;
 
     try {
-      const messages = [{ role: "system", content: systemPrompt }, ...chatHistory.slice(-8)];
-      let reply = await queryDirectAI(messages);
-      reply = reply.replace(/\*\*/g, "").replace(/^#+\s*/gm, "").trim();
+      await ensurePuterLoaded();
+      const chosenModel = el("aiModelSelect").value;
+      const fallbackOrder = [chosenModel, "gemini-2.5-flash", "gpt-4o", "claude-3-5-sonnet"].filter((v, i, a) => a.indexOf(v) === i);
+      const apiMessages = [
+        { role: "system", content: systemPrompt },
+        ...chatHistory.slice(-10).map(m => ({ role: m.role, content: m.content }))
+      ];
 
+      let fullReply = "";
+      let activeModel = chosenModel;
+      let success = false;
+
+      for (const m of fallbackOrder) {
+        if (stopRequested) break;
+        try {
+          activeModel = m;
+          const resp = await window.puter.ai.chat(apiMessages, { model: m, stream: true, temperature: 0.2 });
+          if (resp && typeof resp[Symbol.asyncIterator] === "function") {
+            fullReply = "";
+            for await (const part of resp) {
+              if (stopRequested) break;
+              const chunk = part?.text || part?.choices?.[0]?.delta?.content || "";
+              if (chunk) {
+                fullReply += chunk;
+                botUI.bodySpan.textContent = fullReply.replace(/\*\*/g, "").replace(/^#+\s*/gm, "");
+                botUI.win.scrollTop = botUI.win.scrollHeight;
+              }
+            }
+          } else {
+            fullReply = typeof resp === "string"
+              ? resp
+              : (resp?.message?.content?.[0]?.text || resp?.message?.content || resp?.text || "");
+          }
+          if (fullReply && fullReply.trim()) {
+            success = true;
+            break;
+          }
+        } catch (err) { /* failover to next model */ }
+      }
+
+      if (!success && !stopRequested) throw Error("AI से उत्तर प्राप्त नहीं हो सका। कृपया पुनः प्रयास करें।");
+
+      fullReply = (fullReply || "(उपयोगकर्ता द्वारा रोका गया)").replace(/\*\*/g, "").replace(/^#+\s*/gm, "").trim();
+      botUI.bodySpan.textContent = fullReply;
       const sec = ((performance.now() - t0) / 1000).toFixed(1);
-      chatHistory.push({ role: "assistant", content: reply });
-      appendChatBubble("bot", reply, sec);
+      chatHistory.push({ role: "assistant", content: fullReply });
+      saveSessionChat();
+      attachBotActions(botUI.div, fullReply, sec, activeModel);
     } catch (e) {
-      appendChatBubble("bot", "⚠️ " + (e.message || "कृपया इंटरनेट जाँचें और पुनः प्रयास करें।"));
+      botUI.bodySpan.textContent = "⚠️ " + (e.message || "कृपया इंटरनेट जाँचें और पुनः प्रयास करें।");
     } finally {
-      sendBtn.disabled = false;
-      sendBtn.textContent = "भेजें ➤";
+      stopRequested = false;
+      setSendBtnMode(false);
       inputEl.focus();
     }
   }
 
-  el("aiSendChatBtn").onclick = () => runWithAiConsent(sendToPureAI);
+  el("aiSendChatBtn").onclick = () => {
+    if (isGenerating) { stopRequested = true; return; }
+    runWithAiConsent(sendToPureAI);
+  };
   el("aiFreePrompt").addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      runWithAiConsent(sendToPureAI);
+      if (!isGenerating) runWithAiConsent(sendToPureAI);
     }
   });
 
   el("aiChatClearBtn").onclick = () => {
+    if (isGenerating) stopRequested = true;
     chatHistory = [];
+    try { sessionStorage.removeItem(CHAT_STORE_KEY); } catch (e) {}
     el("aiChatWindow").innerHTML = `<div class="ai-msg bot">नई चैट शुरू की गई है। बताइए, मैं आपकी क्या सहायता करूँ?</div>`;
     el("aiDraftStatus").className = "status";
   };
@@ -1364,6 +1550,22 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   }
 
   el("aiTranslateRunBtn").onclick = () => runWithAiConsent(executeNeuralTranslation);
+
+  el("aiSendToChatBtn").onclick = () => {
+    const hindi = el("aiHindiText").value.trim();
+    const eng = el("aiEnglishText").value.trim();
+    const content = hindi || eng;
+    if (!content) return msg("aiTransStatus", "पहले कोई दस्तावेज़ स्कैन या अनुवाद करें।", "bad");
+
+    attachedDoc = { name: "Scanned-Document.txt", text: content.slice(0, 14000) };
+    el("aiAttachName").textContent = "📄 Scanned-Document.txt";
+    el("aiAttachPill").style.display = "inline-flex";
+
+    const draftTabBtn = document.querySelector('.tabs button[data-tab="aidraft"]');
+    if (draftTabBtn) draftTabBtn.click();
+    el("aiFreePrompt").focus();
+    msg("aiDraftStatus", "✓ स्कैन/अनुवादित दस्तावेज़ संलग्न हो गया है। अब अपना निर्देश लिखें।", "good");
+  };
 
   el("aiTransWordBtn").onclick = () => {
     if (!exportAsWordDoc("Translated Hindi Document", el("aiHindiText").value, "SVC-Translated-Hindi.doc"))
