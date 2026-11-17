@@ -1701,6 +1701,9 @@ chatFileInput.onchange = async () => {
     if (isUnsafeRequest(fullUserContent)) {
       return msg("aiDraftStatus", "⚠️ सुरक्षा नीति: फर्जी दस्तावेज़, धमकी, जालसाजी या गैर-कानूनी कार्य हेतु सहायता उपलब्ध नहीं है।", "bad");
     }
+if (/(?:porn|xxx|nude|nudity|nsfw|erotic|sex|sexual|adult\s*(?:content|image|video|photo)|18\+|bikini|hentai|अश्लील|नग्न|सेक्स|कामुक|गंदी\s*(?:फोटो|फ़ोटो|इमेज|तस्वीर))/i.test(fullUserContent)) {
+      return msg("aiDraftStatus", "⚠️ कृपया केवल कार्यालयी, शैक्षणिक या रचनात्मक कार्यों से संबंधित निर्देश ही दर्ज करें।", "bad");
+    }
 
     const piiFound = detectSensitivePII(fullUserContent);
     if (piiFound) {
