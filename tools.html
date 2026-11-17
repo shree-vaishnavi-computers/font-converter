@@ -1484,15 +1484,6 @@ chatFileInput.onchange = async () => {
         msg("aiDraftStatus", e.message || String(e), "bad");
       }
     };
-        if (el("aiAttachName")) el("aiAttachName").textContent = `📎 ${f.name}${parsed.label ? " (" + parsed.label + ")" : ""}`;
-        if (el("aiAttachPill")) el("aiAttachPill").style.display = "inline-flex";
-        msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना प्रश्न लिखकर भेजें।`, "good");
-      } catch (e) {
-        attachedDoc = null;
-        if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
-        msg("aiDraftStatus", e.message || String(e), "bad");
-      }
-    };
   }
 
   if (el("aiAttachBtn")) {
