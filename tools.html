@@ -944,6 +944,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   let isGenerating = false;
   let stopRequested = false;
 
+  // 1. Ensure AI Tabs exist
   const tabBar = el("tabs");
   if (tabBar && !tabBar.querySelector('[data-tab="aidraft"]')) {
     const b1 = document.createElement("button");
@@ -961,6 +962,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     });
   }
 
+  // 2. Preset Chips
   document.querySelectorAll(".ai-chip").forEach(chip => {
     chip.onclick = () => {
       const box = el("aiFreePrompt");
@@ -970,6 +972,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     };
   });
 
+  // 3. Consent Management
   function hasAiConsent() {
     try { return localStorage.getItem(AI_CONSENT_KEY) === "accepted"; } catch (e) { return false; }
   }
@@ -1019,7 +1022,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
   if (el("aiRevokeDraftBtn")) el("aiRevokeDraftBtn").onclick = revokeAiConsent;
   if (el("aiRevokeTransBtn")) el("aiRevokeTransBtn").onclick = revokeAiConsent;
 
-  // ================= PUTER ACCOUNT STATUS, LOGOUT, DELETE & PURGE =================
+  // 4. Puter Auth Status, Logout, Delete & Purge
   async function refreshPuterAuthUI() {
     const badge = el("aiLoggedUserBadge");
     const btnOut = el("aiPuterLogoutBtn");
@@ -1100,6 +1103,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       try { sessionStorage.clear(); } catch (e) {}
       chatHistory = [];
       attachedDoc = null;
+      if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
       if (el("aiChatWindow")) {
         el("aiChatWindow").innerHTML = `<div class="ai-msg bot">🧹 इस ब्राउज़र से आपका सारा डेटा, चैट और लॉगिन सत्र स्थायी रूप से साफ़ कर दिया गया है।</div>`;
       }
@@ -1109,6 +1113,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     };
   }
 
+  // 5. Export & Print Helpers
   function exportAsWordDoc(title, bodyText, filename) {
     if (!bodyText || !bodyText.trim()) return false;
     const escaped = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
@@ -1134,6 +1139,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return true;
   }
 
+  // 6. Safety & PII Filters
   function isUnsafeRequest(txt) {
     const blocked = /(फर्जी|नकली\s*(?:दस्तावेज|सर्टिफिकेट|मार्कशीट|स्टांप|हस्ताक्षर|नोटिस)|fake\s*(?:document|certificate|marksheet|signature|stamp|notice)|forge|forgery|धमकी|ब्लैकमेल|blackmail|extortion|हफ्ता\s*वसूली|जालसाजी|fraud|scam|defam|अवैध\s*कब्जा)/i;
     return blocked.test(txt);
@@ -1147,15 +1153,14 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     return null;
   }
 
+  // 7. Multimodal Vision + Document Reader (PDF, Word, Text, JPG/PNG)
   async function extractLocalDocumentOrVision(file) {
     const ext = (file.name.split(".").pop() || "").toLowerCase();
 
-    // 1. Plain Text
     if (ext === "txt") {
       return { type: "text", text: (await file.text()).trim() };
     }
 
-    // 2. Word (.docx)
     if (ext === "docx" || ext === "doc") {
       if (!window.mammoth) {
         await new Promise((res, rej) => {
@@ -1169,8 +1174,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       return { type: "text", text: (res.value || "").trim() };
     }
 
-    // 3. Direct Image (JPG/PNG/WebP) -> Send directly to Vision AI like Gemini/ChatGPT
-    if (file.type.startsWith("image/") || ["jpg", "jpeg", "png", "webp"].includes(ext)) {
+    if ((file.type && file.type.startsWith("image/")) || ["jpg", "jpeg", "png", "webp"].includes(ext)) {
       const url = URL.createObjectURL(file);
       const img = await new Promise((res, rej) => {
         const im = new Image();
@@ -1190,7 +1194,6 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       return { type: "vision", images: [dataUrl], label: "1 Image" };
     }
 
-    // 4. PDF -> Digital Text OR High-Res Page Images for Vision AI (up to 4 pages)
     if (ext === "pdf" || file.type === "application/pdf") {
       pdfjsLib.GlobalWorkerOptions.workerSrc = "libs/pdf.worker.min.js";
       const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
@@ -1203,12 +1206,10 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         fullText += (fullText ? "\n\n" : "") + pageStr;
       }
 
-      // If digital text exists, use it directly
       if (fullText.replace(/\s+/g, "").length >= 40) {
         return { type: "text", text: fullText.trim() };
       }
 
-      // Otherwise render scanned PDF pages as crisp images for Vision AI (Gemini / GPT-4o)
       const visionPages = Math.min(pdf.numPages, 4);
       const images = [];
       for (let p = 1; p <= visionPages; p++) {
@@ -1226,17 +1227,13 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 
     throw Error("कृपया PDF, Word (.docx), Image (JPG/PNG) या Text (.txt) फ़ाइल चुनें।");
   }
-  if (el("aiAttachRemoveBtn")) {
-    el("aiAttachRemoveBtn").onclick = () => {
-      attachedDoc = null;
-      el("aiChatFileInput").value = "";
-      el("aiAttachPill").style.display = "none";
-    };
-  }
 
-  if (el("aiChatFileInput")) {
-    el("aiChatFileInput").onchange = async () => {
-      const f = el("aiChatFileInput").files[0];
+  // Ensure file input allows images too even if HTML attribute was not updated
+  const chatFileInput = el("aiChatFileInput");
+  if (chatFileInput) {
+    chatFileInput.setAttribute("accept", ".pdf,.docx,.doc,.txt,image/*");
+    chatFileInput.onchange = async () => {
+      const f = chatFileInput.files[0];
       if (!f) return;
       msg("aiDraftStatus", "📄 दस्तावेज़/फ़ोटो तैयार की जा रही है…", "info");
       try {
@@ -1248,19 +1245,41 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
           text: parsed.text ? parsed.text.slice(0, 14000) : "",
           images: parsed.images || []
         };
-        el("aiAttachName").textContent = `📎 ${f.name}${parsed.label ? " (" + parsed.label + ")" : ""}`;
-        el("aiAttachPill").style.display = "inline-flex";
+        if (el("aiAttachName")) el("aiAttachName").textContent = `📎 ${f.name}${parsed.label ? " (" + parsed.label + ")" : ""}`;
+        if (el("aiAttachPill")) el("aiAttachPill").style.display = "inline-flex";
         msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना प्रश्न लिखकर भेजें।`, "good");
       } catch (e) {
         attachedDoc = null;
-        el("aiAttachPill").style.display = "none";
+        if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
         msg("aiDraftStatus", e.message || String(e), "bad");
       }
     };
   }
 
+  if (el("aiAttachBtn")) {
+    el("aiAttachBtn").onclick = () => {
+      const inp = el("aiChatFileInput");
+      if (inp) {
+        inp.value = "";
+        inp.click();
+      }
+    };
+  }
+
+  if (el("aiAttachRemoveBtn")) {
+    el("aiAttachRemoveBtn").onclick = () => {
+      attachedDoc = null;
+      if (el("aiChatFileInput")) el("aiChatFileInput").value = "";
+      if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
+    };
+  }
+
+  // 8. Session Chat Storage & UI Helpers
   function saveSessionChat() {
-    try { sessionStorage.setItem(CHAT_STORE_KEY, JSON.stringify(chatHistory.slice(-12))); } catch (e) {}
+    try {
+      const slim = chatHistory.slice(-12).map(m => ({ role: m.role, content: m.content, display: m.display }));
+      sessionStorage.setItem(CHAT_STORE_KEY, JSON.stringify(slim));
+    } catch (e) {}
   }
 
   function createBotBubble() {
@@ -1329,7 +1348,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     } catch (e) {}
   })();
 
-  // ================= PART A: AUTO-LATEST DYNAMIC AI ENGINE =================
+  // 9. Dynamic AI Engine with Multimodal Vision & Quota Timer
   async function ensurePuterLoaded() {
     if (location.protocol === "file:") {
       throw Error("आपने फ़ाइल सीधे कंप्यूटर फ़ोल्डर (file:///) से खोली है। इसे अपनी GitHub वेबसाइट पर खोलें।");
@@ -1368,7 +1387,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     const rawPrompt = inputEl.value.trim();
     if (!rawPrompt && !attachedDoc) return;
 
-    const userInstruction = rawPrompt || "संलग्न दस्तावेज़ का संक्षिप्त सार और मुख्य बिंदु हिंदी में बताएं।";
+    const userInstruction = rawPrompt || "संलग्न दस्तावेज़/फ़ोटो का पूरा विश्लेषण करें और मुख्य बिंदु हिंदी में बताएं।";
     const hasVisionImages = attachedDoc && attachedDoc.type === "vision" && attachedDoc.images && attachedDoc.images.length > 0;
     const fullUserContent = attachedDoc
       ? (hasVisionImages
@@ -1391,7 +1410,6 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     const displayBadge = attachedDoc ? `📎 ${attachedDoc.name}\n${userInstruction}` : userInstruction;
     const currentImages = hasVisionImages ? attachedDoc.images.slice() : [];
     attachedDoc = null;
-    attachedDoc = null;
     if (el("aiChatFileInput")) el("aiChatFileInput").value = "";
     if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
 
@@ -1413,9 +1431,9 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     const todayStr = new Date().toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric" });
     const systemPrompt = `Today's date is ${todayStr}. You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal (India).
 1. Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}.
-2. Answer any general knowledge, technical, legal, financial, math, or everyday question accurately and clearly in the user's language (Hindi, English, or Hinglish).
+2. When provided with document images or text, read every detail, number, date, table, and stamp carefully and answer accurately in the user's language (Hindi, English, or Hinglish).
 3. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
-4. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered. Never repeat sentences unnecessarily.
+4. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered.
 5. Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
 6. Output clean plain text without markdown asterisks (**) or hash headers (#).`;
 
@@ -1522,6 +1540,9 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
         throw Error("AI से उत्तर प्राप्त नहीं हो सका। कृपया इंटरनेट जाँचें या पुनः प्रयास करें।");
       }
 
+      // Free heavy base64 images from memory after sending
+      chatHistory.forEach(m => { if (m.images) delete m.images; });
+
       fullReply = (fullReply || "(उपयोगकर्ता द्वारा रोका गया)").replace(/\*\*/g, "").replace(/^#+\s*/gm, "").trim();
       botUI.bodySpan.textContent = fullReply;
       const sec = ((performance.now() - t0) / 1000).toFixed(1);
@@ -1563,7 +1584,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     };
   }
 
-  // ================= PART B: GOOGLE-LENS STYLE SAME-FORMAT LAYOUT TRANSLATOR =================
+  // 10. Same-Format Visual Translator
   let translatedOutputBlob = null;
   let translatedOutputName = "";
 
@@ -1933,9 +1954,9 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
       const content = hindi || eng;
       if (!content) return msg("aiTransStatus", "पहले कोई दस्तावेज़ स्कैन व अनुवाद करें।", "bad");
 
-      attachedDoc = { name: "Translated-Document.txt", text: content.slice(0, 14000) };
-      el("aiAttachName").textContent = "📄 Translated-Document.txt";
-      el("aiAttachPill").style.display = "inline-flex";
+      attachedDoc = { name: "Translated-Document.txt", type: "text", text: content.slice(0, 14000), images: [] };
+      if (el("aiAttachName")) el("aiAttachName").textContent = "📄 Translated-Document.txt";
+      if (el("aiAttachPill")) el("aiAttachPill").style.display = "inline-flex";
 
       const draftTabBtn = document.querySelector('.tabs button[data-tab="aidraft"]');
       if (draftTabBtn) draftTabBtn.click();
