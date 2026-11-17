@@ -1359,6 +1359,23 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     if (ext === "txt") {
       return { type: "text", text: (await file.text()).trim() };
     }
+if (["xlsx", "xls", "csv"].includes(ext)) {
+      if (!window.XLSX) {
+        await new Promise((res, rej) => {
+          const s = document.createElement("script");
+          s.src = "libs/xlsx.full.min.js";
+          s.onload = res; s.onerror = () => rej(Error("libs/xlsx.full.min.js नहीं मिली।"));
+          document.head.appendChild(s);
+        });
+      }
+      const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array" });
+      let combinedCsv = "";
+      wb.SheetNames.slice(0, 3).forEach(shName => {
+        const csv = window.XLSX.utils.sheet_to_csv(wb.Sheets[shName]).trim();
+        if (csv) combinedCsv += `[Sheet: ${shName}]\n${csv}\n\n`;
+      });
+      return { type: "text", text: combinedCsv.trim() };
+    }
 
     if (ext === "docx" || ext === "doc") {
       if (!window.mammoth) {
@@ -1432,20 +1449,41 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 
   const chatFileInput = el("aiChatFileInput");
   if (chatFileInput) {
-    chatFileInput.setAttribute("accept", ".pdf,.docx,.doc,.txt,image/*");
-    chatFileInput.onchange = async () => {
-      const f = chatFileInput.files[0];
-      if (!f) return;
-      msg("aiDraftStatus", "📄 दस्तावेज़/फ़ोटो तैयार की जा रही है…", "info");
+    chatFileInput.setAttribute("accept", ".pdf,.docx,.doc,.txt,.xlsx,.xls,.csv,image/*");
+chatFileInput.setAttribute("multiple", "multiple");
+chatFileInput.onchange = async () => {
+      const files = Array.from(chatFileInput.files || []);
+      if (!files.length) return;
+      msg("aiDraftStatus", `📄 ${files.length} फ़ाइल(ें) तैयार की जा रही हैं…`, "info");
       try {
-        const parsed = await extractLocalDocumentOrVision(f);
-        if (parsed.type === "text" && !parsed.text) throw Error("फ़ाइल में पढ़ने योग्य टेक्स्ट नहीं मिला।");
+        let combinedText = "";
+        let combinedImages = [];
+        let names = [];
+        for (const f of files.slice(0, 4)) {
+          const parsed = await extractLocalDocumentOrVision(f);
+          names.push(f.name);
+          if (parsed.type === "text" && parsed.text) {
+            combinedText += `\n\n=== [फ़ाइल: ${f.name}] ===\n${parsed.text}`;
+          } else if (parsed.type === "vision" && parsed.images) {
+            combinedImages.push(...parsed.images);
+          }
+        }
+        if (!combinedText.trim() && !combinedImages.length) throw Error("फ़ाइलों में पढ़ने योग्य सामग्री नहीं मिली।");
         attachedDoc = {
-          name: f.name,
-          type: parsed.type,
-          text: parsed.text ? parsed.text.slice(0, 14000) : "",
-          images: parsed.images || []
+          name: names.join(", "),
+          type: combinedImages.length ? "vision" : "text",
+          text: combinedText.trim().slice(0, 18000),
+          images: combinedImages.slice(0, 4)
         };
+        if (el("aiAttachName")) el("aiAttachName").textContent = `📎 ${names.length} फ़ाइल(ें): ${names.join(", ").slice(0, 45)}`;
+        if (el("aiAttachPill")) el("aiAttachPill").style.display = "inline-flex";
+        msg("aiDraftStatus", `✓ ${names.length} फ़ाइल(ें) संलग्न हो गईं। अब अपना निर्देश भेजें।`, "good");
+      } catch (e) {
+        attachedDoc = null;
+        if (el("aiAttachPill")) el("aiAttachPill").style.display = "none";
+        msg("aiDraftStatus", e.message || String(e), "bad");
+      }
+    };
         if (el("aiAttachName")) el("aiAttachName").textContent = `📎 ${f.name}${parsed.label ? " (" + parsed.label + ")" : ""}`;
         if (el("aiAttachPill")) el("aiAttachPill").style.display = "inline-flex";
         msg("aiDraftStatus", `✓ '${f.name}' संलग्न हो गई है। अब अपना प्रश्न लिखकर भेजें।`, "good");
@@ -1656,7 +1694,7 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     const hasVisionImages = attachedDoc && attachedDoc.type === "vision" && attachedDoc.images && attachedDoc.images.length > 0;
     const fullUserContent = attachedDoc
       ? (hasVisionImages
-          ? `[संलग्न विज़ुअल दस्तावेज़: ${attachedDoc.name}]\nउपयोगकर्ता का प्रश्न/निर्देश: ${userInstruction}`
+          ? `[संलग्न विज़ुअल व टेक्स्ट दस्तावेज़: ${attachedDoc.name}]\n${attachedDoc.text ? attachedDoc.text + "\n\n" : ""}उपयोगकर्ता का प्रश्न/निर्देश: ${userInstruction}`
           : `[संलग्न दस्तावेज़: ${attachedDoc.name}]\n${attachedDoc.text}\n\n[उपयोगकर्ता निर्देश]:\n${userInstruction}`)
       : userInstruction;
 
@@ -1697,10 +1735,32 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
     try {
       await ensurePuterLoaded();
 
-      // BRANCH 1: AI IMAGE GENERATION (when no file attached and user asks to generate an image/poster)
-      if (!hadAttachment && isImageGenerationPrompt(userInstruction) && typeof window.puter.ai.txt2img === "function") {
-        botUI.bodySpan.textContent = "🎨 आपकी इमेज/पोस्टर तैयार की जा रही है (कृपया कुछ सेकंड प्रतीक्षा करें)…";
-        const imgEl = await window.puter.ai.txt2img(userInstruction);
+// BRANCH 1: AI IMAGE GENERATION (Auto-translates Hindi prompt to English & runs with fallback)
+      if (!hadAttachment && isImageGenerationPrompt(userInstruction)) {
+        botUI.bodySpan.textContent = "🎨 आपकी इमेज/पोस्टर तैयार की जा रही है (कृपया 5–10 सेकंड प्रतीक्षा करें)…";
+        let imgPrompt = userInstruction.replace(/^(?:एक\s+)?(?:आकर्षक|सुंदर)?\s*(?:इमेज|चित्र|फ़ोटो|फोटो|पोस्टर|बैनर|लोगो|तस्वीर)\s*(?:बनाओ|बनाएं|बनाइए|जनरेट\s*करें)\s*[:\-]?\s*/i, "").trim() || userInstruction;
+
+        if (/[\u0900-\u097F]/.test(imgPrompt)) {
+          try {
+            const trResp = await window.puter.ai.chat(
+              `Translate and expand this image request into a clear, detailed English image generation prompt (output ONLY the English prompt, nothing else): ${imgPrompt}`
+            );
+            const enTxt = typeof trResp === "string" ? trResp : (trResp?.message?.content || trResp?.text || "");
+            if (enTxt && enTxt.trim()) imgPrompt = enTxt.trim();
+          } catch (e) {}
+        }
+
+        let imgEl = null;
+        const imgModels = [undefined, "gpt-image-1", "dall-e-3", "flux-schnell"];
+        for (const imModel of imgModels) {
+          try {
+            imgEl = imModel
+              ? await window.puter.ai.txt2img(imgPrompt, { model: imModel })
+              : await window.puter.ai.txt2img(imgPrompt);
+            if (imgEl && imgEl.src) break;
+          } catch (err) {}
+        }
+
         if (imgEl && imgEl.src) {
           imgEl.className = "ai-gen-img";
           botUI.bodySpan.innerHTML = "";
@@ -1736,19 +1796,38 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
           botUI.win.scrollTop = botUI.win.scrollHeight;
           refreshPuterAuthUI();
           return;
+        } else {
+          throw Error("इमेज जनरेशन सर्वर अभी व्यस्त है या आपके AI खाते की इमेज सीमा पूरी हो गई है। कृपया कुछ देर बाद पुनः प्रयास करें।");
         }
       }
 
-      // BRANCH 2: MULTIMODAL TEXT, VISION & STRUCTURED TABLES
+      // BRANCH 2: SELF-AWARE SYSTEM PROMPT (Knows all latest Portal & Admin upgrades)
       const todayStr = new Date().toLocaleDateString("hi-IN", { day: "numeric", month: "long", year: "numeric" });
-      const systemPrompt = `Today's date is ${todayStr}. You are a highly intelligent, accurate AI assistant on SHREE VAISHNAVI COMPUTERS portal (India).
-1. Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}.
-2. When provided with document images or text, read every detail, number, date, table, and stamp carefully and answer accurately in the user's language (Hindi, English, or Hinglish).
-3. When asked to draft letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER do literal English-to-Hindi translation and NEVER mix English letters inside Hindi words.
-4. When presenting lists with numbers, budgets, schedules, or comparisons (or when user asks for a table/Excel), format the data as a clean Markdown pipe table (| Column 1 | Column 2 |) so the user can export it directly to Excel.
-5. Preserve 100% of user-provided names, father's names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, amounts, and rule numbers exact and unaltered.
-6. Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
-7. Output clean text without bold markdown asterisks (**) or hash headers (#).`;
+      let adminLiveContext = "";
+      try {
+        const adm = JSON.parse(localStorage.getItem("svc_admin_config_v1") || "{}");
+        if (adm.orgName) {
+          adminLiveContext = `\nCurrent Admin Portal Profile: Organization = "${adm.orgName}" (${adm.orgSub || ""}), Signatory = "${adm.signName || ""}" (${adm.signDesig || ""}), Custom Saved Templates = ${(adm.templates || []).length}.`;
+        }
+if (adm.customRules) adminLiveContext += `\nIMPORTANT ADMIN CUSTOM INSTRUCTIONS (Always follow strictly):\n${adm.customRules}`;
+      } catch (e) {}
+
+      const systemPrompt = `Today's date is ${todayStr}. You are the upgraded AI+ Assistant on SHREE VAISHNAVI COMPUTERS portal (Bhilwara, Rajasthan, India).
+YOUR LATEST BUILT-IN PORTAL CAPABILITIES & RECENT UPGRADES (Always state these accurately if asked "what updates were made to you" or "what can you do"):
+1. AI Image & Poster Generation: You CAN generate HD images/posters directly in chat! Tell the user to simply type "एक इमेज बनाएं: [अपना विवरण]" or click the '🖼️ इमेज / पोस्टर बनाएं' chip.
+2. Multimodal Vision + Turbo PDF Reader: You can directly view and read scanned image PDFs, digital PDFs (up to 25 pages), Word (.docx), and photos (JPG/PNG) in Hindi & English with high accuracy.
+3. Live Voice Typing & Read Aloud: Users can speak in Hindi/English using the '🎤 बोलें' mic button and listen to your replies using '🔊 सुनें'.
+4. Auto Excel (.xlsx) Table Export: Whenever you output a Markdown pipe table (| Col 1 | Col 2 |), the portal automatically renders a clean table and provides a '📊 Excel (.xlsx)' download button.
+5. Official Letterhead Word Export & 1-Click Refine: Users can export drafts directly with official letterhead & signatory blocks ('📑 लेटरहेड Word'), shorten replies ('✂️ संक्षिप्त करें'), or regenerate ('🔄 फिर से लिखें').
+6. Quota Renewal Timer & Stealth Admin Panel: You show exact IST quota renewal times (05:30 AM IST) and support the Stealth Admin Control Panel (Ctrl+Shift+A) for custom letterheads, prompt templates, live banners, and backups.${adminLiveContext}
+
+STRICT OPERATING RULES:
+- Always provide answers aligned with the latest Indian laws, rules, GST provisions, and administrative procedures up to ${new Date().getFullYear()}.
+- When drafting letters, office orders (कार्यालय आदेश), notices, affidavits, or agreements, write directly in pure, natural, grammatically flawless Indian/Rajasthan Government administrative or legal Hindi (or English if requested). NEVER mix English letters inside Hindi words.
+- When presenting lists with numbers, budgets, schedules, or comparisons (or when asked for a table/Excel), format the data as a clean Markdown pipe table (| Column 1 | Column 2 |).
+- Preserve 100% of user-provided names, plot/house numbers, addresses, mobile numbers, dates, letter numbers, and amounts unaltered.
+- Refuse politely in one sentence if asked for fake/forged documents, threats, extortion, or illegal acts.
+- Output clean text without bold markdown asterisks (**) or hash headers (#).`;
 
       let liveModels = [];
       try {
@@ -2286,4 +2365,443 @@ $("numberCopy").onclick=async()=>{if(!numberResultText)return;try{await navigato
 })();
 </script>
 <script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
+<!-- ==================== STEALTH ADMIN CONTROL PANEL (8-IN-1 WITH AI TRAINING) ==================== -->
+<style>
+  #svcAdminOverlay { position:fixed; inset:0; background:rgba(15,23,42,0.72); z-index:99999; display:none; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(3px); }
+  #svcAdminBox { background:#fff; color:#0f172a; width:100%; max-width:760px; max-height:90vh; overflow-y:auto; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,0.35); border:1px solid #cbd5e1; font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif; }
+  .adm-head { background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:2; }
+  .adm-body { padding:18px 20px; }
+  .adm-sec { border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px; background:#f8fafc; }
+  .adm-sec h4 { margin:0 0 10px 0; font-size:15px; color:#1e3a8a; display:flex; align-items:center; gap:6px; }
+  .adm-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:600px){ .adm-grid { grid-template-columns:1fr; } }
+  .adm-inp, .adm-txt, .adm-sel { width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:7px; font-size:13.5px; box-sizing:border-box; background:#fff; }
+  .adm-btn { padding:7px 13px; border-radius:7px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-size:13px; font-weight:600; }
+  .adm-btn.pri { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+  .adm-btn.dng { background:#dc2626; color:#fff; border-color:#dc2626; }
+  .adm-tpl-item { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #cbd5e1; padding:7px 10px; border-radius:7px; margin-top:6px; font-size:13px; gap:8px; }
+  #svcTopNoticeBar { background:linear-gradient(90deg,#fef3c7,#fde68a); color:#78350f; border-bottom:1px solid #f59e0b; padding:8px 16px; text-align:center; font-weight:600; font-size:14px; display:none; }
+</style>
+
+<div id="svcTopNoticeBar"></div>
+
+<div id="svcAdminOverlay">
+  <div id="svcAdminBox">
+    <div class="adm-head">
+      <div><strong>🛡️ Admin Control Panel</strong> <span style="font-size:12px;opacity:0.85;">(Stealth Mode · Ctrl+Shift+A)</span></div>
+      <button type="button" class="adm-btn" id="admCloseBtn" style="padding:4px 10px;">✕ बंद करें</button>
+    </div>
+
+    <!-- PIN Lock Screen -->
+    <div id="admPinScreen" class="adm-body" style="text-align:center;padding:34px 20px;">
+      <h3 id="admPinTitle" style="margin-top:0;">🔐 Admin PIN दर्ज करें</h3>
+      <p id="admPinSub" style="font-size:13px;color:#475569;">सुरक्षा के लिए अपना 4-अंकों का गुप्त PIN डालें।</p>
+      <input type="password" id="admPinInput" maxlength="6" placeholder="••••" style="font-size:22px;letter-spacing:6px;text-align:center;width:160px;padding:8px;border:2px solid #1d4ed8;border-radius:8px;margin:10px auto;display:block;">
+      <div id="admPinErr" style="color:#dc2626;font-size:13px;min-height:18px;margin-bottom:8px;"></div>
+      <button type="button" class="adm-btn pri" id="admPinSubmitBtn">अनलॉक करें 🔓</button>
+    </div>
+
+    <!-- Main Admin Dashboard -->
+    <div id="admMainScreen" class="adm-body" style="display:none;">
+      <div id="admToast" style="display:none;padding:8px 12px;border-radius:7px;background:#dcfce7;color:#166534;font-weight:600;font-size:13px;margin-bottom:12px;"></div>
+
+      <!-- 1. Letterhead & Signature -->
+      <div class="adm-sec">
+        <h4>📑 1. स्थायी कार्यालय / व्यवसाय लेटरहेड प्रोफ़ाइल</h4>
+        <div class="adm-grid">
+          <input type="text" id="admOrgName" class="adm-inp" placeholder="संस्था / कार्यालय का नाम (जैसे: SHREE VAISHNAVI COMPUTERS)">
+          <input type="text" id="admOrgSub" class="adm-inp" placeholder="पता / संपर्क (जैसे: भीलवाड़ा, राजस्थान | मो. 98XXXXXXXX)">
+          <input type="text" id="admSignName" class="adm-inp" placeholder="हस्ताक्षरकर्ता का नाम (जैसे: रतन लखारा)">
+          <input type="text" id="admSignDesig" class="adm-inp" placeholder="पद / प्राधिकारी (जैसे: प्रोपराइटर / अधिकृत हस्ताक्षरकर्ता)">
+        </div>
+      </div>
+
+      <!-- 2. Custom Prompt Templates -->
+      <div class="adm-sec">
+        <h4>⚡ 2. कस्टम ड्राफ़्ट टेम्पलेट्स (AI शॉर्टकट चिप्स)</h4>
+        <div class="adm-grid" style="margin-bottom:8px;">
+          <input type="text" id="admTplLabel" class="adm-inp" placeholder="बटन का नाम (जैसे: 📝 आवंटन पत्र ड्राफ़्ट)">
+          <input type="text" id="admTplPrompt" class="adm-inp" placeholder="पूरा निर्देश (जैसे: राजस्थान आवासन मण्डल हेतु आवंटन पत्र तैयार करें: )">
+        </div>
+        <button type="button" class="adm-btn pri" id="admAddTplBtn">+ नया टेम्पलेट जोड़ें</button>
+        <div id="admTplList"></div>
+      </div>
+
+      <!-- 3. Live Notice Banner -->
+      <div class="adm-sec">
+        <h4>📢 3. वेबसाइट लाइव सूचना पट्टी (Top Announcement Banner)</h4>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <label style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;">
+            <input type="checkbox" id="admNoticeOn"> सूचना पट्टी दिखाएं
+          </label>
+          <input type="text" id="admNoticeText" class="adm-inp" style="flex:1;min-width:220px;" placeholder="सूचना लिखें (जैसे: आज कार्यालय शाम 6 बजे तक खुला रहेगा।)">
+        </div>
+      </div>
+
+      <!-- 4. Default AI Behaviour -->
+      <div class="adm-sec">
+        <h4>🎛️ 4. डिफ़ॉल्ट AI मॉडल व स्थायी फुटर नोट</h4>
+        <div class="adm-grid">
+          <select id="admDefModel" class="adm-sel">
+            <option value="">डिफ़ॉल्ट मॉडल (पोर्टल अनुसार)</option>
+            <option value="auto_fast">⚡ Fast (Gemini Latest)</option>
+            <option value="auto_pro">🧠 Pro (GPT Latest)</option>
+            <option value="auto_legal">⚖️ Legal & Drafting (Claude Latest)</option>
+          </select>
+          <input type="text" id="admDefFooter" class="adm-inp" placeholder="हर Word फ़ाइल के अंत में जुड़ने वाला फुटर (वैकल्पिक)">
+        </div>
+      </div>
+
+      <!-- 4B. Custom AI Training Rules (Plain Hindi/English) -->
+      <div class="adm-sec">
+        <h4>🧠 4B. AI को नए नियम व जानकारी सिखाएं (बिना कोडिंग के)</h4>
+        <textarea id="admCustomRules" class="adm-txt" rows="3" placeholder="यहाँ सामान्य हिंदी या अंग्रेज़ी में लिखें जो आप AI को सिखाना चाहते हैं (जैसे: हमारे कार्यालय का समय सुबह 10 से शाम 6 बजे तक है, या हर पत्र में विषय और संदर्भ अनिवार्य लिखें)..."></textarea>
+      </div>
+
+      <!-- 5. Stats, Backup & Cache Control -->
+      <div class="adm-sec">
+        <h4>📊 5. लोकल वर्क-लॉग, बैकअप व सिस्टम नियंत्रण</h4>
+        <div id="admStatsLine" style="font-size:13px;color:#334155;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="adm-btn pri" id="admSaveAllBtn">💾 सभी सेटिंग्स सेव करें</button>
+          <button type="button" class="adm-btn" id="admExportJsonBtn">⬇️ Backup डाउनलोड करें</button>
+          <button type="button" class="adm-btn" id="admImportJsonBtn">⬆️ Backup रिस्टोर करें</button>
+          <input type="file" id="admImportFile" accept=".json" style="display:none;">
+          <button type="button" class="adm-btn" id="admChangePinBtn">🔑 PIN बदलें</button>
+          <button type="button" class="adm-btn dng" id="admClearCacheBtn">🧹 AI Cache साफ़ करें</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="svc-stealth-admin-engine">
+(function(){
+  "use strict";
+  const ADM_KEY = "svc_admin_config_v1";
+  const PIN_KEY = "svc_admin_pin_v1";
+  const STAT_KEY = "svc_admin_stats_v1";
+  const g = id => document.getElementById(id);
+
+  const defaultCfg = {
+    orgName: "SHREE VAISHNAVI COMPUTERS",
+    orgSub: "Bhilwara, Rajasthan",
+    signName: "",
+    signDesig: "अधिकृत हस्ताक्षरकर्ता",
+    noticeOn: false,
+    noticeText: "",
+    defModel: "",
+    defFooter: "",
+    customRules: "",
+    templates: []
+  };
+
+  function getCfg() {
+    try { return Object.assign({}, defaultCfg, JSON.parse(localStorage.getItem(ADM_KEY) || "{}")); }
+    catch (e) { return Object.assign({}, defaultCfg); }
+  }
+  function saveCfg(cfg) {
+    try { localStorage.setItem(ADM_KEY, JSON.stringify(cfg)); } catch (e) {}
+    applyAdminSettings();
+  }
+  function getStats() {
+    try { return Object.assign({ promptsSent: 0, docsExported: 0 }, JSON.parse(localStorage.getItem(STAT_KEY) || "{}")); }
+    catch (e) { return { promptsSent: 0, docsExported: 0 }; }
+  }
+  function bumpStat(field) {
+    const s = getStats();
+    s[field] = (s[field] || 0) + 1;
+    try { localStorage.setItem(STAT_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function applyAdminSettings() {
+    const cfg = getCfg();
+
+    const bar = g("svcTopNoticeBar");
+    if (bar) {
+      if (cfg.noticeOn && cfg.noticeText.trim()) {
+        bar.textContent = "📢 " + cfg.noticeText.trim();
+        bar.style.display = "block";
+      } else {
+        bar.style.display = "none";
+      }
+    }
+
+    const sel = g("aiModelSelect");
+    if (sel && cfg.defModel && !sel.dataset.admApplied) {
+      sel.value = cfg.defModel;
+      sel.dataset.admApplied = "1";
+    }
+
+    const firstChip = document.querySelector(".ai-chip");
+    if (firstChip && firstChip.parentElement) {
+      firstChip.parentElement.querySelectorAll('[data-adm-chip="1"]').forEach(n => n.remove());
+      (cfg.templates || []).forEach(tpl => {
+        const sp = document.createElement("span");
+        sp.className = firstChip.className;
+        sp.dataset.preset = tpl.prompt;
+        sp.dataset.admChip = "1";
+        sp.style.borderColor = "#1d4ed8";
+        sp.textContent = tpl.label;
+        sp.onclick = () => {
+          const box = g("aiFreePrompt");
+          if (!box) return;
+          box.value = tpl.prompt + box.value;
+          box.focus();
+        };
+        firstChip.parentElement.appendChild(sp);
+      });
+    }
+  }
+
+  const origCreateObjURL = URL.createObjectURL.bind(URL);
+  URL.createObjectURL = function(blob) {
+    try {
+      if (blob && blob.type === "application/msword" && !blob._admEnhanced) {
+        bumpStat("docsExported");
+      }
+    } catch (e) {}
+    return origCreateObjURL(blob);
+  };
+
+  document.addEventListener("click", function(e) {
+    const btn = e.target && e.target.closest("button");
+    if (!btn) return;
+    if (btn.id === "aiSendChatBtn") bumpStat("promptsSent");
+
+    if (btn.textContent && btn.textContent.includes("लेटरहेड Word")) {
+      const cfg = getCfg();
+      const msgDiv = btn.closest(".ai-msg");
+      const contentDiv = msgDiv ? msgDiv.querySelector("div") : null;
+      const bodyText = contentDiv ? contentDiv.innerText.trim() : "";
+      if (!bodyText) return;
+
+      e.stopImmediatePropagation();
+      e.preventDefault();
+
+      const today = new Date().toLocaleDateString("hi-IN", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const escaped = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+      const orgTitle = (cfg.orgName || "कार्यालय / संस्था का नाम").replace(/</g, "&lt;");
+      const orgSub = cfg.orgSub ? `<div style="text-align:center;font-size:11pt;color:#333;margin-top:2px;">${cfg.orgSub.replace(/</g, "&lt;")}</div>` : "";
+      const signBlock = (cfg.signName || cfg.signDesig)
+        ? `<div style="margin-top:36px;text-align:right;font-size:12.5pt;">
+             ${cfg.signName ? `<strong>(${cfg.signName.replace(/</g, "&lt;")})</strong><br>` : ""}
+             ${cfg.signDesig ? `<span>${cfg.signDesig.replace(/</g, "&lt;")}</span>` : ""}
+           </div>`
+        : "";
+      const footerNote = cfg.defFooter
+        ? `<div style="margin-top:24px;border-top:1px dashed #888;padding-top:6px;font-size:10pt;color:#555;">${cfg.defFooter.replace(/</g, "&lt;")}</div>`
+        : "";
+
+      const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>${orgTitle}</title>
+        <style>body{font-family:'Mangal','Noto Sans Devanagari',Arial,sans-serif;font-size:13pt;line-height:1.75;margin:0.85in;}</style></head>
+        <body>
+          <div style="border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:16px;">
+            <div style="text-align:center;font-weight:bold;font-size:16pt;">${orgTitle}</div>
+            ${orgSub}
+            <table style="width:100%;margin-top:10px;font-size:12pt;"><tr>
+              <td style="text-align:left;">क्रमांक: __________________</td>
+              <td style="text-align:right;">दिनांक: ${today}</td>
+            </tr></table>
+          </div>
+          <div>${escaped}</div>
+          ${signBlock}
+          ${footerNote}
+        </body></html>`;
+
+      const b = new Blob(["\ufeff", html], { type: "application/msword" });
+      b._admEnhanced = true;
+      bumpStat("docsExported");
+      const a = document.createElement("a");
+      a.href = origCreateObjURL(b);
+      a.download = "Official-Letterhead-Doc.doc";
+      a.click();
+    }
+  }, true);
+
+  function showToast(msgText) {
+    const t = g("admToast");
+    if (!t) return;
+    t.textContent = "✓ " + msgText;
+    t.style.display = "block";
+    setTimeout(() => { t.style.display = "none"; }, 2600);
+  }
+
+  function renderAdminForm() {
+    const cfg = getCfg();
+    const st = getStats();
+    g("admOrgName").value = cfg.orgName || "";
+    g("admOrgSub").value = cfg.orgSub || "";
+    g("admSignName").value = cfg.signName || "";
+    g("admSignDesig").value = cfg.signDesig || "";
+    g("admNoticeOn").checked = !!cfg.noticeOn;
+    g("admNoticeText").value = cfg.noticeText || "";
+    g("admDefModel").value = cfg.defModel || "";
+    g("admDefFooter").value = cfg.defFooter || "";
+    g("admCustomRules").value = cfg.customRules || "";
+    g("admStatsLine").textContent = `📈 कुल AI प्रश्न भेजे गए: ${st.promptsSent} | कुल Word फ़ाइलें बनीं: ${st.docsExported} | सहेजे गए टेम्पलेट्स: ${(cfg.templates || []).length}`;
+
+    const list = g("admTplList");
+    list.innerHTML = "";
+    (cfg.templates || []).forEach((tpl, idx) => {
+      const row = document.createElement("div");
+      row.className = "adm-tpl-item";
+      row.innerHTML = `<span><strong>${tpl.label}</strong> — <span style="color:#475569;">${tpl.prompt.slice(0, 55)}…</span></span>`;
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "adm-btn dng";
+      del.style.padding = "3px 8px";
+      del.textContent = "हटाएं";
+      del.onclick = () => {
+        const c = getCfg();
+        c.templates.splice(idx, 1);
+        saveCfg(c);
+        renderAdminForm();
+      };
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  function openAdminModal() {
+    const savedPin = localStorage.getItem(PIN_KEY);
+    g("admPinErr").textContent = "";
+    g("admPinInput").value = "";
+    g("admMainScreen").style.display = "none";
+    g("admPinScreen").style.display = "block";
+
+    if (!savedPin) {
+      g("admPinTitle").textContent = "🆕 नया Admin PIN सेट करें";
+      g("admPinSub").textContent = "पहली बार प्रवेश के लिए अपना 4 से 6 अंकों का गुप्त PIN बनाएं:";
+    } else {
+      g("admPinTitle").textContent = "🔐 Admin PIN दर्ज करें";
+      g("admPinSub").textContent = "एडमिन पैनल खोलने के लिए अपना गुप्त PIN डालें:";
+    }
+    g("svcAdminOverlay").style.display = "flex";
+    setTimeout(() => g("admPinInput").focus(), 100);
+  }
+
+  g("admPinSubmitBtn").onclick = () => {
+    const val = (g("admPinInput").value || "").trim();
+    const savedPin = localStorage.getItem(PIN_KEY);
+    if (!savedPin) {
+      if (val.length < 4) { g("admPinErr").textContent = "कम से कम 4 अंकों का PIN डालें।"; return; }
+      localStorage.setItem(PIN_KEY, val);
+      g("admPinScreen").style.display = "none";
+      g("admMainScreen").style.display = "block";
+      renderAdminForm();
+      showToast("नया Admin PIN सफलतापूर्वक सेट हो गया!");
+    } else {
+      if (val !== savedPin) { g("admPinErr").textContent = "❌ गलत PIN! कृपया पुनः प्रयास करें।"; return; }
+      g("admPinScreen").style.display = "none";
+      g("admMainScreen").style.display = "block";
+      renderAdminForm();
+    }
+  };
+
+  g("admPinInput").addEventListener("keydown", e => { if (e.key === "Enter") g("admPinSubmitBtn").click(); });
+  g("admCloseBtn").onclick = () => { g("svcAdminOverlay").style.display = "none"; };
+
+  g("admAddTplBtn").onclick = () => {
+    const lbl = g("admTplLabel").value.trim();
+    const prm = g("admTplPrompt").value.trim();
+    if (!lbl || !prm) return alert("बटन का नाम और निर्देश दोनों लिखें।");
+    const cfg = getCfg();
+    cfg.templates = cfg.templates || [];
+    cfg.templates.push({ label: lbl, prompt: prm });
+    saveCfg(cfg);
+    g("admTplLabel").value = "";
+    g("admTplPrompt").value = "";
+    renderAdminForm();
+    showToast("नया शॉर्टकट टेम्पलेट जुड़ गया!");
+  };
+
+  g("admSaveAllBtn").onclick = () => {
+    const cfg = getCfg();
+    cfg.orgName = g("admOrgName").value.trim();
+    cfg.orgSub = g("admOrgSub").value.trim();
+    cfg.signName = g("admSignName").value.trim();
+    cfg.signDesig = g("admSignDesig").value.trim();
+    cfg.noticeOn = g("admNoticeOn").checked;
+    cfg.noticeText = g("admNoticeText").value.trim();
+    cfg.defModel = g("admDefModel").value;
+    cfg.defFooter = g("admDefFooter").value.trim();
+    cfg.customRules = g("admCustomRules").value.trim();
+    saveCfg(cfg);
+    renderAdminForm();
+    showToast("सभी एडमिन सेटिंग्स और AI नियम सेव हो गए!");
+  };
+
+  g("admChangePinBtn").onclick = () => {
+    const np = prompt("नया 4-6 अंकों का Admin PIN लिखें:");
+    if (np && np.trim().length >= 4) {
+      localStorage.setItem(PIN_KEY, np.trim());
+      showToast("Admin PIN बदल दिया गया!");
+    }
+  };
+
+  g("admClearCacheBtn").onclick = () => {
+    if (!confirm("क्या आप AI चैट और Puter सत्र कैश साफ़ करना चाहते हैं? (आपकी एडमिन सेटिंग्स सुरक्षित रहेंगी)")) return;
+    Object.keys(localStorage).forEach(k => { if (k.toLowerCase().includes("puter")) localStorage.removeItem(k); });
+    sessionStorage.clear();
+    showToast("AI कैश साफ़ कर दिया गया!");
+  };
+
+  g("admExportJsonBtn").onclick = () => {
+    const data = JSON.stringify({ config: getCfg(), stats: getStats() }, null, 2);
+    const a = document.createElement("a");
+    a.href = origCreateObjURL(new Blob([data], { type: "application/json" }));
+    a.download = "SVC-Admin-Backup.json";
+    a.click();
+  };
+
+  g("admImportJsonBtn").onclick = () => g("admImportFile").click();
+  g("admImportFile").onchange = async () => {
+    const f = g("admImportFile").files[0];
+    if (!f) return;
+    try {
+      const parsed = JSON.parse(await f.text());
+      if (parsed && parsed.config) {
+        saveCfg(parsed.config);
+        renderAdminForm();
+        showToast("बैकअप सफलतापूर्वक रिस्टोर हो गया!");
+      }
+    } catch (e) { alert("अमान्य बैकअप फ़ाइल।"); }
+  };
+
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) {
+      e.preventDefault();
+      openAdminModal();
+    }
+  });
+
+  applyAdminSettings();
+  if (location.search === "?SHREE-0812" || new URLSearchParams(location.search).get("admin") === "SHREE-0812") {
+    setTimeout(openAdminModal, 400);
+  }
+})();
+</script>
+<style>
+  .ai-typing-dots { display:inline-flex; align-items:center; gap:5px; padding:4px 2px; vertical-align:middle; }
+  .ai-typing-dots span { width:8px; height:8px; background:#2563eb; border-radius:50%; display:inline-block; animation:svcWaveDots 1.2s infinite ease-in-out both; }
+  .ai-typing-dots span:nth-child(1) { animation-delay:-0.32s; }
+  .ai-typing-dots span:nth-child(2) { animation-delay:-0.16s; }
+  @keyframes svcWaveDots { 0%, 80%, 100% { transform:translateY(0) scale(0.75); opacity:0.45; } 40% { transform:translateY(-6px) scale(1); opacity:1; } }
+</style>
+<script>
+(function(){
+  const dotsHTML = '<span class="ai-typing-dots" aria-label="Typing"><span></span><span></span><span></span></span>';
+  const obs = new MutationObserver(() => {
+    document.querySelectorAll(".ai-msg, .ai-msg div, .ai-msg span").forEach(el => {
+      if (el.children.length === 0 && /विचार कर रहा है|सोच रहा है/.test(el.textContent || "")) {
+        el.innerHTML = dotsHTML;
+      }
+    });
+  });
+  obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+})();
+</script>
+<!-- ==================== END STEALTH ADMIN CONTROL PANEL ==================== -->
 </body></html>
