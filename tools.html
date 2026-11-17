@@ -1669,7 +1669,11 @@ chatFileInput.onchange = async () => {
   }
 
   function isImageGenerationPrompt(txt) {
-    return /(?:^|\s)(?:इमेज|चित्र|फ़ोटो|फोटो|पोस्टर|बैनर|लोगो|तस्वीर|image|poster|banner|logo|illustration|drawing|picture)\s*(?:बनाओ|बनाएं|बनाइए|जनरेट|generate|create|draw|design|make)|^(?:generate|create|draw)\s+(?:an?\s+)?(?:image|picture|poster|banner|logo)/i.test(txt);
+    const clean = txt.trim();
+    const hasVisualNoun = /(?:इमेज|चित्र|फ़ोटो|फोटो|पोस्टर|बैनर|लोगो|तस्वीर|दृश्य|पेंटिंग|कार्टून|वॉलपेपर|थंबनेल|कार्ड|image|img|picture|pic|photo|poster|banner|logo|illustration|drawing|painting|wallpaper|thumbnail|card|art|tasveer|chitra|drishya)/i.test(clean);
+    const hasActionVerb = /(?:बना|जनरेट|तैयार|डिजाइन|डिज़ाइन|दिखा|खींच|रच|चाहिए|निकाल|दे\s*दो|कर\s*दो|क्रिएट|bna|bana|bnado|banado|bnao|banao|taiyar|tayyar|design|dikha|dikhao|chahiye|de\s*do|kr\s*do|kar\s*do|create|generate|draw|make|render|show)/i.test(clean);
+    const startsWithVisual = /^(?:एक\s+|ek\s+)?(?:सुंदर|आकर्षक|आधुनिक|बढ़िया|अच्छी|अच्छा|4k|hd|रियलिस्टिक|sundar|achhi|achi|badhiya|modern)?\s*(?:इमेज|चित्र|फ़ोटो|फोटो|पोस्टर|बैनर|लोगो|तस्वीर|image|img|photo|poster|banner|logo|tasveer)/i.test(clean);
+    return (hasVisualNoun && hasActionVerb) || startsWithVisual;
   }
 
   async function sendToPureAI() {
@@ -1805,7 +1809,7 @@ if (adm.customRules) adminLiveContext += `\nIMPORTANT ADMIN CUSTOM INSTRUCTIONS 
 
       const systemPrompt = `Today's date is ${todayStr}. You are the upgraded AI+ Assistant on SHREE VAISHNAVI COMPUTERS portal (Bhilwara, Rajasthan, India).
 YOUR LATEST BUILT-IN PORTAL CAPABILITIES & RECENT UPGRADES (Always state these accurately if asked "what updates were made to you" or "what can you do"):
-1. AI Image & Poster Generation: You CAN generate HD images/posters directly in chat! Tell the user to simply type "एक इमेज बनाएं: [अपना विवरण]" or click the '🖼️ इमेज / पोस्टर बनाएं' chip.
+1. Natural Hinglish, Hindi & English Understanding + Auto Image Generation: Understand natural conversational Hinglish (e.g. "ek poster bna do", "order taiyar kro", "shorting krke de do"), Hindi, and English seamlessly without requiring rigid commands. Automatically generate HD images whenever the user asks to create/draw/show any image, photo, poster, banner, or logo. NEVER tell the user that a specific command format is required.
 2. Multimodal Vision + Turbo PDF Reader: You can directly view and read scanned image PDFs, digital PDFs (up to 25 pages), Word (.docx), and photos (JPG/PNG) in Hindi & English with high accuracy.
 3. Live Voice Typing & Read Aloud: Users can speak in Hindi/English using the '🎤 बोलें' mic button and listen to your replies using '🔊 सुनें'.
 4. Auto Excel (.xlsx) Table Export: Whenever you output a Markdown pipe table (| Col 1 | Col 2 |), the portal automatically renders a clean table and provides a '📊 Excel (.xlsx)' download button.
