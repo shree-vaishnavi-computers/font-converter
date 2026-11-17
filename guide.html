@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>पूरी वेबसाइट की कार्यक्षमता, टूल्स एवं उपयोग की शर्तें</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      background: #0b1120;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; overflow: hidden;
+    }
+    .deck-viewport {
+      width: 100vw; height: calc(100vh - 58px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px;
+    }
+    .slide-container {
+      width: 1280px; height: 720px;
+      border-radius: 14px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+      overflow: hidden;
+      display: none;
+      transform-origin: center center;
+    }
+    .slide-container.active { display: flex; }
+    .player-bar {
+      height: 58px; width: 100%;
+      background: #111827; border-top: 1px solid #1f2937;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      color: #f9fafb; font-size: 15px;
+    }
+    .p-btn {
+      background: #059669; color: #fff; border: none;
+      padding: 8px 18px; border-radius: 8px; font-weight: 700;
+      cursor: pointer; font-family: inherit; font-size: 14px;
+    }
+    .p-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; }
+    .p-btn.sec { background: #1f2937; border: 1px solid #374151; }
+  </style>
+</head>
+<body>
+
+<div class="deck-viewport" id="viewport">
+
+  <!-- Slide 1: Title Slide -->
+  <div class="slide-container active" style="padding:56px 72px;background:linear-gradient(135deg,#0f172a 0%,#111827 65%,#064e3b 100%);flex-direction:column;justify-content:center;">
+    <p style="font-size:16px;font-weight:700;color:#34d399;margin:0 0 16px 0;letter-spacing:0.5px;">
+      SHREE VAISHNAVI COMPUTERS · भीलवाड़ा (राजस्थान)
+    </p>
+    <h1 style="font-size:54px;font-weight:800;color:#f9fafb;margin:0;line-height:1.2;max-width:900px;">
+      वेबसाइट की संपूर्ण कार्यक्षमता एवं उपयोग की शर्तें
+    </h1>
+    <p style="font-size:22px;color:#d1d5db;margin:22px 0 0 0;max-width:760px;line-height:1.5;">
+      ऑफ़लाइन हिंदी फ़ॉन्ट कन्वर्जन, PDF/इमेज टूल्स, मल्टीमॉडल AI+ असिस्टेंट व तकनीकी सीमाएं
+    </p>
+    <div style="width:72px;height:5px;background:#10b981;border-radius:3px;margin:34px 0 0 0;"></div>
+  </div>
+
+  <!-- Slide 2: Hindi Font Converter Suite -->
+  <div class="slide-container" style="padding:48px 64px;background:#ffffff;flex-direction:column;">
+    <h2 style="font-size:34px;font-weight:800;color:#111827;margin:0 0 28px 0;">
+      1. ऑफ़लाइन हिंदी फ़ॉन्ट कन्वर्जन सुइट (index.html)
+    </h2>
+    <div style="flex-grow:1;display:flex;gap:24px;align-items:center;">
+      <div style="flex:1 1 0;background:#f0fdf4;border-radius:14px;padding:30px;border:1px solid #bbf7d0;">
+        <i class="fa-solid fa-arrows-rotate" style="font-size:32px;color:#059669;margin-bottom:14px;"></i>
+        <h3 style="font-size:23px;font-weight:700;color:#111827;margin:0 0 10px 0;">द्वि-तरफ़ा कन्वर्जन</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.5;">Devlys 010 व Unicode के बीच तुरंत व सटीक बदलाव।</p>
+      </div>
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:30px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-file-word" style="font-size:32px;color:#0f766e;margin-bottom:14px;"></i>
+        <h3 style="font-size:23px;font-weight:700;color:#111827;margin:0 0 10px 0;">Word व Text एक्सपोर्ट</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.5;">कन्वर्ट किए गए मैटर की सीधे .doc व .txt फ़ाइल डाउनलोड।</p>
+      </div>
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:30px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-shield-halved" style="font-size:32px;color:#0f766e;margin-bottom:14px;"></i>
+        <h3 style="font-size:23px;font-weight:700;color:#111827;margin:0 0 10px 0;">100% ब्राउज़र आधारित</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.5;">बिना इंटरनेट व बिना सर्वर आपका डेटा पूर्ण सुरक्षित।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Offline PDF, Image & OCR Tools -->
+  <div class="slide-container" style="padding:48px 64px;background:#f8fafc;flex-direction:column;">
+    <h2 style="font-size:34px;font-weight:800;color:#111827;margin:0 0 28px 0;">
+      2. ऑफ़लाइन PDF, इमेज व OCR यूटिलिटी टूल्स
+    </h2>
+    <div style="flex-grow:1;display:flex;gap:36px;align-items:center;">
+      <div style="flex:1;background:#ffffff;border-radius:14px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+        <h3 style="font-size:24px;font-weight:700;color:#0f766e;margin:0 0 16px 0;">
+          📄 संपूर्ण PDF प्रबंधन
+        </h3>
+        <ul style="font-size:19px;color:#374151;padding-left:22px;line-height:1.7;">
+          <li style="margin-bottom:10px;"><b>मर्ज व स्प्लिट:</b> कई PDF जोड़ें या चुनिंदा पेज अलग करें।</li>
+          <li style="margin-bottom:10px;"><b>पेज संपादन:</b> पेज घुमाएं, हटाएं या क्रम व्यवस्थित करें।</li>
+          <li><b>सुरक्षा:</b> पासवर्ड लॉक व टेक्स्ट वॉटरमार्क लगाएं।</li>
+        </ul>
+      </div>
+      <div style="flex:1;background:#ffffff;border-radius:14px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+        <h3 style="font-size:24px;font-weight:700;color:#059669;margin:0 0 16px 0;">
+          🖼️ इमेज व लोकल OCR इंजन
+        </h3>
+        <ul style="font-size:19px;color:#374151;padding-left:22px;line-height:1.7;">
+          <li style="margin-bottom:10px;"><b>फ़ॉर्मेट बदलाव:</b> Image से PDF व PDF से JPG बनाएं।</li>
+          <li style="margin-bottom:10px;"><b>साइज कंप्रेस:</b> फ़ोटो का आकार तय KB में कम करें।</li>
+          <li><b>ऑफ़लाइन OCR:</b> स्कैन इमेज से हिंदी/अंग्रेज़ी टेक्स्ट निकालें।</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Multimodal AI+ Assistant Capabilities -->
+  <div class="slide-container" style="padding:48px 64px;background:#ffffff;flex-direction:column;">
+    <h2 style="font-size:34px;font-weight:800;color:#111827;margin:0 0 28px 0;">
+      3. मल्टीमॉडल AI+ असिस्टेंट की मुख्य क्षमताएं
+    </h2>
+    <div style="flex-grow:1;display:flex;gap:22px;align-items:center;">
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:26px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-file-signature" style="font-size:28px;color:#059669;margin-bottom:14px;"></i>
+        <h3 style="font-size:21px;font-weight:700;color:#111827;margin:0 0 8px 0;">सरकारी ड्राफ़्टिंग</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.45;">शुद्ध हिंदी में आदेश, नोटिस व शपथ-पत्र तैयार।</p>
+      </div>
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:26px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-layer-group" style="font-size:28px;color:#059669;margin-bottom:14px;"></i>
+        <h3 style="font-size:21px;font-weight:700;color:#111827;margin:0 0 8px 0;">Vision व मल्टी-फ़ाइल</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.45;">एक साथ 4 PDF, Excel व फ़ोटो की तुलना।</p>
+      </div>
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:26px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-table" style="font-size:28px;color:#059669;margin-bottom:14px;"></i>
+        <h3 style="font-size:21px;font-weight:700;color:#111827;margin:0 0 8px 0;">Excel व Word एक्सपोर्ट</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.45;">सॉर्टेड .xlsx तालिका व लेटरहेड .doc।</p>
+      </div>
+      <div style="flex:1 1 0;background:#f8fafc;border-radius:14px;padding:26px;border:1px solid #e2e8f0;">
+        <i class="fa-solid fa-wand-magic-sparkles" style="font-size:28px;color:#059669;margin-bottom:14px;"></i>
+        <h3 style="font-size:21px;font-weight:700;color:#111827;margin:0 0 8px 0;">वॉइस व पोस्टर निर्माण</h3>
+        <p style="font-size:18px;color:#374151;line-height:1.45;">हिंदी बोलकर टाइपिंग व HD इमेज जनरेशन।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Technical Limits & Conditions -->
+  <div class="slide-container" style="padding:48px 64px;background:#f8fafc;flex-direction:column;">
+    <h2 style="font-size:34px;font-weight:800;color:#111827;margin:0 0 24px 0;">
+      4. कार्य करने की तकनीकी शर्तें एवं सीमाएं
+    </h2>
+    <div style="flex-grow:1;display:flex;align-items:center;">
+      <table style="width:100%;border-collapse:collapse;background:#ffffff;border:1px solid #cbd5e1;font-size:19px;">
+        <thead>
+          <tr style="background:#0f766e;color:#ffffff;text-align:left;">
+            <th style="padding:15px 18px;border:1px solid #cbd5e1;">श्रेणी / मॉड्यूल</th>
+            <th style="padding:15px 18px;border:1px solid #cbd5e1;">निर्धारित सीमा व शर्त</th>
+            <th style="padding:15px 18px;border:1px solid #cbd5e1;">सुझाव / समाधान</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;font-weight:700;">ऑफ़लाइन टूल्स (फ़ॉन्ट/PDF)</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">बिना इंटरनेट पूरी तरह निःशुल्क व असीमित</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">डिवाइस की RAM अनुसार बड़ी फ़ाइलें चलाएं</td>
+          </tr>
+          <tr style="background:#f8fafc;">
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;font-weight:700;">AI फ़ाइल अपलोड सीमा</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">एक बार में अधिकतम 4 फ़ाइलें, 25 PDF पेज</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">स्कैन इमेज हेतु अधिकतम 4 पेज प्रति बार</td>
+          </tr>
+          <tr>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;font-weight:700;">AI उपयोग कोटा व इंटरनेट</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">इंटरनेट आवश्यक; मुफ़्त दैनिक कोटा सीमा</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">कोटा प्रतिदिन प्रातः 05:30 IST पर नवीनीकृत</td>
+          </tr>
+          <tr style="background:#f8fafc;">
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;font-weight:700;">रियल-टाइम इंटरनेट सर्च</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">लाइव न्यूज़ या बाहरी वेबसाइट ब्राउज़िंग नहीं</td>
+            <td style="padding:15px 18px;border:1px solid #cbd5e1;">मॉडल के अंतर्निहित ज्ञान व फ़ाइलों पर कार्य</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Slide 6: Legal, Ethical & Data Privacy Terms -->
+  <div class="slide-container" style="padding:48px 64px;background:#ffffff;flex-direction:column;">
+    <h2 style="font-size:34px;font-weight:800;color:#111827;margin:0 0 28px 0;">
+      5. गोपनीयता, वैधानिक एवं नैतिक उपयोग की शर्तें
+    </h2>
+    <div style="flex-grow:1;display:flex;flex-direction:column;justify-content:center;">
+      <ul style="font-size:21px;color:#1f2937;padding-left:28px;line-height:1.85;max-width:1040px;">
+        <li style="margin-bottom:14px;"><b>पूर्ण डेटा गोपनीयता:</b> ऑफ़लाइन टूल्स में कोई भी दस्तावेज़ या टेक्स्ट बाहरी सर्वर पर सेव नहीं होता।</li>
+        <li style="margin-bottom:14px;"><b>गैर-कानूनी सामग्री पर प्रतिबंध:</b> फ़र्ज़ी दस्तावेज़, जाली प्रमाण-पत्र या धमकी भरे पत्र बनाना पूर्णतः वर्जित है।</li>
+        <li style="margin-bottom:14px;"><b>अंतिम सत्यापन अनिवार्य:</b> किसी भी विधिक या सरकारी आदेश को प्रिंट करने से पूर्व तथ्यों की जांच स्वयं करें।</li>
+        <li><b>कोड व सुरक्षा संरक्षण:</b> पोर्टल की सुरक्षा शील्ड व एडमिन क्रेडेंशियल्स का अनाधिकृत उपयोग प्रतिबंधित है।</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Slide 7: Closing Slide -->
+  <div class="slide-container" style="padding:64px;background:linear-gradient(135deg,#0f172a 0%,#064e3b 100%);flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+    <p style="font-size:16px;font-weight:700;color:#34d399;margin:0 0 14px 0;">
+      SHREE VAISHNAVI COMPUTERS · भीलवाड़ा, राजस्थान
+    </p>
+    <h2 style="font-size:44px;font-weight:800;color:#f9fafb;margin:0 0 18px 0;">
+      तेज़, सुरक्षित और प्रोफ़ेशनल डिजिटल कार्यशाला
+    </h2>
+    <p style="font-size:20px;color:#d1d5db;margin:0 0 28px 0;max-width:720px;">
+      सही नियमों और निर्धारित सीमाओं के साथ अपने दैनिक कार्यालयी कार्यों को सरल बनाएं
+    </p>
+    <a href="tools.html" style="background:#10b981;color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:18px;">
+      ← वापस टूल्स पोर्टल पर जाएं
+    </a>
+  </div>
+
+</div>
+
+<div class="player-bar">
+  <button class="p-btn sec" id="prevBtn">◀ पिछली स्लाइड</button>
+  <span id="slideCounter" style="font-weight:700;min-width:95px;text-align:center;">1 / 7</span>
+  <button class="p-btn" id="nextBtn">अगली स्लाइड ▶</button>
+  <button class="p-btn sec" onclick="window.location.href='tools.html'" style="margin-left:12px;">✕ बंद करें</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide-container"));
+  const counter = document.getElementById("slideCounter");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  let idx = 0;
+
+  function fitSlide() {
+    const vp = document.getElementById("viewport");
+    const scale = Math.min((vp.clientWidth - 24) / 1280, (vp.clientHeight - 24) / 720, 1);
+    slides[idx].style.transform = `scale(${scale})`;
+  }
+  function showSlide(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+    counter.textContent = `${idx + 1} / ${slides.length}`;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+    fitSlide();
+  }
+  prevBtn.onclick = () => showSlide(idx - 1);
+  nextBtn.onclick = () => showSlide(idx + 1);
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === " ") showSlide(idx + 1);
+    if (e.key === "ArrowLeft") showSlide(idx - 1);
+  });
+  window.addEventListener("resize", fitSlide);
+  showSlide(0);
+</script>
+</body>
+</html>
