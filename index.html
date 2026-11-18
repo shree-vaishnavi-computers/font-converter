@@ -2641,102 +2641,97 @@ window.svcPro = (function() {
     }
 })();
 </script>
-<!-- ============ SVC STRICT MAPPING PATCH (FINAL VERIFIED) ============ -->
-<script id="svc-mapping-patch">
-(function() {
-  function fixDevlysToUnicodeOutput(uText) {
-    if (!uText) return uText;
-    let out = uText;
+<script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
+<script id="svc-mapping-fix">
+(function () {
+  var busy = false;
+  function initFix() {
+    var d = document.getElementById("devlysField");
+    var u = document.getElementById("unicodeField");
+    if (!d || !u) return;
 
-    // 1. Devlys Shift+7 (&) -> Unicode '-' (अकेले '-' और मकान नं. '5-बी-10' दोनों के लिए)
-    out = out.replace(/&/g, '-');
-
-    // 2. Devlys Shift+W ('W') -> Unicode अर्धचंद्राकार 'ॅ' / 'ॉ' / 'ऑ' (ऑनलाईन, डॉक्टर)
-    out = out.replace(/आW/g, 'ऑ');
-    out = out.replace(/ाW/g, 'ॉ');
-    out = out.replace(/W/g, 'ॅ');
-
-    // 3. 'क्ष्ो' -> 'क्षे' (क्षेत्राधीन) तथा अन्य अर्ध व्यंजन + 'ो'/'ौ' -> पूर्ण व्यंजन + 'े'/'ै'
-    out = out.replace(/([क-ह]्[क-ह]|क्ष|त्र|ज्ञ|श्र|[क-ह])्ो/g, '$1े');
-    out = out.replace(/([क-ह]्[क-ह]|क्ष|त्र|ज्ञ|श्र|[क-ह])्ौ/g, '$1ै');
-
-    return out;
-  }
-
-  function fixUnicodeToDevlysOutput(dText) {
-    if (!dText) return dText;
-    let out = dText;
-
-    // 1. Unicode '-' (जैसे '5-बी-10' या अकेला '-') -> Devlys '&' (Shift+7)
-    out = out.replace(/-/g, '&');
-
-    // 2. Unicode 'ऑ' / 'ॉ' / 'ॅ' -> Devlys 'vkW' / 'kW' / 'W' (Shift+W)
-    out = out.replace(/ऑ/g, 'vkW');
-    out = out.replace(/ॉ/g, 'kW');
-    out = out.replace(/ॅ/g, 'W');
-
-    return out;
-  }
-
-  function wrapConverterFunctions() {
-    const dBox = document.getElementById('devlysField');
-    const uBox = document.getElementById('unicodeField');
-    if (!dBox || !uBox) return;
-
-    // Forward: Devlys 010 -> Unicode
-    ['runDevlysToUnicode', 'autoConvertText'].forEach(function(fnName) {
-      if (typeof window[fnName] === 'function' && !window[fnName]._svcPatched) {
-        const origFn = window[fnName];
-        window[fnName] = function() {
-          const res = origFn.apply(this, arguments);
-          const fixed = fixDevlysToUnicodeOutput(uBox.value);
-          if (uBox.value !== fixed) uBox.value = fixed;
-          return res;
-        };
-        window[fnName]._svcPatched = true;
-      }
-    });
-
-    // Reverse: Unicode -> Devlys 010
-    ['runUnicodeToDevlys', 'autoReverseConvert'].forEach(function(fnName) {
-      if (typeof window[fnName] === 'function' && !window[fnName]._svcPatched) {
-        const origFn = window[fnName];
-        window[fnName] = function() {
-          const srcU = uBox.value;
-          const hasLiteralColon = srcU.indexOf(':') !== -1;
-          const hasRu = /र[ुू]/.test(srcU);
-          let res;
-
-          if (hasLiteralColon && hasRu) {
-            const placeholder = '___SVCCOLON___';
-            uBox.value = srcU.replace(/:/g, placeholder);
-            res = origFn.apply(this, arguments);
-            uBox.value = srcU;
-            dBox.value = dBox.value.replace(new RegExp(placeholder, 'g'), '%');
-          } else {
-            res = origFn.apply(this, arguments);
-            if (hasLiteralColon && !hasRu) {
-              dBox.value = dBox.value.replace(/:/g, '%');
+    ["runDevlysToUnicode", "autoConvertText"].forEach(function (fn) {
+      if (typeof window[fn] === "function" && !window[fn]._ok) {
+        var orig = window[fn];
+        window[fn] = function () {
+          if (busy) return orig.apply(this, arguments);
+          busy = true;
+          try {
+            var s = d.value, ss = d.selectionStart, se = d.selectionEnd;
+            var t = s
+              .replace(/-/g, "\uE001")
+              .replace(/&/g, "\uE002")
+              .replace(/W/g, "\uE004")
+              .replace(/_/g, "\uE005");
+            if (t !== s) d.value = t;
+            var r = orig.apply(this, arguments);
+            if (d.value !== s) {
+              d.value = s;
+              if (document.activeElement === d) d.setSelectionRange(ss, se);
             }
+            var f = u.value
+              .replace(/\uE001/g, ".")
+              .replace(/\uE002/g, "-")
+              .replace(/आ\uE004/g, "ऑ")
+              .replace(/ा\uE004/g, "ॉ")
+              .replace(/\uE004/g, "ॅ")
+              .replace(/\uE005/g, "ऋ")
+              .replace(/([क-ह]्[क-ह]|क्ष|त्र|ज्ञ|श्र|[क-ह])्ो/g, "$1े")
+              .replace(/([क-ह]्[क-ह]|क्ष|त्र|ज्ञ|श्र|[क-ह])्ौ/g, "$1ै");
+            if (u.value !== f) u.value = f;
+            return r;
+          } finally {
+            busy = false;
           }
-
-          const fixed = fixUnicodeToDevlysOutput(dBox.value);
-          if (dBox.value !== fixed) dBox.value = fixed;
-          return res;
         };
-        window[fnName]._svcPatched = true;
+        window[fn]._ok = true;
+      }
+    });
+
+    ["runUnicodeToDevlys", "autoReverseConvert"].forEach(function (fn) {
+      if (typeof window[fn] === "function" && !window[fn]._ok) {
+        var orig = window[fn];
+        window[fn] = function () {
+          if (busy) return orig.apply(this, arguments);
+          busy = true;
+          try {
+            var s = u.value, ss = u.selectionStart, se = u.selectionEnd;
+            var t = s
+              .replace(/:/g, "\uE003")
+              .replace(/-/g, "\uE002")
+              .replace(/ऑ/g, "आ\uE004")
+              .replace(/ॉ/g, "ा\uE004")
+              .replace(/ॅ/g, "\uE004")
+              .replace(/ऋ/g, "\uE005")
+              .replace(/त्रु/g, "\uE006")
+              .replace(/त्रू/g, "\uE007");
+            if (t !== s) u.value = t;
+            var r = orig.apply(this, arguments);
+            if (u.value !== s) {
+              u.value = s;
+              if (document.activeElement === u) u.setSelectionRange(ss, se);
+            }
+            var f = d.value
+              .replace(/\uE003/g, "%")
+              .replace(/\uE002/g, "&")
+              .replace(/\uE004/g, "W")
+              .replace(/\uE005/g, "_")
+              .replace(/\uE006/g, "=q")
+              .replace(/\uE007/g, "=w");
+            if (d.value !== f) d.value = f;
+            return r;
+          } finally {
+            busy = false;
+          }
+        };
+        window[fn]._ok = true;
       }
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', wrapConverterFunctions);
-  } else {
-    wrapConverterFunctions();
-  }
-  setTimeout(wrapConverterFunctions, 300);
+  initFix();
+  document.addEventListener("DOMContentLoaded", initFix);
 })();
 </script>
-<script id="svc-security-shield">(function(){document.addEventListener('contextmenu',function(e){if(e.target&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='INPUT'){e.preventDefault();}});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey;if(e.key==='F12'||(c&&!s&&k==='u')||(c&&s&&(k==='i'||k==='j'||k==='c'))){e.preventDefault();e.stopPropagation();return false;}},true);})();</script>
 </body>
 </html>
