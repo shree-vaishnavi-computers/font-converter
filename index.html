@@ -2645,6 +2645,11 @@ window.svcPro = (function() {
 <script id="svc-mapping-fix">
 (function () {
   var busy = false;
+  var isRestoring = false;
+  var history = [];
+  var histIndex = -1;
+  var typeTimer = null;
+
   function initFix() {
     var d = document.getElementById("devlysField");
     var u = document.getElementById("unicodeField");
@@ -2654,6 +2659,7 @@ window.svcPro = (function() {
       if (typeof window[fn] === "function" && !window[fn]._ok) {
         var orig = window[fn];
         window[fn] = function () {
+          if (isRestoring) return;
           if (busy) return orig.apply(this, arguments);
           busy = true;
           try {
@@ -2692,6 +2698,7 @@ window.svcPro = (function() {
       if (typeof window[fn] === "function" && !window[fn]._ok) {
         var orig = window[fn];
         window[fn] = function () {
+          if (isRestoring) return;
           if (busy) return orig.apply(this, arguments);
           busy = true;
           try {
@@ -2727,6 +2734,128 @@ window.svcPro = (function() {
         window[fn]._ok = true;
       }
     });
+
+    if (!d._undoReady) {
+      function recordState() {
+        if (isRestoring) return;
+        var snap = {
+          d: d.value,
+          u: u.value,
+          ds: d.selectionStart || 0,
+          de: d.selectionEnd || 0,
+          us: u.selectionStart || 0,
+          ue: u.selectionEnd || 0
+        };
+        if (histIndex >= 0 && history[histIndex].d === snap.d && history[histIndex].u === snap.u) {
+          return;
+        }
+        history = history.slice(0, histIndex + 1);
+        history.push(snap);
+        if (history.length > 100) history.shift();
+        histIndex = history.length - 1;
+      }
+
+      function syncUiAfterRestore() {
+        function calcBoxStat(val) {
+          var chars = val.length;
+          var words = val.trim() ? val.trim().split(/\s+/).length : 0;
+          var paras = val.trim() ? val.trim().split(/\n+/).length : 0;
+          var sents = val.trim() ? val.split(/[।.!?]+/).filter(function (x) { return x.trim().length > 0; }).length : 0;
+          return "Characters: " + chars + " | Words: " + words + " | Paragraphs: " + paras + " | Sentences: " + sents;
+        }
+        var dInfo = document.getElementById("devlysStatInfo");
+        var uInfo = document.getElementById("unicodeStatInfo");
+        if (dInfo) dInfo.textContent = calcBoxStat(d.value);
+        if (uInfo) uInfo.textContent = calcBoxStat(u.value);
+
+        var activeBox = (document.activeElement === d) ? d : u;
+        var txt = activeBox.value || "";
+        var w = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+        var c = txt.length;
+        var cNo = txt.replace(/\s/g, "").length;
+        var l = txt.trim() ? txt.split("\n").length : 0;
+        var rMin = Math.ceil(w / 180);
+        if (document.getElementById("statWords")) document.getElementById("statWords").innerText = w;
+        if (document.getElementById("statChars")) document.getElementById("statChars").innerText = c;
+        if (document.getElementById("statCharsNoSpace")) document.getElementById("statCharsNoSpace").innerText = cNo;
+        if (document.getElementById("statLines")) document.getElementById("statLines").innerText = l;
+        if (document.getElementById("statReadTime")) document.getElementById("statReadTime").innerText = (w > 0 ? rMin + " मिनट" : "0 मिनट");
+
+        try {
+          var draftNum = parseInt(localStorage.getItem("svc_active_draft_num")) || 1;
+          localStorage.setItem("svc_d_" + draftNum + "_devlys", d.value);
+          localStorage.setItem("svc_d_" + draftNum + "_unicode", u.value);
+        } catch (e) {}
+      }
+
+      function applySnapshot(snap) {
+        if (!snap) return;
+        isRestoring = true;
+        try {
+          var activeEl = document.activeElement;
+          d.value = snap.d;
+          u.value = snap.u;
+          if (activeEl === u) {
+            u.setSelectionRange(snap.us, snap.ue);
+          } else if (activeEl === d) {
+            d.setSelectionRange(snap.ds, snap.de);
+          }
+          syncUiAfterRestore();
+        } finally {
+          isRestoring = false;
+        }
+      }
+
+      function handleInputForHistory(e) {
+        if (isRestoring) return;
+        clearTimeout(typeTimer);
+        var immediate = e && (
+          e.inputType === "insertFromPaste" ||
+          e.inputType === "deleteByCut" ||
+          e.inputType === "insertLineBreak" ||
+          e.data === " " ||
+          !e.inputType
+        );
+        if (immediate) {
+          setTimeout(recordState, 15);
+        } else {
+          typeTimer = setTimeout(recordState, 350);
+        }
+      }
+
+      function handleUndoRedoKeys(e) {
+        var isCtrl = e.ctrlKey || e.metaKey;
+        if (!isCtrl || e.altKey) return;
+        var k = (e.key || "").toLowerCase();
+
+        if (k === "z" && !e.shiftKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          clearTimeout(typeTimer);
+          recordState();
+          if (histIndex > 0) {
+            histIndex--;
+            applySnapshot(history[histIndex]);
+          }
+        } else if (k === "y" || (k === "z" && e.shiftKey)) {
+          e.preventDefault();
+          e.stopPropagation();
+          clearTimeout(typeTimer);
+          if (histIndex < history.length - 1) {
+            histIndex++;
+            applySnapshot(history[histIndex]);
+          }
+        }
+      }
+
+      d.addEventListener("input", handleInputForHistory);
+      u.addEventListener("input", handleInputForHistory);
+      d.addEventListener("keydown", handleUndoRedoKeys, true);
+      u.addEventListener("keydown", handleUndoRedoKeys, true);
+
+      setTimeout(recordState, 100);
+      d._undoReady = true;
+    }
   }
 
   initFix();
